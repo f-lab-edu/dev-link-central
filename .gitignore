@@ -38,4 +38,8 @@ out/
 .vscode/
 
 
-application.yml
+### Querydsl
+/src/main/generated
+
+
+/src/main/resources/application.yml
