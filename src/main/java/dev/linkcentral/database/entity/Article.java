@@ -2,35 +2,34 @@ package dev.linkcentral.database.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 
 @Getter
-@ToString(of = {"id", "name", "password", "email", "nickname"})
 @Entity
-public class Member extends AuditingFields {
+public class Article extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Setter
-    @Column(length = 50, unique = true)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member memberId;
 
     @Setter
     @Column(length = 100, nullable = false)
-    private String password;
+    private String title;
+
+    @Setter
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
 
     @Setter
     @Column(length = 100, nullable = false)
-    private String email;
+    private String writer;
 
-    @Setter
-    @Column(length = 100, nullable = false)
-    private String nickname;
-
-    protected Member() {
+    protected Article() {
     }
 }
