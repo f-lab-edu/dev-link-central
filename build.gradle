@@ -62,7 +62,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
 
 	// 스프링 세션
-//	implementation 'org.springframework.session:spring-session-jdbc'
+	implementation 'org.springframework.session:spring-session-jdbc'
 
 
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -81,9 +81,14 @@ tasks.named('bootBuildImage') {
 //}
 
 //V2
+//test {
+//	useJUnitPlatform()
+//}
+
 test {
 	useJUnitPlatform()
 }
+
 
 
 // Querydsl 설정부
