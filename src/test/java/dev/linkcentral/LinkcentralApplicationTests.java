@@ -9,5 +9,4 @@ class LinkcentralApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

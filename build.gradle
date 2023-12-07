@@ -81,9 +81,14 @@ tasks.named('bootBuildImage') {
 //}
 
 //V2
+//test {
+//	useJUnitPlatform()
+//}
+
 test {
 	useJUnitPlatform()
 }
+
 
 
 // Querydsl 설정부
