@@ -1,6 +1,9 @@
 package dev.linkcentral.service.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
@@ -34,5 +37,4 @@ public class MemberSaveRequestDTO {
     public void updateRole(String role) {
         this.role = role;
     }
-
 }
