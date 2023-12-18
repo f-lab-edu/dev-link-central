@@ -63,10 +63,10 @@
 <h2 style="color: #333;">안녕하세요!</h2>
 <p>로그인을 해주세요 :)</p>
 
-<form action="/new" method="post">
+<form action="/login" method="post">
     <div>
         <label for="userId">아이디: </label>
-        <input id="userId" name="userId" type="text" required>
+        <input id="userId" name="name" type="text" required>
     </div>
     <div>
         <label for="password">패스워드: </label>
@@ -75,7 +75,7 @@
     <input type="submit" value="로그인하기">
 </form>
 
-<p th:text="${loginMessage}"></p>
+<p>${loginMessage}</p>
 
 <p>처음이신가요? 회원가입은 여기서 해주세요!</p>
 <input class="signup-button" type="button" onclick="location.href='/members/join-form';" value="회원가입하기">
