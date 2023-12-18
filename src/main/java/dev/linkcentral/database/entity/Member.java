@@ -31,15 +31,10 @@ public class Member extends AuditingFields {
     @Column(nullable = false, length = 100)
     private String nickname;
 
-//    @Column
-//    @Enumerated(EnumType.STRING)
-//    private Role role;
-
     private String role;
 
     protected Member() {
     }
-
 
     public void updateName(String name) {
         this.name = name;

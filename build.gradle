@@ -51,11 +51,9 @@ dependencies {
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
 	implementation 'javax.servlet:jstl'
 
-
 	// 설정파일 암호화
 	implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.3'
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
-
 
 	// junit5
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
@@ -64,9 +62,13 @@ dependencies {
 	// 스프링 세션
 	implementation 'org.springframework.session:spring-session-jdbc'
 
-
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'mysql:mysql-connector-java:8.0.33' //mysql
+
+	// security
+//	implementation 'org.springframework.boot:spring-boot-starter-security:2.7.0'
+//	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5:3.0.4.RELEASE'
+//	testImplementation 'org.springframework.security:spring-security-test:5.7.1'
 
 }
 

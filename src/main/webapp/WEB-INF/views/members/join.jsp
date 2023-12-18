@@ -60,6 +60,7 @@
     </style>
 </head>
 <body>
+
 <div class="container">
     <form action="/new" method="post">
         <div class="form_group">
