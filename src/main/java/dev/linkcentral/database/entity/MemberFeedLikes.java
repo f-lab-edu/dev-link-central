@@ -14,10 +14,10 @@ public class MemberFeedLikes extends AuditingFields {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_feed_id")
-    private MemberFeed memberFeedId;
+    private MemberFeed memberFeed;
 
 }

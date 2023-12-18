@@ -14,11 +14,11 @@ public class StudyMember extends AuditingFields {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_group_id")
-    private StudyGroup studyGroupId;
+    private StudyGroup studyGroup;
 
     protected StudyMember() {
     }

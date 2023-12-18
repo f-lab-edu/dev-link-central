@@ -14,7 +14,7 @@ public class Article extends AuditingFields {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     @Column(length = 100, nullable = false)
     private String title;

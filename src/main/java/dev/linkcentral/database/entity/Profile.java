@@ -14,7 +14,7 @@ public class Profile extends AuditingFields {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     @Column(length = 250, nullable = false)
     private String bio;
