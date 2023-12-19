@@ -20,7 +20,8 @@ public class Alarm extends AuditingFields {
     @Column(columnDefinition = "TEXT")
     private String message;
 
-    private int targetId;
+    @Column(name = "target_id")
+    private int targetMember;
 
     @Column(length = 100)
     private String type;
