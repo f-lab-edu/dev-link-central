@@ -16,7 +16,6 @@ public class Member extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
     private Long id;
 
     @Column(nullable = false, length = 50, unique = true)

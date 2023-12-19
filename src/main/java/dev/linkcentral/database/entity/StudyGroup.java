@@ -10,7 +10,6 @@ public class StudyGroup extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "study_group_id")
     private Long id;
 
     private int studyLeaderId;
