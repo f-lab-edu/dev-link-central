@@ -15,7 +15,7 @@ public class Alarm extends AuditingFields {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     @Column(columnDefinition = "TEXT")
     private String message;

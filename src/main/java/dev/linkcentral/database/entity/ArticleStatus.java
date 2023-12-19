@@ -14,7 +14,7 @@ public class ArticleStatus extends AuditingFields {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
-    private Article articleId;
+    private Article article;
 
     private int likes;
 

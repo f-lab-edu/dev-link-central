@@ -14,11 +14,11 @@ public class Friend extends AuditingFields {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id")
-    private Member senderId;
+    private Member sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")
-    private Member receiverId;
+    private Member receiver;
 
     protected Friend() {
     }

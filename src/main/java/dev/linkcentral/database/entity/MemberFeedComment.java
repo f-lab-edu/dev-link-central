@@ -14,7 +14,7 @@ public class MemberFeedComment extends AuditingFields {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_feed_id")
-    private MemberFeed memberFeedId;
+    private MemberFeed memberFeed;
 
     @Column(columnDefinition = "TEXT")
     private String content;
