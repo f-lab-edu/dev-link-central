@@ -8,6 +8,6 @@ public class LinkcentralApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(LinkcentralApplication.class, args);
-		// Rebase Test
+		// Rebase Test2
 	}
 }
