@@ -1,5 +1,6 @@
 package dev.linkcentral.service.dto;
 
+import dev.linkcentral.database.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,5 +38,14 @@ public class MemberSaveRequestDTO {
 
     public void updateRole(String role) {
         this.role = role;
+    }
+
+    public Member toEntity() {
+        return Member.builder()
+                .name(name)
+                .password(password)
+                .email(email)
+                .role(role)
+                .build();
     }
 }
