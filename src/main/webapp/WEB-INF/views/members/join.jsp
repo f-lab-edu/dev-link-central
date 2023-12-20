@@ -58,6 +58,52 @@
             background-color: #45a049;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // 닉네임 중복 체크 함수
+            function checkNickname(callback) {
+                var nickname = $("#nickname").val();
+                if (nickname) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/members/" + nickname + "/exists",
+                        success: function (result) {
+                            if (result) {
+                                // 중복된 경우
+                                $("#nicknameError").text("이미 사용 중인 닉네임입니다.");
+                                $("#nicknameStatus").text("");
+                                callback(false);
+                            } else {
+                                // 중복되지 않은 경우
+                                $("#nicknameError").text("");
+                                $("#nicknameStatus").text("사용 가능한 닉네임입니다.");
+                                callback(true);
+                            }
+                        },
+                        error: function () {
+                            console.error("닉네임 중복 체크 실패");
+                            callback(false);
+                        }
+                    });
+                } else {
+                    callback(false);
+                }
+            }
+
+            // 닉네임 중복 체크 버튼 클릭 시 이벤트
+            $("#checkNicknameButton").click(function () {
+                checkNickname(function (isValid) {
+                    // 사용 가능한 닉네임인 경우 회원가입 버튼 활성화
+                    if (isValid) {
+                        $("#signupButton").prop("disabled", false);
+                    }
+                });
+            });
+
+            // 끝
+        });
+    </script>
 </head>
 <body>
 
@@ -75,8 +121,13 @@
 
             <label for="nickname">닉네임</label>
             <input type="text" id="nickname" name="nickname" placeholder="닉네임을 입력하세요.">
+            <span id="nicknameError" style="color: red;"></span>
+            <span id="nicknameStatus" style="color: green;"></span>
 
-            <button type="submit">회원가입</button>
+            <!-- 중복 체크 버튼 추가 -->
+            <button type="button" id="checkNicknameButton">닉네임 중복 확인</button>
+
+            <button type="submit" id="signupButton" disabled>회원가입</button>
         </div>
     </form>
 </div>
