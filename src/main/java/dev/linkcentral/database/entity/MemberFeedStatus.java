@@ -1,7 +1,6 @@
 package dev.linkcentral.database.entity;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -13,17 +12,23 @@ public class MemberFeedStatus extends AuditingFields {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_feed_id")
-    private MemberFeed MemberFeedId;
+    private MemberFeed memberFeed;
 
-    @Setter
     private int likes;
 
-    @Setter
     private int view;
 
     protected MemberFeedStatus() {
+    }
+
+
+    public void updateLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public void updateView(int view) {
+        this.view = view;
     }
 }
