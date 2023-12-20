@@ -31,4 +31,8 @@ public class MemberService {
         Optional<Member> member = memberRepository.selectMember(name, password);
         return member;
     }
+
+    public boolean isNicknameDuplicated(String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
 }

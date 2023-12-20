@@ -12,4 +12,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("select m from Member m where m.name=:name and m.password=:password")
     Optional<Member> selectMember(@Param("name") String name, @Param("password") String password);
 
+    boolean existsByNickname(String nickname);
 }
