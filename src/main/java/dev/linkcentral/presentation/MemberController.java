@@ -6,10 +6,12 @@ import dev.linkcentral.service.dto.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.MemberSaveRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Optional;
@@ -47,6 +49,11 @@ public class MemberController {
         }
         member.map(Member::getName).ifPresent(memberName -> model.addAttribute("memberName", memberName));
         return "/members/login";
+    }
+
+    @GetMapping("/members/{nickname}/exists")
+    public ResponseEntity<Boolean> isNicknameDuplicated(@PathVariable String nickname) {
+        return ResponseEntity.ok(memberService.isNicknameDuplicated(nickname));
     }
 
 }
