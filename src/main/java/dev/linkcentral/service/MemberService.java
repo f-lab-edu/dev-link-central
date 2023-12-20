@@ -6,6 +6,8 @@ import dev.linkcentral.service.dto.MemberSaveRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -23,5 +25,10 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(memberEntity).getId();
+    }
+
+    public Optional<Member> loginMember(String name, String password) {
+        Optional<Member> member = memberRepository.selectMember(name, password);
+        return member;
     }
 }
