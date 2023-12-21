@@ -62,7 +62,7 @@
     <script>
         $(document).ready(function () {
             // 닉네임 중복 체크 함수
-            function checkNickname(callback) {
+            function checkNickname(callback) { // true
                 var nickname = $("#nickname").val();
                 if (nickname) {
                     $.ajax({
@@ -70,12 +70,12 @@
                         url: "/members/" + nickname + "/exists",
                         success: function (result) {
                             if (result) {
-                                // 중복된 경우
+                                // result가 true인 경우 -> 닉네임이 DB에 있다
                                 $("#nicknameError").text("이미 사용 중인 닉네임입니다.");
                                 $("#nicknameStatus").text("");
                                 callback(false);
                             } else {
-                                // 중복되지 않은 경우
+                                // result가 false인 경우 -> 닉네임이 DB에 없다
                                 $("#nicknameError").text("");
                                 $("#nicknameStatus").text("사용 가능한 닉네임입니다.");
                                 callback(true);
@@ -94,8 +94,9 @@
             // 닉네임 중복 체크 버튼 클릭 시 이벤트
             $("#checkNicknameButton").click(function () {
                 checkNickname(function (isValid) {
-                    // 사용 가능한 닉네임인 경우 회원가입 버튼 활성화
+                    // 사용 가능한 닉네임인 경우 회원가입 버튼 동작
                     if (isValid) {
+                        // 여기서 disabled false는 비활성화 상태를 해제하라는 의미 -> 결론은, 활성화
                         $("#signupButton").prop("disabled", false);
                     }
                 });
