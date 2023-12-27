@@ -10,5 +10,6 @@ public class LinkcentralApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(LinkcentralApplication.class, args);
+		// git ignore 동작 테스트
 	}
 }
