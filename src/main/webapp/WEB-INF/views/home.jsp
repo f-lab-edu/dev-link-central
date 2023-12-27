@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <title>나만의 게시판 만들기!</title>
+    <title>프로젝트!</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -14,7 +14,6 @@
             margin: 0;
             padding: 0;
         }
-
         form {
             margin-top: 20px;
             background-color: #fff;
@@ -24,38 +23,36 @@
             width: 300px;
             margin: auto;
         }
-
         label {
             font-weight: bold;
         }
-
         input {
             margin-bottom: 10px;
             padding: 8px;
             width: 100%;
             box-sizing: border-box;
         }
-
-        input[type="submit"] {
-            background-color: #4caf50;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        p {
-            color: red;
-            margin-top: 10px;
-        }
-
-        .signup-button {
+        input[type="submit"], .signup-button, .password-reset-button {
             margin-top: 20px;
-            background-color: #3498db;
-            color: #fff;
             padding: 10px 20px;
             font-size: 16px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            color: #fff;
+        }
+        input[type="submit"] {
+            background-color: #4caf50;
+        }
+        .signup-button {
+            background-color: #3498db;
+        }
+        .password-reset-button {
+            background-color: #e74c3c;
+        }
+        p {
+            color: red;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -78,6 +75,9 @@
 <p>${loginMessage}</p>
 
 <p>처음이신가요? 회원가입은 여기서 해주세요!</p>
-<input class="signup-button" type="button" onclick="location.href='/members/join-form';" value="회원가입하기">
+<a class="signup-button" href="/members/join-form">회원가입하기</a>
+
+<!-- 비밀번호 찾기 버튼 추가 -->
+<a class="password-reset-button" href="/reset-password">비밀번호 찾기</a>
 </body>
 </html>
