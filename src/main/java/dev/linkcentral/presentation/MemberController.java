@@ -2,6 +2,7 @@ package dev.linkcentral.presentation;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.MemberService;
+import dev.linkcentral.service.dto.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.MemberSaveRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -56,4 +56,28 @@ public class MemberController {
         return ResponseEntity.ok(memberService.isNicknameDuplicated(nickname));
     }
 
+    @GetMapping("reset-password")
+    public String mailAndChangePassword() {
+        return "/members/reset-password";
+    }
+
+    @ResponseBody
+    @GetMapping("/forgot-password")
+    public Map<String, Boolean> isPasswordValid(String userEmail, String userName) {
+        Map<String, Boolean> json = new HashMap<>();
+
+        // 이메일과 이름이 일치하는 사용자가 있는지 확인.
+        boolean pwFindCheck = memberService.userEmailCheck(userEmail, userName);
+
+        json.put("check", pwFindCheck);
+        return json;
+    }
+
+
+    // 등록된 이메일로 임시비밀번호를 발송하고, 발송된 임시비밀번호로 사용자의 pw를 변경하는 API
+    @PostMapping("/send-email/update-password")
+    public void sendEmail(String userEmail, String userName) {
+        MemberMailRequestDTO dto = memberService.createMailAndChangePassword(userEmail, userName);
+        memberService.mailSend(dto);
+    }
 }
