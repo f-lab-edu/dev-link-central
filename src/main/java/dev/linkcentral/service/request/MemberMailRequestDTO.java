@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
