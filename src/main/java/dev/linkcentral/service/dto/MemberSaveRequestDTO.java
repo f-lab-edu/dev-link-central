@@ -38,4 +38,8 @@ public class MemberSaveRequestDTO {
     public void updateRole(String role) {
         this.role = role;
     }
+
+    public void encryptPassword(String BCryptpassword) {
+        this.password = BCryptpassword;
+    }
 }
