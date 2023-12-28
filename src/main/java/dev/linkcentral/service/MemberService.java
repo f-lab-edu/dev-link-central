@@ -2,8 +2,8 @@ package dev.linkcentral.service;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
-import dev.linkcentral.service.dto.MemberMailRequestDTO;
-import dev.linkcentral.service.dto.MemberSaveRequestDTO;
+import dev.linkcentral.service.request.MemberMailRequestDTO;
+import dev.linkcentral.service.request.MemberSaveRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,6 +18,7 @@ public class MemberService {
 
     private static final String FROM_ADDRESS = "alstjr706@gmail.com";
 
+    // private final BCryptPasswordEncoder encoder; //비밀번호암호화
     private final MemberRepository memberRepository;
     private final JavaMailSender mailSender;
 
@@ -108,4 +109,18 @@ public class MemberService {
         message.setText(mailDto.getMessage());  // 메일 내용
         mailSender.send(message);
     }
+
+    public void updateMember(Member member) {
+        Member foundMember = memberRepository.findById(member.getId())
+                            .orElseThrow(() -> { return new IllegalArgumentException("회원 찾기 실패");
+                             });
+
+        String password = member.getPassword();
+        // String encPassword = encoder.encode(rawPassword); //시큐리티
+
+        foundMember.updatePassword(password);
+        foundMember.updateEmail(member.getEmail());
+        foundMember.updateNickname(member.getNickname());
+    }
+
 }
