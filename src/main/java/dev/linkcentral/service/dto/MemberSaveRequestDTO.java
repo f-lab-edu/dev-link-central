@@ -1,17 +1,16 @@
 package dev.linkcentral.service.dto;
 
+import dev.linkcentral.database.entity.Member;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberSaveRequestDTO {
@@ -37,5 +36,18 @@ public class MemberSaveRequestDTO {
 
     public void updateRole(String role) {
         this.role = role;
+    }
+
+    public void encryptPassword(String BCryptpassword) {
+        this.password = BCryptpassword;
+    }
+
+    public Member toEntity() {
+        return Member.builder()
+                .name(name)
+                .password(password)
+                .email(email)
+                .role(role)
+                .build();
     }
 }
