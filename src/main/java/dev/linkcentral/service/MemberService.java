@@ -2,8 +2,8 @@ package dev.linkcentral.service;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
-import dev.linkcentral.service.dto.MemberMailRequestDTO;
-import dev.linkcentral.service.dto.MemberSaveRequestDTO;
+import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
+import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -83,7 +83,7 @@ public class MemberService {
     @Transactional
     public void updatePassword(String str, String userEmail) {
 
-        String pw =  passwordEncoder.encode(str);
+        String pw = passwordEncoder.encode(str);
         Optional<Member> member = memberRepository.findByEmail(userEmail);
 
         if (member.isPresent()) {
@@ -115,4 +115,29 @@ public class MemberService {
         message.setText(mailDto.getMessage());  // 메일 내용
         mailSender.send(message);
     }
+
+    public void updateMember(Member member) {
+        Member foundMember = memberRepository.findById(member.getId())
+                .orElseThrow(() -> {
+                    return new IllegalArgumentException("회원 찾기 실패");
+                });
+
+        String password = member.getPassword();
+        String encodePassword = passwordEncoder.encode(password); //시큐리티
+
+        foundMember.updatePassword(encodePassword);
+        foundMember.updateEmail(member.getEmail());
+        foundMember.updateNickname(member.getNickname());
+    }
+
+    public boolean checkPassword(String nickname, String password) {
+        Member member = memberRepository.findByNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
+        if (passwordEncoder.matches(password, member.getPassword())) {
+            return true;
+        }
+        return false;
+    }
+
 }
