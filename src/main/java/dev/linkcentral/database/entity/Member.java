@@ -6,19 +6,20 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
 @Builder
 @ToString(of = {"id", "name", "password", "email", "nickname"})
 @AllArgsConstructor
-public class Member extends AuditingFields {
+public class Member extends AuditingFields implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 50)
     private String name;
 
     @Column(nullable = false, length = 100)
