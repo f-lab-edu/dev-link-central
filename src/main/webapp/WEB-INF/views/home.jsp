@@ -70,8 +70,8 @@
 
 <form action="/login" method="post">
     <div>
-        <label for="userId">아이디: </label>
-        <input id="userId" name="name" type="text" required>
+        <label for="email">이메일: </label>
+        <input id="email" name="email" type="email" required>
     </div>
     <div>
         <label for="password">패스워드: </label>
