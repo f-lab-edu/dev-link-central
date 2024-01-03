@@ -45,7 +45,7 @@ public class MemberSaveRequestDTO {
     public Member toEntity() {
         return Member.builder()
                 .name(name)
-                .password(password)
+                .passwordHash(password)
                 .email(email)
                 .role(role)
                 .build();

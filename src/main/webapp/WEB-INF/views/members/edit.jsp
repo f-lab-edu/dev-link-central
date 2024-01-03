@@ -113,8 +113,8 @@
             function update() {
                 let data = {
                     id: $("#id").val(),
-                    username: $("#name").val(),
-                    password: $("#password").val(),
+                    name: $("#name").val(),
+                    passwordHash: $("#password").val(),
                     email: $("#email").val(),
                     nickname: $("#nickname").val()
                 };
@@ -149,7 +149,7 @@
 
         <div class="form-group">
             <label for="name">이름 :</label>
-            <input type="text" class="form-control" value="${member.name}" id="name" readonly>
+            <input type="text" class="form-control" value="${member.name}" id="name">
         </div>
         <div class="form-group">
             <label for="currentPassword">현재 비밀번호 확인 :</label>
@@ -161,7 +161,7 @@
         </div>
         <div class="form-group">
             <label for="email">이메일 :</label>
-            <input type="email" class="form-control" value="${member.email}" id="email">
+            <input type="email" class="form-control" value="${member.email}" id="email" readonly>
         </div>
         <div class="form-group">
             <label for="nickname">닉네임 :</label>
