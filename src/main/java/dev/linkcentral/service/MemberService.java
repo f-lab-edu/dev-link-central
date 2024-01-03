@@ -1,17 +1,17 @@
 package dev.linkcentral.service;
 
+import dev.linkcentral.common.Encrypt;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,14 +21,19 @@ public class MemberService {
     private static final String FROM_ADDRESS = "alstjr706@gmail.com";
 
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final Encrypt encrypt;
 
-    public Long joinMember(MemberSaveRequestDTO member) {
+    @Value("${encrypt.key16}")
+    private String aesKey;
+
+    public Long joinMember(MemberSaveRequestDTO member) throws Exception {
+        member.encryptPassword(encrypt.encryptAes(member.getPassword(), aesKey));
+
         member.updateRole("USER");
         Member memberEntity = Member.builder()
                 .name(member.getName())
-                .password(member.getPassword())
+                .passwordHash(member.getPassword())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .role(member.getRole())
@@ -37,13 +42,12 @@ public class MemberService {
         return memberRepository.save(memberEntity).getId();
     }
 
-    public Optional<Member> loginMember(String name, String password) {
-        List<Member> memberList = memberRepository.findByName(name);
+    public Optional<Member> loginMember(String email, String password) throws Exception {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        String decryptPassword = encrypt.decryptAes(member.get().getPasswordHash(), aesKey);
 
-        for (Member member : memberList) {
-            if (passwordEncoder.matches(password, member.getPassword())) {
-                return Optional.of(member);
-            }
+        if (password.equals(decryptPassword)) {
+            return member;
         }
         return Optional.empty();
     }
@@ -66,29 +70,29 @@ public class MemberService {
      * DTO에 사용자가 원하는 내용과 제목을 저장
      */
     @Transactional
-    public MemberMailRequestDTO createMailAndChangePassword(String userEmail, String userName) {
+    public MemberMailRequestDTO createMailAndChangePassword(String userEmail, String userName) throws Exception {
         MemberMailRequestDTO dto = new MemberMailRequestDTO();
-        String str = generateTempPassword();
+        String generatedPassword = generateTempPassword();
 
         dto.setAddress(userEmail);
         dto.setTitle(userName + "님의 HOTTHINK 임시비밀번호 안내 이메일 입니다.");
         dto.setMessage("안녕하세요. HOTTHINK 임시비밀번호 안내 관련 이메일 입니다."
-                + "[" + userName + "]" + "님의 임시 비밀번호는 " + str + " 입니다.");
+                + "[" + userName + "]" + "님의 임시 비밀번호는 " + generatedPassword + " 입니다.");
 
-        updatePassword(str, userEmail);
+        updatePassword(generatedPassword, userEmail);
         return dto;
     }
 
     // 이메일로 발송된 임시비밀번호로 해당 유저의 패스워드 변경
     @Transactional
-    public void updatePassword(String str, String userEmail) {
+    public void updatePassword(String generatedPassword, String userEmail) throws Exception {
 
-        String pw = passwordEncoder.encode(str);
+        String passwordHash = encrypt.encryptAes(generatedPassword, aesKey);
         Optional<Member> member = memberRepository.findByEmail(userEmail);
 
         if (member.isPresent()) {
             Long id = member.get().getId();
-            memberRepository.updatePasswordById(id, pw);
+            memberRepository.updatePasswordById(id, passwordHash);
         }
     }
 
@@ -116,28 +120,28 @@ public class MemberService {
         mailSender.send(message);
     }
 
-    public void updateMember(Member member) {
+    public void updateMember(Member member) throws Exception {
         Member foundMember = memberRepository.findById(member.getId())
-                .orElseThrow(() -> {
-                    return new IllegalArgumentException("회원 찾기 실패");
-                });
+                .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
 
-        String password = member.getPassword();
-        String encodePassword = passwordEncoder.encode(password); //시큐리티
-
-        foundMember.updatePassword(encodePassword);
+        String password = member.getPasswordHash();
+        if (password != null) {
+            String encodePassword = encrypt.encryptAes(password, aesKey);
+            foundMember.updatePassword(encodePassword);
+        }
+        foundMember.updateName(member.getName());
         foundMember.updateEmail(member.getEmail());
         foundMember.updateNickname(member.getNickname());
     }
 
-    public boolean checkPassword(String nickname, String password) {
+    public boolean checkPassword(String nickname, String password) throws Exception {
         Member member = memberRepository.findByNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
-        if (passwordEncoder.matches(password, member.getPassword())) {
+        String decryptPassword = encrypt.decryptAes(member.getPasswordHash(), aesKey);
+        if (password.equals(decryptPassword)) {
             return true;
         }
         return false;
     }
-
 }

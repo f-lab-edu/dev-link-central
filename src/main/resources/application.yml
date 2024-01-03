@@ -29,7 +29,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: alstjr706@gmail.com
-    password: aaaabbbbccccdddd
+    password: wifsqrwqlmnvgztd
     properties:
       mail:
         smtp:
@@ -37,6 +37,10 @@ spring:
           timeout: 5000
           starttls:
             enable: true
+
+
+encrypt:
+  key16: ABCdefg123456plm
 
 
 logging:

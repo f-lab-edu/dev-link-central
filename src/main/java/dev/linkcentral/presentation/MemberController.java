@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,6 @@ import java.util.Optional;
 public class MemberController {
 
     private final MemberService memberService;
-    private final BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping("/")
     public String Home() {
@@ -39,18 +37,16 @@ public class MemberController {
     }
 
     @PostMapping("/new")
-    public String createMember(@ModelAttribute MemberSaveRequestDTO memberSaveRequestDTO) {
-        memberSaveRequestDTO.encryptPassword(passwordEncoder.encode(memberSaveRequestDTO.getPassword()));
+    public String createMember(@ModelAttribute MemberSaveRequestDTO memberSaveRequestDTO) throws Exception {
         Long memberId = memberService.joinMember(memberSaveRequestDTO);
 
         return "/home";
     }
 
     @PostMapping("/login")
-    public String login(MemberLoginRequestDTO MemberLoginRequestDTO, HttpSession session, Model model) {
-        Optional<Member> member = memberService.loginMember(MemberLoginRequestDTO.getName(),
-                MemberLoginRequestDTO.getPassword());
-
+    public String login(MemberLoginRequestDTO MemberLoginRequestDTO, HttpSession session, Model model) throws Exception {
+        Optional<Member> member = memberService.loginMember(MemberLoginRequestDTO.getEmail(),
+                                                            MemberLoginRequestDTO.getPassword());
         if (member.isEmpty()) {
             model.addAttribute("loginMessage", "아이디 혹은 비밀번호가 일치하지 않습니다.");
             return "/home";
@@ -84,7 +80,7 @@ public class MemberController {
 
     // 등록된 이메일로 임시비밀번호를 발송하고, 발송된 임시비밀번호로 사용자의 pw를 변경하는 API
     @PostMapping("/send-email/update-password")
-    public void sendEmail(String userEmail, String userName) {
+    public void sendEmail(String userEmail, String userName) throws Exception {
         MemberMailRequestDTO dto = memberService.createMailAndChangePassword(userEmail, userName);
         memberService.mailSend(dto);
     }
@@ -102,7 +98,7 @@ public class MemberController {
 
     @ResponseBody
     @PostMapping("/check-current-password")
-    public Map<String, Boolean> checkPassword(@RequestParam String password, HttpSession session, Model model) {
+    public Map<String, Boolean> checkPassword(@RequestParam String password, HttpSession session, Model model) throws Exception {
         Member member = (Member) session.getAttribute("member");
         boolean result = memberService.checkPassword(member.getNickname(), password);
 
@@ -113,7 +109,7 @@ public class MemberController {
 
     @ResponseBody
     @PutMapping("/edit")
-    public MemberEditResponseDTO memberUpdate(@RequestBody Member member) {
+    public MemberEditResponseDTO memberUpdate(@RequestBody Member member) throws Exception {
         memberService.updateMember(member);
         return new MemberEditResponseDTO(HttpStatus.OK.value());
     }
