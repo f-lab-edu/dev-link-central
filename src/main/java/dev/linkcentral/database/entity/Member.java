@@ -11,9 +11,9 @@ import java.io.Serializable;
 @Entity
 @Getter
 @Builder
-@ToString(of = {"id", "name", "password", "email", "nickname"})
+@ToString(of = {"id", "name", "passwordHash", "email", "nickname"})
 @AllArgsConstructor
-public class Member extends AuditingFields implements Serializable {
+public class Member extends AuditingFields implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +23,9 @@ public class Member extends AuditingFields implements Serializable {
     private String name;
 
     @Column(nullable = false, length = 100)
-    private String password;
+    private String passwordHash;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String email;
 
     @Column(nullable = false, length = 100)
@@ -42,7 +42,7 @@ public class Member extends AuditingFields implements Serializable {
     }
 
     public void updatePassword(String password) {
-        this.password = password;
+        this.passwordHash = password;
     }
 
     public void updateEmail(String email) {

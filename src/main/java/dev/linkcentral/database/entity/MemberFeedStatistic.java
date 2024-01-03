@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-public class MemberFeedStatus extends AuditingFields {
+public class MemberFeedStatistic extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,17 +18,17 @@ public class MemberFeedStatus extends AuditingFields {
 
     private int likes;
 
-    private int view;
+    private int views;
 
-    protected MemberFeedStatus() {
+    protected MemberFeedStatistic() {
     }
 
 
-    public void updateLikes(int likes) {
-        this.likes = likes;
+    public void updateLikes(int like) {
+        this.likes = like;
     }
 
-    public void updateView(int view) {
-        this.view = view;
+    public void updateViews(int view) {
+        this.views = view;
     }
 }
