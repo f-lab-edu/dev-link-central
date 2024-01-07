@@ -162,7 +162,6 @@
 
             <!-- 중복 체크 버튼 추가 -->
             <button type="button" id="checkNicknameButton">닉네임 중복 확인</button>
-
             <button type="submit" id="signupButton" disabled>회원가입</button>
         </div>
     </form>

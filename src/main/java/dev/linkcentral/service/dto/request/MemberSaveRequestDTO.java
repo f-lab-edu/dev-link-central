@@ -4,6 +4,7 @@ import dev.linkcentral.database.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(of = {"name", "password", "email", "nickname", "role"})
 public class MemberSaveRequestDTO {
 
     @Length(max = 50, message = "이름은 50자 이내로 입력해 주세요.")
