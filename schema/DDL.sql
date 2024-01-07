@@ -1,31 +1,31 @@
-
--- 사용자 - 테이블
+-- 사용자 테이블
 create table member (
     id               bigint auto_increment,
-    name             varchar(50),
-    password_hash    varchar(250),
-    email            varchar(100),
-    nickname         varchar(100),
-    role             varchar(50),
-    created_at       datetime,
-    created_by       varchar(100),
-    modified_at      datetime,
-    modified_by      varchar(100),
-    primary key (id)
+    name             varchar(50)     not null,
+    password_hash    varchar(250)    not null,
+    email            varchar(100)    not null,
+    nickname         varchar(100)    not null,
+    role             varchar(50)         null,
+    created_at       datetime        not null,
+    created_by       varchar(100)    not null,
+    modified_at      datetime        not null,
+    modified_by      varchar(100)    not null,
+    primary key (id),
+    unique key (email)
 );
 
 
--- 알람 - 테이블
+-- 알람 테이블
 create table alarm (
     id            bigint auto_increment,
-    member_id     bigint,
-    message       text,
-    target_id     int,
-    type          varchar(100),
-    alarm_checked int,
-    create_time   datetime,
-    created_by    varchar(100),
-    modified_at   datetime,
+    member_id     bigint             null,
+    message       text               null,
+    target_id     int                null,
+    type          varchar(100)       null,
+    alarm_checked int            not null,
+    create_time   datetime           null,
+    created_by    varchar(100)   not null,
+    modified_at   datetime       not null,
     primary key (id),
     foreign key (member_id) references member(id) on delete cascade
 );
@@ -64,7 +64,7 @@ create table friend (
 -- 게시판 - 테이블
 create table article (
     id          bigint auto_increment,
-    member_id   bigint,
+    member_id   bigint null,
     title       varchar(100),
     content     text,
     created_at  datetime,
