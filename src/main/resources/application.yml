@@ -17,7 +17,7 @@ spring:
     include: oauth
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         # 실행되는 쿼리 출력
@@ -37,7 +37,6 @@ spring:
           timeout: 5000
           starttls:
             enable: true
-
 
 encrypt:
   key16: ABCdefg123456plm
