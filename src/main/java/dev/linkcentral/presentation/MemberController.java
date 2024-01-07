@@ -1,5 +1,7 @@
 package dev.linkcentral.presentation;
 
+import dev.linkcentral.common.exception.DuplicateNicknameException;
+import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.request.MemberLoginRequestDTO;
@@ -36,17 +38,24 @@ public class MemberController {
         return "/members/join";
     }
 
+    @ResponseBody
     @PostMapping("/new")
-    public String createMember(@ModelAttribute MemberSaveRequestDTO memberSaveRequestDTO) throws Exception {
-        Long memberId = memberService.joinMember(memberSaveRequestDTO);
-
-        return "/home";
+    public ResponseEntity<String> createMember(@ModelAttribute MemberSaveRequestDTO memberDTO) {
+        try {
+            Member member = memberService.joinMember(memberDTO);
+            return ResponseEntity.status(HttpStatus.FOUND).header("Location", "/").build();
+        } catch (DuplicateNicknameException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("닉네임이 이미 사용 중입니다.");
+        } catch (MemberRegistrationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 가입 중 오류가 발생했습니다.");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/login")
-    public String login(MemberLoginRequestDTO MemberLoginRequestDTO, HttpSession session, Model model) throws Exception {
-        Optional<Member> member = memberService.loginMember(MemberLoginRequestDTO.getEmail(),
-                                                            MemberLoginRequestDTO.getPassword());
+    public String login(@ModelAttribute MemberLoginRequestDTO MemberLoginDTO, HttpSession session, Model model) {
+        Optional<Member> member = memberService.loginMember(MemberLoginDTO.getEmail(), MemberLoginDTO.getPassword());
         if (member.isEmpty()) {
             model.addAttribute("loginMessage", "아이디 혹은 비밀번호가 일치하지 않습니다.");
             return "/home";
@@ -69,18 +78,19 @@ public class MemberController {
     @ResponseBody
     @GetMapping("/forgot-password")
     public Map<String, Boolean> isPasswordValid(String userEmail, String userName) {
-        Map<String, Boolean> json = new HashMap<>();
-
         // 이메일과 이름이 일치하는 사용자가 있는지 확인.
         boolean pwFindCheck = memberService.userEmailCheck(userEmail, userName);
 
+        Map<String, Boolean> json = new HashMap<>();
         json.put("check", pwFindCheck);
         return json;
     }
 
-    // 등록된 이메일로 임시비밀번호를 발송하고, 발송된 임시비밀번호로 사용자의 pw를 변경하는 API
+    /**
+     * 등록된 이메일로 임시비밀번호를 발송하고, 발송된 임시비밀번호로 사용자의 pw를 변경하는 API
+     */
     @PostMapping("/send-email/update-password")
-    public void sendEmail(String userEmail, String userName) throws Exception {
+    public void sendEmail(String userEmail, String userName) {
         MemberMailRequestDTO dto = memberService.createMailAndChangePassword(userEmail, userName);
         memberService.mailSend(dto);
     }
@@ -98,7 +108,7 @@ public class MemberController {
 
     @ResponseBody
     @PostMapping("/check-current-password")
-    public Map<String, Boolean> checkPassword(@RequestParam String password, HttpSession session, Model model) throws Exception {
+    public Map<String, Boolean> checkPassword(@RequestParam String password, HttpSession session) {
         Member member = (Member) session.getAttribute("member");
         boolean result = memberService.checkPassword(member.getNickname(), password);
 
@@ -109,9 +119,8 @@ public class MemberController {
 
     @ResponseBody
     @PutMapping("/edit")
-    public MemberEditResponseDTO memberUpdate(@RequestBody Member member) throws Exception {
+    public MemberEditResponseDTO memberUpdate(@RequestBody Member member) {
         memberService.updateMember(member);
         return new MemberEditResponseDTO(HttpStatus.OK.value());
     }
-
 }
