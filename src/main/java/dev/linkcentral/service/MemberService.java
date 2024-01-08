@@ -1,5 +1,6 @@
 package dev.linkcentral.service;
 
+import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
@@ -28,9 +29,7 @@ public class MemberService {
 
     public Member joinMember(MemberSaveRequestDTO memberDTO) {
         String nickname = memberDTO.getNickname();
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new DuplicateNicknameException("닉네임이 이미 사용 중입니다.");
-        }
+        checkForDuplicate(memberDTO, nickname);
 
         try {
             memberDTO.updateRole("USER");
@@ -51,8 +50,18 @@ public class MemberService {
                 .build();
     }
 
+    private void checkForDuplicate(MemberSaveRequestDTO memberDTO, String nickname) {
+        if (memberRepository.existsByNicknameAndDeletedFalse(nickname)) {
+            throw new DuplicateNicknameException("닉네임이 이미 사용 중입니다.");
+        }
+
+        if (memberRepository.countByEmailIgnoringDeleted(memberDTO.getEmail()) > 0) {
+            throw new DuplicateEmailException("중복된 이메일 주소입니다.");
+        }
+    }
+
     public Optional<Member> loginMember(String email, String password) {
-        Optional<Member> member = memberRepository.findByEmail(email);
+        Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(email);
         if (member.isPresent()) {
             String passwordHash = member.get().getPasswordHash();
 
@@ -64,11 +73,11 @@ public class MemberService {
     }
 
     public boolean isNicknameDuplicated(String nickname) {
-        return memberRepository.existsByNickname(nickname);
+        return memberRepository.existsByNicknameAndDeletedFalse(nickname);
     }
 
     public boolean userEmailCheck(String userEmail, String userName) {
-        Optional<Member> member = memberRepository.findByEmail(userEmail);
+        Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
         String memberName = member.get().getName();
 
         return memberName.equals(userName);
@@ -97,11 +106,11 @@ public class MemberService {
     @Transactional
     public void updatePassword(String generatedPassword, String userEmail) {
         String passwordHash = passwordEncoder.encode(generatedPassword);
-        Optional<Member> member = memberRepository.findByEmail(userEmail);
+        Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
 
         if (member.isPresent()) {
             Long id = member.get().getId();
-            memberRepository.updatePasswordById(id, passwordHash);
+            memberRepository.updatePasswordByIdAndDeletedFalse(id, passwordHash);
         }
     }
 
@@ -145,7 +154,7 @@ public class MemberService {
     }
 
     public boolean checkPassword(String nickname, String password) {
-        Optional<Member> member = memberRepository.findByNickname(nickname);
+        Optional<Member> member = memberRepository.findByNicknameAndDeletedFalse(nickname);
 
         if (member.isPresent()) {
             String passwordHash = member.get().getPasswordHash();
@@ -155,7 +164,7 @@ public class MemberService {
     }
 
     public boolean deleteMember(String nickname, String password) {
-        Member member = memberRepository.findByNickname(nickname)
+        Member member = memberRepository.findByNicknameAndDeletedFalse(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
 
         if (member != null) {
