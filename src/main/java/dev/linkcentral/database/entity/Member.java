@@ -6,25 +6,26 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
 @Builder
-@ToString(of = {"id", "name", "password", "email", "nickname"})
+@ToString(of = {"id", "name", "passwordHash", "email", "nickname"})
 @AllArgsConstructor
-public class Member extends AuditingFields {
+public class Member extends AuditingFields implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 50)
     private String name;
 
     @Column(nullable = false, length = 100)
-    private String password;
+    private String passwordHash;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String email;
 
     @Column(nullable = false, length = 100)
@@ -41,7 +42,7 @@ public class Member extends AuditingFields {
     }
 
     public void updatePassword(String password) {
-        this.password = password;
+        this.passwordHash = password;
     }
 
     public void updateEmail(String email) {

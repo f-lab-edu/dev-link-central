@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-public class MemberFeedLikes extends AuditingFields {
+public class ArticleLike extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +17,7 @@ public class MemberFeedLikes extends AuditingFields {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_feed_id")
-    private MemberFeed memberFeed;
+    @JoinColumn(name = "article_id")
+    private Article article;
 
 }

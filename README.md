@@ -160,7 +160,7 @@ dev-link-central는 `Git-Flow` 를 이용하여 브랜치를 관리하였습니�
 ## ER 다이어그램
 
 
-![이미지](/images/ERD.svg)
+![이미지](/schema/ERD.svg)
 
 
 test

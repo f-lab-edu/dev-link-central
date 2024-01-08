@@ -1,19 +1,20 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.request;
 
+import dev.linkcentral.database.entity.Member;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(of = {"name", "password", "email", "nickname", "role"})
 public class MemberSaveRequestDTO {
 
     @Length(max = 50, message = "이름은 50자 이내로 입력해 주세요.")
@@ -37,5 +38,14 @@ public class MemberSaveRequestDTO {
 
     public void updateRole(String role) {
         this.role = role;
+    }
+
+    public Member toEntity() {
+        return Member.builder()
+                .name(name)
+                .passwordHash(password)
+                .email(email)
+                .role(role)
+                .build();
     }
 }
