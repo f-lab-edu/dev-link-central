@@ -6,6 +6,7 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
+import dev.linkcentral.service.dto.request.MemberUpdateRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -33,27 +34,28 @@ public class MemberService {
 
         try {
             memberDTO.updateRole("USER");
-            Member memberEntity = Member.builder()
-                    .name(memberDTO.getName())
-                    .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
-                    .email(memberDTO.getEmail())
-                    .nickname(memberDTO.getNickname())
-                    .role(memberDTO.getRole())
-                    .build();
+            Member memberEntity = getMemberEntity(memberDTO);
             return memberRepository.save(memberEntity);
         } catch (Exception e) {
             throw new MemberRegistrationException("회원 등록 중 오류가 발생했습니다.", e);
         }
     }
 
+    private Member getMemberEntity(MemberSaveRequestDTO memberDTO) {
+        return Member.builder()
+                .name(memberDTO.getName())
+                .password(memberDTO.getPassword()) // 코드 추가
+                .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
+                .email(memberDTO.getEmail())
+                .nickname(memberDTO.getNickname())
+                .role(memberDTO.getRole())
+                .build();
+    }
+
     public Optional<Member> loginMember(String email, String password) {
         Optional<Member> member = memberRepository.findByEmail(email);
-        if (member.isPresent()) {
-            String passwordHash = member.get().getPasswordHash();
-
-            if (passwordEncoder.matches(password, passwordHash)) {
-                return member;
-            }
+        if (member.isPresent() && password.equals(member.get().getPassword())) { // 코드 수정
+            return member;
         }
         return Optional.empty();
     }
@@ -96,7 +98,8 @@ public class MemberService {
 
         if (member.isPresent()) {
             Long id = member.get().getId();
-            memberRepository.updatePasswordById(id, passwordHash);
+            memberRepository.updatePasswordById(id, generatedPassword); // 추가
+            memberRepository.updatePasswordHashById(id, passwordHash);
         }
     }
 
@@ -129,26 +132,26 @@ public class MemberService {
         mailSender.send(message);
     }
 
-    public void updateMember(Member member) {
-        Member foundMember = memberRepository.findById(member.getId())
+    public void updateMember(MemberUpdateRequestDTO memberUpdateDTO) {
+        Member memberEntity = memberRepository.findById(memberUpdateDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
 
-        String password = member.getPasswordHash();
+        String password = memberUpdateDTO.getPassword(); // 추가
+
         if (password != null) {
+            memberEntity.updatePassword(password); // 추가
+
             String encodePassword = passwordEncoder.encode(password);
-            foundMember.updatePassword(encodePassword);
+            memberEntity.updatePasswordHash(encodePassword);
         }
-        foundMember.updateName(member.getName());
-        foundMember.updateEmail(member.getEmail());
-        foundMember.updateNickname(member.getNickname());
+        memberEntity.updateName(memberUpdateDTO.getName());
+        memberEntity.updateNickname(memberUpdateDTO.getNickname());
     }
 
     public boolean checkPassword(String nickname, String password) {
         Optional<Member> member = memberRepository.findByNickname(nickname);
-
-        if (member.isPresent()) {
-            String passwordHash = member.get().getPasswordHash();
-            return passwordEncoder.matches(password, passwordHash);
+        if (member.isPresent() && password.equals(member.get().getPassword())) {
+            return true;
         }
         return false;
     }
