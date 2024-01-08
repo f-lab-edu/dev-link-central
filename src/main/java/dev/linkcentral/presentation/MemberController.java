@@ -8,6 +8,7 @@ import dev.linkcentral.service.dto.request.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
 import dev.linkcentral.service.dto.response.MemberEditResponseDTO;
+import dev.linkcentral.service.dto.response.MemberPasswordResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -45,7 +44,7 @@ public class MemberController {
             Member member = memberService.joinMember(memberDTO);
             return ResponseEntity.status(HttpStatus.FOUND).header("Location", "/").build();
         } catch (DuplicateNicknameException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("닉네임이 이미 사용 중입니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("닉네임이 이미 사용 중입니다.");
         } catch (MemberRegistrationException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 가입 중 오류가 발생했습니다.");
         } catch (Exception e) {
@@ -56,6 +55,7 @@ public class MemberController {
     @PostMapping("/login")
     public String login(@ModelAttribute MemberLoginRequestDTO MemberLoginDTO, HttpSession session, Model model) {
         Optional<Member> member = memberService.loginMember(MemberLoginDTO.getEmail(), MemberLoginDTO.getPassword());
+
         if (member.isEmpty()) {
             model.addAttribute("loginMessage", "아이디 혹은 비밀번호가 일치하지 않습니다.");
             return "/home";
@@ -77,13 +77,10 @@ public class MemberController {
 
     @ResponseBody
     @GetMapping("/forgot-password")
-    public Map<String, Boolean> isPasswordValid(String userEmail, String userName) {
+    public MemberPasswordResponseDTO isPasswordValid(String userEmail, String userName) {
         // 이메일과 이름이 일치하는 사용자가 있는지 확인.
         boolean pwFindCheck = memberService.userEmailCheck(userEmail, userName);
-
-        Map<String, Boolean> json = new HashMap<>();
-        json.put("check", pwFindCheck);
-        return json;
+        return new MemberPasswordResponseDTO(pwFindCheck);
     }
 
     /**
@@ -108,13 +105,11 @@ public class MemberController {
 
     @ResponseBody
     @PostMapping("/check-current-password")
-    public Map<String, Boolean> checkPassword(@RequestParam String password, HttpSession session) {
+    public MemberPasswordResponseDTO checkPassword(@RequestParam String password, HttpSession session) {
         Member member = (Member) session.getAttribute("member");
         boolean result = memberService.checkPassword(member.getNickname(), password);
 
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("result", result);
-        return response;
+        return new MemberPasswordResponseDTO(result);
     }
 
     @ResponseBody

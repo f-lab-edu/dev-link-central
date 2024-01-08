@@ -54,7 +54,7 @@
                         "userName": userName
                     },
                     success: function (res) {
-                        if (res['check']) {
+                        if (res['result']) {
                             Swal.fire({
                                 title: '발송 완료!',
                                 text: '입력하신 이메일로 임시비밀번호가 발송되었습니다.',
