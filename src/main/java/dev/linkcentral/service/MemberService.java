@@ -153,4 +153,20 @@ public class MemberService {
         }
         return false;
     }
+
+    public boolean deleteMember(String nickname, String password) {
+        Member member = memberRepository.findByNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
+
+        if (member != null) {
+            String passwordHash = member.getPasswordHash();
+
+            if (passwordEncoder.matches(password, passwordHash)) {
+                memberRepository.delete(member);
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
