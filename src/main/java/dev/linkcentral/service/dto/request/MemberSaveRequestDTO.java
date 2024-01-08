@@ -40,10 +40,6 @@ public class MemberSaveRequestDTO {
         this.role = role;
     }
 
-    public void encryptPassword(String BCryptpassword) {
-        this.password = BCryptpassword;
-    }
-
     public Member toEntity() {
         return Member.builder()
                 .name(name)

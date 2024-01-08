@@ -32,12 +32,10 @@ public class MemberService {
         }
 
         try {
-            memberDTO.encryptPassword(passwordEncoder.encode(memberDTO.getPassword()));
-
             memberDTO.updateRole("USER");
             Member memberEntity = Member.builder()
                     .name(memberDTO.getName())
-                    .passwordHash(memberDTO.getPassword())
+                    .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
                     .email(memberDTO.getEmail())
                     .nickname(memberDTO.getNickname())
                     .role(memberDTO.getRole())
