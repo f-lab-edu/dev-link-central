@@ -16,7 +16,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Modifying
     @Query("update Member m set m.passwordHash = :password_hash where m.id = :id")
-    void updatePasswordById(@Param("id") Long id, @Param("password_hash") String passwordHash);
+    void updatePasswordHashById(@Param("id") Long id, @Param("password_hash") String passwordHash);
+
+    @Modifying
+    @Query("update Member m set m.password = :password where m.id = :id")
+    void updatePasswordById(@Param("id") Long id, @Param("password") String password);
 
     Optional<Member> findByNickname(String nickname);
 }
