@@ -38,10 +38,6 @@ spring:
           starttls:
             enable: true
 
-encrypt:
-  key16: ABCdefg123456plm
-
-
 logging:
   level:
     org:
