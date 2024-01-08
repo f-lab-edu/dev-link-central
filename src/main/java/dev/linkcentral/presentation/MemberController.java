@@ -118,4 +118,21 @@ public class MemberController {
         memberService.updateMember(memberEditDTO);
         return new MemberEditResponseDTO(HttpStatus.OK.value());
     }
+
+    @GetMapping("/api/delete-page")
+    public String logout() {
+        return "/members/delete";
+    }
+
+    @PostMapping("/delete")
+    public String checkPassword(@RequestParam String password, HttpSession session, Model model) {
+        Member member = (Member) session.getAttribute("member");
+        boolean result = memberService.deleteMember(member.getNickname(), password);
+
+        if (result) {
+            return "redirect:/";
+        }
+        model.addAttribute("message", "비밀번호가 일치하지 않습니다.");
+        return "members/delete";
+    }
 }
