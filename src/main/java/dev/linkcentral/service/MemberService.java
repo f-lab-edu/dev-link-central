@@ -5,9 +5,9 @@ import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
+import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
-import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -163,15 +163,16 @@ public class MemberService {
         return false;
     }
 
+    @Transactional
     public boolean deleteMember(String nickname, String password) {
         Member member = memberRepository.findByNicknameAndDeletedFalse(nickname)
-                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("닉네임이 존재하지 않습니다."));
 
         if (member != null) {
             String passwordHash = member.getPasswordHash();
 
             if (passwordEncoder.matches(password, passwordHash)) {
-                memberRepository.delete(member);
+                memberRepository.softDeleteById(member.getId());
                 return true;
             }
         }

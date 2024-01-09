@@ -14,7 +14,6 @@ import java.io.Serializable;
 @Builder
 @ToString(of = {"id", "name", "passwordHash", "email", "nickname"})
 @AllArgsConstructor
-@SQLDelete(sql = "update member set deleted = true where id = ?")
 public class Member extends AuditingFields implements Serializable{
 
     @Id
