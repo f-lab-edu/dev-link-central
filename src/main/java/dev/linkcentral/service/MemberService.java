@@ -44,7 +44,6 @@ public class MemberService {
     private Member getMemberEntity(MemberSaveRequestDTO memberDTO) {
         return Member.builder()
                 .name(memberDTO.getName())
-                .password(memberDTO.getPassword()) // 코드 추가
                 .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
                 .email(memberDTO.getEmail())
                 .nickname(memberDTO.getNickname())
@@ -54,8 +53,12 @@ public class MemberService {
 
     public Optional<Member> loginMember(String email, String password) {
         Optional<Member> member = memberRepository.findByEmail(email);
-        if (member.isPresent() && password.equals(member.get().getPassword())) { // 코드 수정
-            return member;
+        if (member.isPresent()) {
+            String passwordHash = member.get().getPasswordHash();
+
+            if (passwordEncoder.matches(password, passwordHash)) {
+                return member;
+            }
         }
         return Optional.empty();
     }
@@ -98,8 +101,7 @@ public class MemberService {
 
         if (member.isPresent()) {
             Long id = member.get().getId();
-            memberRepository.updatePasswordById(id, generatedPassword); // 추가
-            memberRepository.updatePasswordHashById(id, passwordHash);
+            memberRepository.updatePasswordById(id, passwordHash);
         }
     }
 
@@ -136,11 +138,9 @@ public class MemberService {
         Member memberEntity = memberRepository.findById(memberUpdateDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
 
-        String password = memberUpdateDTO.getPassword(); // 추가
+        String password = memberUpdateDTO.getPassword();
 
         if (password != null) {
-            memberEntity.updatePassword(password); // 추가
-
             String encodePassword = passwordEncoder.encode(password);
             memberEntity.updatePasswordHash(encodePassword);
         }
@@ -150,8 +150,10 @@ public class MemberService {
 
     public boolean checkPassword(String nickname, String password) {
         Optional<Member> member = memberRepository.findByNickname(nickname);
-        if (member.isPresent() && password.equals(member.get().getPassword())) {
-            return true;
+
+        if (member.isPresent()) {
+            String passwordHash = member.get().getPasswordHash();
+            return passwordEncoder.matches(password, passwordHash);
         }
         return false;
     }

@@ -23,9 +23,6 @@ public class Member extends AuditingFields implements Serializable{
     private String name;
 
     @Column(nullable = false, length = 100)
-    private String password;
-
-    @Column(nullable = false, length = 100)
     private String passwordHash;
 
     @Column(nullable = false, length = 100, unique = true)
@@ -42,10 +39,6 @@ public class Member extends AuditingFields implements Serializable{
 
     public void updateName(String name) {
         this.name = name;
-    }
-
-    public void updatePassword(String password) {
-        this.password = password;
     }
 
     public void updatePasswordHash(String passwordHash) {
