@@ -6,7 +6,7 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
-import dev.linkcentral.service.dto.request.MemberUpdateRequestDTO;
+import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -134,18 +134,14 @@ public class MemberService {
         mailSender.send(message);
     }
 
-    public void updateMember(MemberUpdateRequestDTO memberUpdateDTO) {
-        Member memberEntity = memberRepository.findById(memberUpdateDTO.getId())
+    public void updateMember(MemberEditRequestDTO memberEditDTO) {
+        Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
 
-        String password = memberUpdateDTO.getPassword();
-
-        if (password != null) {
-            String encodePassword = passwordEncoder.encode(password);
-            memberEntity.updatePasswordHash(encodePassword);
-        }
-        memberEntity.updateName(memberUpdateDTO.getName());
-        memberEntity.updateNickname(memberUpdateDTO.getNickname());
+        String password = memberEditDTO.getPassword();
+        memberEntity.updatePasswordHash(passwordEncoder.encode(password));
+        memberEntity.updateName(memberEditDTO.getName());
+        memberEntity.updateNickname(memberEditDTO.getNickname());
     }
 
     public boolean checkPassword(String nickname, String password) {

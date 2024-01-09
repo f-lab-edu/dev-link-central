@@ -7,7 +7,7 @@ import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.request.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
-import dev.linkcentral.service.dto.request.MemberUpdateRequestDTO;
+import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.response.MemberEditResponseDTO;
 import dev.linkcentral.service.dto.response.MemberPasswordResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -114,8 +114,8 @@ public class MemberController {
 
     @ResponseBody
     @PutMapping("/edit")
-    public MemberEditResponseDTO memberUpdate(@ModelAttribute MemberUpdateRequestDTO memberUpdateDTO) {
-        memberService.updateMember(memberUpdateDTO);
+    public MemberEditResponseDTO memberUpdate(@ModelAttribute MemberEditRequestDTO memberEditDTO) {
+        memberService.updateMember(memberEditDTO);
         return new MemberEditResponseDTO(HttpStatus.OK.value());
     }
 }

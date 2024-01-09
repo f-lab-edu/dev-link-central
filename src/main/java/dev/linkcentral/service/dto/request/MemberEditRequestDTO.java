@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberUpdateRequestDTO {
+public class MemberEditRequestDTO {
 
     private Long id;
     private String name;

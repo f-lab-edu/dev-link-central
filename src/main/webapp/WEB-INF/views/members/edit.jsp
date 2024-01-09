@@ -103,7 +103,7 @@
                         if (resp.result) {
                             update();
                         } else {
-                            let errorMessage = "현재 비밀번호가 일치하지 않습니다.";
+                            let errorMessage = "현재 비밀번호가 일치하지 않거나, 입력하지 않는 문구가 있습니다.";
                             $("#currentPassword").after("<div class='error-message'>" + errorMessage + "</div>");
                         }
                     })
@@ -124,14 +124,20 @@
 
                 // 데이터 객체를 폼 데이터로 변환
                 let formData = new FormData();
-                Object.keys(data).forEach(key => formData.append(key, data[key]));
+
+                // 빈 값 또는 null 값이 아닌 경우에만 FormData에 추가
+                Object.keys(data).forEach(key => {
+                    if (data[key] !== null && data[key] !== "") {
+                        formData.append(key, data[key]);
+                    }
+                });
 
                 $.ajax({
                     type: "PUT",
                     url: "/edit",
-                    data: formData,      // 폼 데이터로 전송
-                    processData: false,  // jQuery가 데이터를 자동으로 처리하지 않도록 설정
-                    contentType: false   // jQuery가 자동으로 콘텐츠 타입을 설정하지 않도록 설정
+                    data: formData,
+                    processData: false,
+                    contentType: false
                 })
                     .done(function (resp) {
                         alert("회원 수정이 완료되었습니다.");
@@ -164,7 +170,7 @@
         </div>
         <div class="form-group">
             <label for="password">새 비밀번호 입력 :</label>
-            <input type="password" class="form-control" id="password">
+            <input type="password" class="form-control" id="password" required>
         </div>
         <div class="form-group">
             <label for="email">이메일 :</label>
