@@ -2,7 +2,6 @@
 create table member (
     id               bigint auto_increment,
     name             varchar(50)     not null,
-    password         varchar(250)    not null,
     password_hash    varchar(250)    not null,
     email            varchar(100)    not null,
     nickname         varchar(100)    not null,
