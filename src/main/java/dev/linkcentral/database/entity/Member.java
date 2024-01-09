@@ -41,8 +41,8 @@ public class Member extends AuditingFields implements Serializable{
         this.name = name;
     }
 
-    public void updatePassword(String password) {
-        this.passwordHash = password;
+    public void updatePasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public void updateEmail(String email) {

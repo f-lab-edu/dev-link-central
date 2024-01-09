@@ -98,10 +98,12 @@
 
                 $.post("/check-current-password", { id: $("#id").val(), password: currentPassword })
                     .done(function (resp) {
+                        console.log("Response:", resp); // 응답 로그 추가
+
                         if (resp.result) {
                             update();
                         } else {
-                            let errorMessage = "현재 비밀번호가 일치하지 않습니다.";
+                            let errorMessage = "현재 비밀번호가 일치하지 않거나, 입력하지 않는 문구가 있습니다.";
                             $("#currentPassword").after("<div class='error-message'>" + errorMessage + "</div>");
                         }
                     })
@@ -114,20 +116,31 @@
                 let data = {
                     id: $("#id").val(),
                     name: $("#name").val(),
-                    passwordHash: $("#password").val(),
-                    email: $("#email").val(),
+                    password: $("#password").val(),
                     nickname: $("#nickname").val()
                 };
+
+                console.log("업데이트 데이터:", data);
+
+                // 데이터 객체를 폼 데이터로 변환
+                let formData = new FormData();
+
+                // 빈 값 또는 null 값이 아닌 경우에만 FormData에 추가
+                Object.keys(data).forEach(key => {
+                    if (data[key] !== null && data[key] !== "") {
+                        formData.append(key, data[key]);
+                    }
+                });
 
                 $.ajax({
                     type: "PUT",
                     url: "/edit",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    data: formData,
+                    processData: false,
+                    contentType: false
                 })
                     .done(function (resp) {
-                        alert("회원수정이 완료되었습니다.");
+                        alert("회원 수정이 완료되었습니다.");
                         location.href = "/";
                     })
                     .fail(function (error) {
@@ -157,7 +170,7 @@
         </div>
         <div class="form-group">
             <label for="password">새 비밀번호 입력 :</label>
-            <input type="password" class="form-control" id="password">
+            <input type="password" class="form-control" id="password" required>
         </div>
         <div class="form-group">
             <label for="email">이메일 :</label>

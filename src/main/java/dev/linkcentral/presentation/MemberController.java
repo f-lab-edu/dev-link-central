@@ -7,6 +7,7 @@ import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.request.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
+import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.response.MemberEditResponseDTO;
 import dev.linkcentral.service.dto.response.MemberPasswordResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -108,14 +109,13 @@ public class MemberController {
     public MemberPasswordResponseDTO checkPassword(@RequestParam String password, HttpSession session) {
         Member member = (Member) session.getAttribute("member");
         boolean result = memberService.checkPassword(member.getNickname(), password);
-
         return new MemberPasswordResponseDTO(result);
     }
 
     @ResponseBody
     @PutMapping("/edit")
-    public MemberEditResponseDTO memberUpdate(@RequestBody Member member) {
-        memberService.updateMember(member);
+    public MemberEditResponseDTO memberUpdate(@ModelAttribute MemberEditRequestDTO memberEditDTO) {
+        memberService.updateMember(memberEditDTO);
         return new MemberEditResponseDTO(HttpStatus.OK.value());
     }
 }

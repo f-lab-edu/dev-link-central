@@ -6,6 +6,7 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
+import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -33,17 +34,21 @@ public class MemberService {
 
         try {
             memberDTO.updateRole("USER");
-            Member memberEntity = Member.builder()
-                    .name(memberDTO.getName())
-                    .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
-                    .email(memberDTO.getEmail())
-                    .nickname(memberDTO.getNickname())
-                    .role(memberDTO.getRole())
-                    .build();
+            Member memberEntity = getMemberEntity(memberDTO);
             return memberRepository.save(memberEntity);
         } catch (Exception e) {
             throw new MemberRegistrationException("회원 등록 중 오류가 발생했습니다.", e);
         }
+    }
+
+    private Member getMemberEntity(MemberSaveRequestDTO memberDTO) {
+        return Member.builder()
+                .name(memberDTO.getName())
+                .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
+                .email(memberDTO.getEmail())
+                .nickname(memberDTO.getNickname())
+                .role(memberDTO.getRole())
+                .build();
     }
 
     public Optional<Member> loginMember(String email, String password) {
@@ -129,18 +134,14 @@ public class MemberService {
         mailSender.send(message);
     }
 
-    public void updateMember(Member member) {
-        Member foundMember = memberRepository.findById(member.getId())
+    public void updateMember(MemberEditRequestDTO memberEditDTO) {
+        Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
 
-        String password = member.getPasswordHash();
-        if (password != null) {
-            String encodePassword = passwordEncoder.encode(password);
-            foundMember.updatePassword(encodePassword);
-        }
-        foundMember.updateName(member.getName());
-        foundMember.updateEmail(member.getEmail());
-        foundMember.updateNickname(member.getNickname());
+        String password = memberEditDTO.getPassword();
+        memberEntity.updatePasswordHash(passwordEncoder.encode(password));
+        memberEntity.updateName(memberEditDTO.getName());
+        memberEntity.updateNickname(memberEditDTO.getNickname());
     }
 
     public boolean checkPassword(String nickname, String password) {
