@@ -10,13 +10,20 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    boolean existsByNickname(String nickname);
+    boolean existsByNicknameAndDeletedFalse(String nickname);
 
-    Optional<Member> findByEmail(String email);
+    Optional<Member> findByNicknameAndDeletedFalse(String nickname);
+
+    Optional<Member> findByEmailAndDeletedFalse(String email);
+
+    @Query("select count(m) from Member m where m.email = :email and m.deleted = false")
+    Long countByEmailIgnoringDeleted(@Param("email") String email);
 
     @Modifying
     @Query("update Member m set m.passwordHash = :password_hash where m.id = :id")
     void updatePasswordById(@Param("id") Long id, @Param("password_hash") String passwordHash);
 
-    Optional<Member> findByNickname(String nickname);
+    @Modifying
+    @Query("update Member m set m.deleted = true where m.id = :id")
+    void softDeleteById(@Param("id") Long id);
 }

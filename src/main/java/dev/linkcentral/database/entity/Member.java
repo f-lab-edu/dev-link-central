@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -25,13 +26,15 @@ public class Member extends AuditingFields implements Serializable{
     @Column(nullable = false, length = 100)
     private String passwordHash;
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 100)
     private String email;
 
     @Column(nullable = false, length = 100)
     private String nickname;
 
     private String role;
+
+    private boolean deleted = Boolean.FALSE; // 삭제 여부
 
     protected Member() {
     }

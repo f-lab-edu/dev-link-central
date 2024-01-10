@@ -62,6 +62,8 @@
     <p><%= request.getAttribute("memberName") %>님 환영합니다!</p>
     <button onclick="logout()">로그아웃</button>
     <button onclick="editProfile()">회원수정</button>
+
+    <button><a href="/api/delete-page">회원탈퇴</a></button>
 </div>
 </body>
 </html>

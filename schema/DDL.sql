@@ -5,13 +5,13 @@ create table member (
     password_hash    varchar(250)    not null,
     email            varchar(100)    not null,
     nickname         varchar(100)    not null,
+    deleted          boolean,
     role             varchar(50)         null,
     created_at       datetime        not null,
     created_by       varchar(100)    not null,
     modified_at      datetime        not null,
     modified_by      varchar(100)    not null,
-    primary key (id),
-    unique key (email)
+    primary key (id)
 );
 
 
