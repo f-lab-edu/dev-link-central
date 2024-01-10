@@ -110,7 +110,7 @@ public class MemberService {
 
         if (member.isPresent()) {
             Long id = member.get().getId();
-            memberRepository.updatePasswordByIdAndDeletedFalse(id, passwordHash);
+            memberRepository.updatePasswordById(id, passwordHash);
         }
     }
 

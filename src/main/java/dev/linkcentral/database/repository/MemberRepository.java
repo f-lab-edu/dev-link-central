@@ -21,7 +21,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Modifying
     @Query("update Member m set m.passwordHash = :password_hash where m.id = :id")
-    void updatePasswordByIdAndDeletedFalse(@Param("id") Long id, @Param("password_hash") String passwordHash);
+    void updatePasswordById(@Param("id") Long id, @Param("password_hash") String passwordHash);
 
     @Modifying
     @Query("update Member m set m.deleted = true where m.id = :id")
