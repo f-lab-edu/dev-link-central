@@ -53,11 +53,17 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
 
+	// Mockito의 핵심 라이브러리
+	testImplementation 'org.mockito:mockito-core:4.0.0'
+	// JUnit 5와 Mockito를 함께 사용하기 위한 라이브러리
+	testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
+
 	// 스프링 세션
 	implementation 'org.springframework.session:spring-session-jdbc'
 
+	//mysql
+	implementation 'mysql:mysql-connector-java:8.0.33'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	implementation 'mysql:mysql-connector-java:8.0.33' //mysql
 
 	// 시큐리티
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -71,21 +77,9 @@ tasks.named('bootBuildImage') {
 	builder = 'paketobuildpacks/builder-jammy-base:latest'
 }
 
-//V1
-//tasks.named('test') {
-//	useJUnitPlatform()
-//}
-
-//V2
-//test {
-//	useJUnitPlatform()
-//}
-
 test {
 	useJUnitPlatform()
 }
-
-
 
 // Querydsl 설정부
 def generated = 'src/main/generated'
