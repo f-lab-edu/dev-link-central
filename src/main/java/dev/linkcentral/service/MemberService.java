@@ -2,6 +2,7 @@ package dev.linkcentral.service;
 
 import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
+import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
@@ -73,14 +74,21 @@ public class MemberService {
     }
 
     public boolean isNicknameDuplicated(String nickname) {
-        return memberRepository.existsByNicknameAndDeletedFalse(nickname);
+        boolean isDuplicated = memberRepository.existsByNicknameAndDeletedFalse(nickname);
+
+        if (isDuplicated) {
+            throw new DuplicateNicknameException("닉네임이 중복되었습니다.: " + nickname);
+        }
+        return isDuplicated;
     }
 
     public boolean userEmailCheck(String userEmail, String userName) {
-        Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
-        String memberName = member.get().getName();
+        Optional<Member> member = memberRepository.findByEmailAndNameAndDeletedFalse(userEmail, userName);
 
-        return memberName.equals(userName);
+        if (!member.isPresent()) {
+            throw new MemberEmailNotFoundException("유저의 이메일을 찾을 수 없습니다.");
+        }
+        return true;
     }
 
     /**
@@ -178,5 +186,4 @@ public class MemberService {
         }
         return false;
     }
-
 }
