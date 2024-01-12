@@ -49,14 +49,9 @@ dependencies {
 	implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.3'
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
-	// junit5
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
-
-	// Mockito의 핵심 라이브러리
-	testImplementation 'org.mockito:mockito-core:4.0.0'
-	// JUnit 5와 Mockito를 함께 사용하기 위한 라이브러리
-	testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
+	// JUnit Jupiter 최신 버전으로 업데이트
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
 	// 스프링 세션
 	implementation 'org.springframework.session:spring-session-jdbc'
@@ -70,6 +65,9 @@ dependencies {
 
 	//email
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// validator
+	implementation 'org.hibernate.validator:hibernate-validator:6.2.1.Final'
 }
 
 
