@@ -5,7 +5,10 @@ import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -26,5 +29,12 @@ public class ArticleController {
         articleService.save(articleDTO);
 
         return "/home";
+    }
+
+    @GetMapping("/")
+    public String findAll(Model model) {
+        List<ArticleRequestDTO> articleList = articleService.findAll();
+        model.addAttribute("articleList", articleList);
+        return "/articles/list";
     }
 }
