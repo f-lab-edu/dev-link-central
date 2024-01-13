@@ -50,4 +50,8 @@ public class ArticleService {
         Article updateArticle = articleRepository.save(articleEntity);
         return findById(updateArticle.getId());
     }
+
+    public void delete(Long id) {
+        articleRepository.deleteById(id);
+    }
 }
