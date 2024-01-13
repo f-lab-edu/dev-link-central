@@ -2,8 +2,11 @@ package dev.linkcentral.presentation;
 
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
+import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
+import dev.linkcentral.service.dto.response.ArticleEditResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +47,20 @@ public class ArticleController {
         ArticleRequestDTO articleDTO = articleService.findById(id);
         model.addAttribute("article", articleDTO);
         return "/articles/detail";
+    }
+
+    @GetMapping("/update/{id}")
+    public String updateForm(@PathVariable Long id, Model model) {
+        ArticleRequestDTO articleDTO = articleService.findById(id);
+        model.addAttribute("articleUpdate", articleDTO);
+        return "/articles/update";
+    }
+
+    @ResponseBody
+    @PutMapping("/update")
+    public ArticleEditResponseDTO update(@RequestBody ArticleUpdateRequestDTO articleDTO, Model model) {
+        ArticleRequestDTO article = articleService.update(articleDTO);
+        model.addAttribute("article", article);
+        return new ArticleEditResponseDTO(HttpStatus.OK.value());
     }
 }
