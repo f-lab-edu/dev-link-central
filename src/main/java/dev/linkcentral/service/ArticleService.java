@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +29,15 @@ public class ArticleService {
             articleDTOList.add(ArticleRequestDTO.toArticleDTO(articleEntity));
         }
         return articleDTOList;
+    }
+
+    public ArticleRequestDTO findById(Long id) {
+        Optional<Article> optionalArticleEntity = articleRepository.findById(id);
+        if (optionalArticleEntity.isPresent()) {
+            Article articleEntity = optionalArticleEntity.get();
+            ArticleRequestDTO articleDTO = ArticleRequestDTO.toArticleDTO(articleEntity);
+            return articleDTO;
+        }
+        return null;
     }
 }
