@@ -64,4 +64,10 @@ public class ArticleController {
         model.addAttribute("article", article);
         return new ArticleEditResponseDTO(HttpStatus.OK.value());
     }
+
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id) {
+        articleService.delete(id);
+        return "redirect:/article/";
+    }
 }
