@@ -6,6 +6,9 @@ import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
@@ -15,5 +18,15 @@ public class ArticleService {
     public void save(ArticleRequestDTO articleDTO) {
         Article articleEntity = Article.toSaveEntity(articleDTO);
         articleRepository.save(articleEntity);
+    }
+
+    public List<ArticleRequestDTO> findAll() {
+        List<Article> articleEntityList = articleRepository.findAll();
+        List<ArticleRequestDTO> articleDTOList = new ArrayList<>();
+
+        for (Article articleEntity : articleEntityList) {
+            articleDTOList.add(ArticleRequestDTO.toArticleDTO(articleEntity));
+        }
+        return articleDTOList;
     }
 }
