@@ -3,14 +3,18 @@ package dev.linkcentral.service;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.repository.ArticleRepository;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
+import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ArticleService {
 
@@ -39,5 +43,11 @@ public class ArticleService {
             return articleDTO;
         }
         return null;
+    }
+
+    public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
+        Article articleEntity = Article.toUpdateEntity(articleDTO);
+        Article updateArticle = articleRepository.save(articleEntity);
+        return findById(updateArticle.getId());
     }
 }

@@ -1,6 +1,7 @@
 package dev.linkcentral.database.entity;
 
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
+import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +46,15 @@ public class Article extends AuditingFields {
     // DTO -> Entity 변환
     public static Article toSaveEntity(ArticleRequestDTO articleDTO) {
         return Article.builder()
+                .title(articleDTO.getTitle())
+                .content(articleDTO.getContent())
+                .writer(articleDTO.getWriter())
+                .build();
+    }
+
+    public static Article toUpdateEntity(ArticleUpdateRequestDTO articleDTO) {
+        return Article.builder()
+                .id(articleDTO.getId())
                 .title(articleDTO.getTitle())
                 .content(articleDTO.getContent())
                 .writer(articleDTO.getWriter())
