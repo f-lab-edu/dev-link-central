@@ -1,8 +1,7 @@
 package dev.linkcentral.presentation;
 
-import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.service.ArticleService;
-import dev.linkcentral.service.dto.request.ArticleSaveRequestDTO;
+import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -22,9 +21,9 @@ public class ArticleController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute ArticleSaveRequestDTO articleSaveDTO) {
-        log.info("info articleSaveDTO={}", articleSaveDTO);
-        articleService.save(articleSaveDTO);
+    public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
+        log.info("info articleSaveDTO={}", articleDTO);
+        articleService.save(articleDTO);
 
         return "/home";
     }

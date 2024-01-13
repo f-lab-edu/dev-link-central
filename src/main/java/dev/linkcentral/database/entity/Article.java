@@ -1,6 +1,6 @@
 package dev.linkcentral.database.entity;
 
-import dev.linkcentral.service.dto.request.ArticleSaveRequestDTO;
+import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,11 +42,11 @@ public class Article extends AuditingFields {
         this.content = content;
     }
 
-    public static Article toSaveEntity(ArticleSaveRequestDTO articleSaveDTO) {
+    public static Article toSaveEntity(ArticleRequestDTO articleDTO) {
         return Article.builder()
-                .title(articleSaveDTO.getTitle())
-                .content(articleSaveDTO.getContent())
-                .writer(articleSaveDTO.getWriter())
+                .title(articleDTO.getTitle())
+                .content(articleDTO.getContent())
+                .writer(articleDTO.getWriter())
                 .build();
     }
 }

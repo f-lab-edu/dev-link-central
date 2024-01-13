@@ -65,7 +65,7 @@
     </style>
 
     <script>
-        function studyRecruitmentBoard() {
+        function studyRecruitmentArticle() {
             window.location.href = "/article/save";
         }
     </script>
@@ -98,7 +98,7 @@
 
 
 
-<button onclick="studyRecruitmentBoard()">스터디 모집 게시판</button>
+<button onclick="studyRecruitmentArticle()">스터디 모집 게시판 글등록</button>
 
 
 </body>
