@@ -68,6 +68,10 @@
         function studyRecruitmentArticle() {
             window.location.href = "/article/save";
         }
+
+        function studyRecruitmentArticleList() {
+            window.location.href = "/article/";
+        }
     </script>
 
 </head>
@@ -97,8 +101,9 @@
 
 
 
-
 <button onclick="studyRecruitmentArticle()">스터디 모집 게시판 글등록</button>
+
+<button onclick="studyRecruitmentArticleList()">스터디 모집 게시판 글목록</button>
 
 
 </body>
