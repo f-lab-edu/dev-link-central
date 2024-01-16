@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/article")
+@RequestMapping("/api/v1/article")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -24,7 +24,6 @@ public class ArticleController {
     public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
         log.info("info articleSaveDTO={}", articleDTO);
         articleService.save(articleDTO);
-
         return "/home";
     }
 }
