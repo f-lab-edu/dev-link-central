@@ -1,11 +1,16 @@
 package dev.linkcentral.database.entity;
 
+import dev.linkcentral.service.dto.request.ArticleRequestDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 public class Article extends AuditingFields {
 
     @Id
@@ -22,7 +27,7 @@ public class Article extends AuditingFields {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 50, nullable = false)
     private String writer;
 
     protected Article() {
@@ -37,4 +42,12 @@ public class Article extends AuditingFields {
         this.content = content;
     }
 
+    // DTO -> Entity 변환
+    public static Article toSaveEntity(ArticleRequestDTO articleDTO) {
+        return Article.builder()
+                .title(articleDTO.getTitle())
+                .content(articleDTO.getContent())
+                .writer(articleDTO.getWriter())
+                .build();
+    }
 }

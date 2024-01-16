@@ -63,6 +63,13 @@
             margin-top: 10px;
         }
     </style>
+
+    <script>
+        function studyRecruitmentArticle() {
+            window.location.href = "/api/v1/article/save";
+        }
+    </script>
+
 </head>
 <body>
 <h2 style="color: #333;">안녕하세요!</h2>
@@ -87,5 +94,12 @@
 
 <!-- 비밀번호 찾기 버튼 추가 -->
 <a class="password-reset-button" href="/reset-password">비밀번호 찾기</a>
+
+
+
+
+<button onclick="studyRecruitmentArticle()">스터디 모집 게시판 글등록</button>
+
+
 </body>
 </html>
