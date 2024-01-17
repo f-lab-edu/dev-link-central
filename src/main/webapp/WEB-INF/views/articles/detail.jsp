@@ -42,6 +42,7 @@
                     alert("삭제 중 오류가 발생했습니다: " + error);
                 }
             });
+            location.href = "/api/v1/article/paging?page=${page}";
         }
     </script>
 </head>
