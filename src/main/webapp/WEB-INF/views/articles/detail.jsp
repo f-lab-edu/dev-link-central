@@ -14,17 +14,17 @@
 
         function updateReq() {
             console.log("수정 요청");
-            location.href = "/article/update/" + articleId;
+            location.href = "/api/v1/article/update/" + articleId;
         }
 
         function deleteReq() {
             console.log("삭제 요청");
-            location.href = "/article/delete/" + articleId;
+            location.href = "/api/v1/article/delete/" + articleId;
         }
 
         function listReq() {
             console.log("목록 요청");
-            location.href = "/article/";
+            location.href = "/api/v1/article/";
         }
     </script>
 </head>

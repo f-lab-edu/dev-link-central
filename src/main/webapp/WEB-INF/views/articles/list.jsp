@@ -23,7 +23,7 @@
 
       <td><c:out value="${article.writer}"/></td>
 
-      <td><a href="<c:url value='/article/${article.id}'/>"><c:out value="${article.title}"/></a></td>
+      <td><a href="<c:url value='/api/v1/article/${article.id}'/>"><c:out value="${article.title}"/></a></td>
 
       <td><c:out value="${article.createdAt}"/></td>
 
