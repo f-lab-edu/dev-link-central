@@ -28,13 +28,13 @@
       };
 
       $.ajax({
-        url: "/article/update",
+        url: "/api/v1/article/update",
         type: "PUT",
         data: JSON.stringify(data),
         contentType: "application/json",
         success: function(response) {
           console.log("글이 업데이트되었습니다.");
-          location.href = "/article/";
+          location.href = "/api/v1/article/";
         },
         error: function(error) {
           console.error("글 업데이트 중 오류가 발생했습니다.");

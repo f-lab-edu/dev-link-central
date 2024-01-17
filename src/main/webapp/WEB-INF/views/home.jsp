@@ -70,11 +70,11 @@
         }
 
         function studyRecruitmentArticleList() {
-            window.location.href = "/article/";
+            window.location.href = "/api/v1/article/";
         }
 
-        function studyRecruitmentArticleList() {
-            window.location.href = "/article/";
+        function studyRecruitmentArticlePaging() {
+            window.location.href = "/api/v1/article/paging";
         }
     </script>
 
@@ -108,6 +108,8 @@
 <button onclick="studyRecruitmentArticle()">스터디 모집 게시판 글등록</button>
 
 <button onclick="studyRecruitmentArticleList()">스터디 모집 게시판 글목록</button>
+
+<button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판 페이징목록</button>
 
 
 </body>
