@@ -34,7 +34,6 @@ public class ArticleController {
     public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
         log.info("info articleSaveDTO={}", articleDTO);
         articleService.save(articleDTO);
-
         return "/home";
     }
 
@@ -92,5 +91,7 @@ public class ArticleController {
         model.addAttribute("startPage", startPage);     // 시작 페이지
         model.addAttribute("endPage", endPage);         // 마지막 페이지
         return "/articles/paging";
+
     }
+
 }
