@@ -33,7 +33,6 @@ public class ArticleController {
     public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
         log.info("info articleSaveDTO={}", articleDTO);
         articleService.save(articleDTO);
-
         return "/home";
     }
 
