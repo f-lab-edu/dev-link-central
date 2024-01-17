@@ -6,6 +6,9 @@ import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import dev.linkcentral.service.dto.response.ArticleEditResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +19,7 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/article")
+@RequestMapping("/api/v1/article")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -68,6 +71,22 @@ public class ArticleController {
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
         articleService.delete(id);
-        return "redirect:/article/";
+        return "redirect:/api/v1/article/";
+    }
+
+    @GetMapping("/paging")
+    public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
+        Page<ArticleRequestDTO> articlePage = articleService.paging(pageable);
+        List<ArticleRequestDTO> articleList = articlePage.getContent(); // Page에서 List로 변환
+
+        int blockLimit = 3;
+        int startPage = (((int) Math.ceil(((double) pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
+        int endPage = Math.min((startPage + blockLimit - 1), articlePage.getTotalPages());
+
+        model.addAttribute("articleList", articleList); // List로 전달
+        model.addAttribute("articlePage", articlePage); // 페이지 정보 전달
+        model.addAttribute("startPage", startPage);     // 시작 페이지
+        model.addAttribute("endPage", endPage);         // 마지막 페이지
+        return "/articles/paging";
     }
 }
