@@ -6,12 +6,13 @@ import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import dev.linkcentral.service.dto.response.ArticleEditResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
-
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class ArticleController {
     public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
         log.info("info articleSaveDTO={}", articleDTO);
         articleService.save(articleDTO);
+
         return "/home";
     }
 
@@ -41,7 +43,7 @@ public class ArticleController {
         model.addAttribute("articleList", articleList);
         return "/articles/list";
     }
-  
+
     @GetMapping("/{id}")
     public String findById(@PathVariable Long id, Model model) {
         // TODO: 해당 게시글의 조회수를 하나 올리는 작업
@@ -66,11 +68,25 @@ public class ArticleController {
         return new ArticleEditResponseDTO(HttpStatus.OK.value());
     }
 
-    @DeleteMapping("/delete/{id}")
-    @ResponseBody
-    public ResponseEntity<String> delete(@PathVariable Long id) {
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id) {
         articleService.delete(id);
-        return ResponseEntity.ok().body("성공적으로 삭제되었습니다.");
+        return "redirect:/api/v1/article/";
     }
 
+    @GetMapping("/paging")
+    public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
+        Page<ArticleRequestDTO> articlePage = articleService.paging(pageable);
+        List<ArticleRequestDTO> articleList = articlePage.getContent(); // Page에서 List로 변환
+
+        int blockLimit = 3;
+        int startPage = (((int) Math.ceil(((double) pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
+        int endPage = Math.min((startPage + blockLimit - 1), articlePage.getTotalPages());
+
+        model.addAttribute("articleList", articleList); // List로 전달
+        model.addAttribute("articlePage", articlePage); // 페이지 정보 전달
+        model.addAttribute("startPage", startPage);     // 시작 페이지
+        model.addAttribute("endPage", endPage);         // 마지막 페이지
+        return "/articles/paging";
+    }
 }
