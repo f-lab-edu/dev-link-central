@@ -45,11 +45,13 @@ public class ArticleController {
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id, Model model) {
+    public String findById(@PageableDefault(page = 1) Pageable pageable,
+                           @PathVariable Long id, Model model) {
         // TODO: 해당 게시글의 조회수를 하나 올리는 작업
 
         ArticleRequestDTO articleDTO = articleService.findById(id);
         model.addAttribute("article", articleDTO);
+        model.addAttribute("page", pageable.getPageNumber());
         return "/articles/detail";
     }
 
