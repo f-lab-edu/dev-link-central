@@ -6,6 +6,7 @@ import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,12 +33,8 @@ public class ArticleService {
     }
 
     public ArticleRequestDTO findById(Long id) {
-        Optional<Article> optionalArticleEntity = articleRepository.findById(id);
-        if (optionalArticleEntity.isPresent()) {
-            Article articleEntity = optionalArticleEntity.get();
-            ArticleRequestDTO articleDTO = ArticleRequestDTO.toArticleDTO(articleEntity);
-            return articleDTO;
-        }
-        return null;
+        return articleRepository.findById(id)
+                .map(ArticleRequestDTO::toArticleDTO)
+                .orElse(null);
     }
 }
