@@ -19,11 +19,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().disable()                 //cors 방지
-                .csrf().disable()             //csrf 방지
-                .formLogin().disable()        //기본 로그인페이지 없애기
-                .headers().frameOptions().disable();
-
+        http
+                .csrf().disable()                 // CSRF 방지
+                .formLogin().disable()            // 기본 로그인 페이지 없애기
+                .headers().frameOptions().disable()
+                .and()
+                .authorizeRequests()
+                .antMatchers("/articles/save").authenticated() // 게시글 작성 경로에 대한 접근은 인증된 사용자에게만 허용
+                .and()
+                .logout()                         // 로그아웃 설정 추가
+                    .logoutSuccessUrl("/")        // 로그아웃 성공 시 리다이렉트할 URL
+                    .invalidateHttpSession(true)  // 세션 무효화
+                    .deleteCookies("JSESSIONID")  // JSESSIONID 쿠키 삭제
+                    .permitAll();
         return http.build();
     }
 }
