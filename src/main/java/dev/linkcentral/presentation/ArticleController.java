@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation;
 
+import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -31,10 +33,15 @@ public class ArticleController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
+    public String save(@ModelAttribute ArticleRequestDTO articleDTO, HttpSession session) {
+        Member member = (Member) session.getAttribute("member");
+        if (member == null) {
+            return "/home";
+        }
+
         log.info("info articleSaveDTO={}", articleDTO);
         articleService.save(articleDTO);
-        return "/home";
+        return "redirect:/api/v1/article/paging";
     }
 
     @GetMapping("/")
