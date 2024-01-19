@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>프로젝트!</title>
@@ -46,7 +46,7 @@
     <script>
         function logout() {
             alert("로그아웃 되었습니다.");
-            window.location.href = '/';
+            window.location.href = '/logout';
         }
 
         function editProfile() {
@@ -56,6 +56,10 @@
         function deletePage() {
             window.location.href = "/api/delete-page";
         }
+
+        function studyRecruitmentArticlePaging() {
+            window.location.href = "/api/v1/article/paging";
+        }
     </script>
 </head>
 <body>
@@ -64,11 +68,14 @@
 </header>
 <div class="container">
     <p><%= request.getAttribute("memberName") %>님 환영합니다!</p>
+
     <button onclick="logout()">로그아웃</button>
 
     <button onclick="editProfile()">회원수정</button>
 
     <button onclick="deletePage()">회원탈퇴</button>
+
+    <button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판 페이징 목록</button>
 </div>
 </body>
 </html>
