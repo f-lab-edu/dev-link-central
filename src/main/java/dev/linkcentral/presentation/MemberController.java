@@ -66,6 +66,12 @@ public class MemberController {
         return "/members/login";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // 세션 무효화
+        return "redirect:/";
+    }
+
     @GetMapping("/members/{nickname}/exists")
     public ResponseEntity<Boolean> isNicknameDuplicated(@PathVariable String nickname) {
         return ResponseEntity.ok(memberService.isNicknameDuplicated(nickname));
