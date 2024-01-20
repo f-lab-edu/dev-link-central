@@ -13,7 +13,7 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/article")
+@RequestMapping("/api/v1/article")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -27,7 +27,6 @@ public class ArticleController {
     public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
         log.info("info articleSaveDTO={}", articleDTO);
         articleService.save(articleDTO);
-
         return "/home";
     }
 
@@ -37,7 +36,7 @@ public class ArticleController {
         model.addAttribute("articleList", articleList);
         return "/articles/list";
     }
-
+  
     @GetMapping("/{id}")
     public String findById(@PathVariable Long id, Model model) {
         // TODO: 해당 게시글의 조회수를 하나 올리는 작업

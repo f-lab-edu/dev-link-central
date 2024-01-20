@@ -30,7 +30,7 @@ public class ArticleService {
         }
         return articleDTOList;
     }
-
+  
     public ArticleRequestDTO findById(Long id) {
         return articleRepository.findById(id)
                 .map(ArticleRequestDTO::toArticleDTO)
