@@ -1,7 +1,9 @@
 package dev.linkcentral.service;
 
 import dev.linkcentral.database.entity.Article;
+import dev.linkcentral.database.entity.ArticleStatistic;
 import dev.linkcentral.database.repository.ArticleRepository;
+import dev.linkcentral.database.repository.ArticleStatisticRepository;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.servlet.http.HttpSession;
+import java.util.*;
 
 
 @Service
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final ArticleStatisticRepository articleStatisticRepository;
 
     public void save(ArticleRequestDTO articleDTO) {
         Article articleEntity = Article.toSaveEntity(articleDTO);
@@ -39,11 +41,34 @@ public class ArticleService {
         return articleDTOList;
     }
 
-    public ArticleRequestDTO findById(Long id) {
+    public ArticleRequestDTO findById(Long id, HttpSession session) {
         Optional<Article> optionalArticleEntity = articleRepository.findById(id);
         if (optionalArticleEntity.isPresent()) {
             Article articleEntity = optionalArticleEntity.get();
+
+            // 세션에서 조회된 게시글 ID 확인
+            Set<Long> viewedArticles = (Set<Long>) session.getAttribute("viewedArticles");
+            if (viewedArticles == null) {
+                viewedArticles = new HashSet<>();
+            }
+
+            // 해당 게시글을 처음 조회하는 경우에만 조회수 증가
+            if (!viewedArticles.contains(id)) {
+                ArticleStatistic articleStatistic = articleStatisticRepository.findByArticle(articleEntity)
+                        .orElseGet(() -> new ArticleStatistic(articleEntity));
+
+                articleStatistic.incrementViews();
+                articleStatisticRepository.save(articleStatistic);
+                viewedArticles.add(id);
+                session.setAttribute("viewedArticles", viewedArticles);
+            }
+
             ArticleRequestDTO articleDTO = ArticleRequestDTO.toArticleDTO(articleEntity);
+
+            // 조회수 설정
+            articleStatisticRepository.findByArticle(articleEntity).ifPresent(
+                    articleStatistic -> articleDTO.setViews(articleStatistic.getViews())
+            );
             return articleDTO;
         }
         return null;
@@ -52,7 +77,13 @@ public class ArticleService {
     public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
         Article articleEntity = Article.toUpdateEntity(articleDTO);
         Article updateArticle = articleRepository.save(articleEntity);
-        return findById(updateArticle.getId());
+
+        Optional<Article> optionalArticleEntity = articleRepository.findById(updateArticle.getId());
+        if (optionalArticleEntity.isPresent()) {
+            Article article = optionalArticleEntity.get();
+            return ArticleRequestDTO.toArticleDTO(article);
+        }
+        return null;
     }
 
     public void delete(Long id) {
