@@ -20,6 +20,7 @@ public class ArticleRequestDTO {
     private String writer;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private int views;
 
     // Entity -> DTO 변환
     public static ArticleRequestDTO toArticleDTO(Article article) {
