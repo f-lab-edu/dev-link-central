@@ -9,9 +9,11 @@ import dev.linkcentral.database.entity.ArticleStatistic;
 import dev.linkcentral.database.entity.ArticleView;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.ArticleLikeRepository;
+import dev.linkcentral.database.entity.ArticleStatistic;
 import dev.linkcentral.database.repository.ArticleRepository;
 import dev.linkcentral.database.repository.ArticleStatisticRepository;
 import dev.linkcentral.database.repository.ArticleViewRepository;
+import dev.linkcentral.database.repository.ArticleStatisticRepository;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,8 @@ import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.http.HttpSession;
+import java.util.*;
 
 
 @Service
