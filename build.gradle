@@ -53,6 +53,12 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
+	// mockito 의존성 추가
+	testImplementation 'org.mockito:mockito-core:5.8.0'
+
+	// spring-boot-starter-test를 사용하지 않는 경우 추가 필요
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+
 	// 스프링 세션
 	implementation 'org.springframework.session:spring-session-jdbc'
 
