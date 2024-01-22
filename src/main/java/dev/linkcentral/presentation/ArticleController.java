@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -94,5 +95,21 @@ public class ArticleController {
         model.addAttribute("startPage", startPage);     // 시작 페이지
         model.addAttribute("endPage", endPage);         // 마지막 페이지
         return "/articles/paging";
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> toggleLike(@PathVariable Long id, HttpSession session) {
+        Member member = (Member) session.getAttribute("member");
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        articleService.toggleLike(id, member);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/likes-count")
+    public ResponseEntity<Integer> getLikesCount(@PathVariable Long id) {
+        int likesCount = articleService.getLikesCount(id);
+        return ResponseEntity.ok(likesCount);
     }
 }
