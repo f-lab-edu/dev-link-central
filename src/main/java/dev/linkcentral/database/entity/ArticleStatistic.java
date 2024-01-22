@@ -27,11 +27,17 @@ public class ArticleStatistic extends AuditingFields {
         this.article = article;
     }
 
-    public void updateLikes(int like) {
-        this.likes = like;
-    }
-
     public void incrementViews() {
         this.views++;
+    }
+
+    public void incrementLikes() {
+        this.likes++;
+    }
+
+    public void decrementLikes() {
+        if (this.likes > 0) {
+            this.likes--;
+        }
     }
 }
