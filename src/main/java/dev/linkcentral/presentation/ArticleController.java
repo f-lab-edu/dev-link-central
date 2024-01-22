@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+
 
 import java.util.List;
 
@@ -63,4 +65,12 @@ public class ArticleController {
         model.addAttribute("article", article);
         return new ArticleEditResponseDTO(HttpStatus.OK.value());
     }
+
+    @DeleteMapping("/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        articleService.delete(id);
+        return ResponseEntity.ok().body("성공적으로 삭제되었습니다.");
+    }
+
 }

@@ -17,14 +17,24 @@
             location.href = "/article/update/" + articleId;
         }
 
-        function deleteReq() {
-            console.log("삭제 요청");
-            location.href = "/article/delete/" + articleId;
-        }
-
         function listReq() {
             console.log("목록 요청");
             location.href = "/article/";
+        }
+
+        function deleteReq() {
+            console.log("삭제 요청");
+            $.ajax({
+                url: "/article/delete/" + articleId,
+                type: "DELETE",
+                success: function (response) {
+                    alert("게시글이 삭제되었습니다.");
+                    location.href = "/article/";
+                },
+                error: function(error) {
+                    alert("삭제 중 오류가 발생했습니다: " + error);
+                }
+            });
         }
     </script>
 </head>
