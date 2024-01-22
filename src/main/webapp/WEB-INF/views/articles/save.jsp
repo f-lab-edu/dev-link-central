@@ -6,7 +6,7 @@
     <title>글작성</title>
 </head>
 <body>
-<form action="/article/save" method="post">
+<form action="/api/v1/article/save" method="post">
     writer: <input type="text" name="writer"> <br>
     title: <input type="text" name="title"> <br>
     content: <textarea name="content" cols="30" rows="10"></textarea> <br>

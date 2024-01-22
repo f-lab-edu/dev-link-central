@@ -1,5 +1,6 @@
 package dev.linkcentral.service;
 
+import dev.linkcentral.common.exception.ArticleNotFoundException;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.repository.ArticleRepository;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 
 @Service
@@ -34,15 +35,17 @@ public class ArticleService {
         }
         return articleDTOList;
     }
-
+  
     public ArticleRequestDTO findById(Long id) {
-        Optional<Article> optionalArticleEntity = articleRepository.findById(id);
-        if (optionalArticleEntity.isPresent()) {
-            Article articleEntity = optionalArticleEntity.get();
-            ArticleRequestDTO articleDTO = ArticleRequestDTO.toArticleDTO(articleEntity);
-            return articleDTO;
-        }
-        return null;
+        return articleRepository.findById(id)
+                .map(ArticleRequestDTO::toArticleDTO)
+                .orElseThrow(() -> new ArticleNotFoundException());
+    }
+
+    public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
+        Article articleEntity = Article.toUpdateEntity(articleDTO);
+        Article updateArticle = articleRepository.save(articleEntity);
+        return findById(updateArticle.getId());
     }
 
     public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
