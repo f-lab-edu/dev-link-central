@@ -1,5 +1,6 @@
 package dev.linkcentral.service;
 
+import dev.linkcentral.common.exception.ArticleNotFoundException;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.repository.ArticleRepository;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
@@ -28,5 +29,11 @@ public class ArticleService {
             articleDTOList.add(ArticleRequestDTO.toArticleDTO(articleEntity));
         }
         return articleDTOList;
+    }
+  
+    public ArticleRequestDTO findById(Long id) {
+        return articleRepository.findById(id)
+                .map(ArticleRequestDTO::toArticleDTO)
+                .orElseThrow(() -> new ArticleNotFoundException());
     }
 }

@@ -72,6 +72,10 @@
         function studyRecruitmentArticleList() {
             window.location.href = "/article/";
         }
+
+        function studyRecruitmentArticleList() {
+            window.location.href = "/article/";
+        }
     </script>
 
 </head>
