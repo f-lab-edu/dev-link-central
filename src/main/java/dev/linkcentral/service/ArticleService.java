@@ -1,7 +1,10 @@
 package dev.linkcentral.service;
 
 import dev.linkcentral.database.entity.Article;
+import dev.linkcentral.database.entity.ArticleLike;
 import dev.linkcentral.database.entity.ArticleStatistic;
+import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.repository.ArticleLikeRepository;
 import dev.linkcentral.database.repository.ArticleRepository;
 import dev.linkcentral.database.repository.ArticleStatisticRepository;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
@@ -25,6 +29,7 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final ArticleStatisticRepository articleStatisticRepository;
+    private final ArticleLikeRepository articleLikeRepository;
 
     public void save(ArticleRequestDTO articleDTO) {
         Article articleEntity = Article.toSaveEntity(articleDTO);
@@ -103,5 +108,32 @@ public class ArticleService {
                 article.getWriter(),
                 article.getTitle(),
                 article.getCreatedAt()));
+    }
+
+    @Transactional
+    public void toggleLike(Long articleId, Member member) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        Optional<ArticleLike> like = articleLikeRepository.findByMemberAndArticle(member, article);
+        ArticleStatistic articleStatistic = articleStatisticRepository.findByArticle(article)
+                .orElseGet(() -> new ArticleStatistic(article));
+
+        if (like.isPresent()) {
+            articleLikeRepository.delete(like.get());
+            articleStatistic.decrementLikes(); // 좋아요 감소
+        } else {
+            ArticleLike newLike = new ArticleLike(member, article);
+            articleLikeRepository.save(newLike);
+            articleStatistic.incrementLikes(); // 좋아요 증가
+        }
+        articleStatisticRepository.save(articleStatistic); // 상태 업데이트 저장
+    }
+
+    // 특정 게시글의 "좋아요" 총 갯수를 반환
+    public int getLikesCount(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        return (int) articleLikeRepository.countByArticle(article);
     }
 }
