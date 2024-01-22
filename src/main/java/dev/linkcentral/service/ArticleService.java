@@ -48,12 +48,6 @@ public class ArticleService {
         return findById(updateArticle.getId());
     }
 
-    public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
-        Article articleEntity = Article.toUpdateEntity(articleDTO);
-        Article updateArticle = articleRepository.save(articleEntity);
-        return findById(updateArticle.getId());
-    }
-
     public void delete(Long id) {
         articleRepository.deleteById(id);
     }
