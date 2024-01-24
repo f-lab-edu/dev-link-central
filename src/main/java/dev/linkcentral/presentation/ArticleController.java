@@ -2,6 +2,7 @@ package dev.linkcentral.presentation;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.ArticleService;
+import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import dev.linkcentral.service.dto.response.ArticleEditResponseDTO;
@@ -56,6 +57,10 @@ public class ArticleController {
                            @PathVariable Long id, Model model, HttpSession session) {
         Member member = (Member) session.getAttribute("member");
         ArticleRequestDTO articleDTO = articleService.findById(id, member);
+
+        // 댓글 목록 가져오기
+        List<ArticleCommentRequestDTO> commentDTOList = articleService.commentFindAll(id);
+        model.addAttribute("commentList", commentDTOList);
 
         model.addAttribute("article", articleDTO);
         model.addAttribute("page", pageable.getPageNumber());
@@ -115,5 +120,19 @@ public class ArticleController {
     public ResponseEntity<Integer> getLikesCount(@PathVariable Long id) {
         int likesCount = articleService.getLikesCount(id);
         return ResponseEntity.ok(likesCount);
+    }
+
+    @PostMapping("/comment/save")
+    @ResponseBody
+    public ResponseEntity<?> commentSave(@RequestBody ArticleCommentRequestDTO commentDTO, HttpSession session) {
+        Member member = (Member) session.getAttribute("member");
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        Long saveArticleId = articleService.commentSave(commentDTO, member.getNickname());
+
+        // 작성 성공하면 댓글 목록을 가져와서 반환
+        List<ArticleCommentRequestDTO> commentDTOList = articleService.commentFindAll(commentDTO.getArticleId());
+        return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
     }
 }
