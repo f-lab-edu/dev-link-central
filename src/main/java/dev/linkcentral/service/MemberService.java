@@ -20,6 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberService {
 
     private static final String FROM_ADDRESS = "alstjr706@gmail.com";
@@ -28,6 +29,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
+    @Transactional
     public Member joinMember(MemberSaveRequestDTO memberDTO) {
         String nickname = memberDTO.getNickname();
         checkForDuplicate(memberDTO, nickname);
@@ -61,6 +63,7 @@ public class MemberService {
         }
     }
 
+    @Transactional
     public Optional<Member> loginMember(String email, String password) {
         Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(email);
         if (member.isPresent()) {
@@ -73,6 +76,7 @@ public class MemberService {
         return Optional.empty();
     }
 
+    @Transactional
     public boolean isNicknameDuplicated(String nickname) {
         boolean isDuplicated = memberRepository.existsByNicknameAndDeletedFalse(nickname);
 
@@ -82,6 +86,7 @@ public class MemberService {
         return isDuplicated;
     }
 
+    @Transactional
     public boolean userEmailCheck(String userEmail, String userName) {
         Optional<Member> member = memberRepository.findByEmailAndNameAndDeletedFalse(userEmail, userName);
 
@@ -141,6 +146,7 @@ public class MemberService {
     /**
      * 메일 보내기
      */
+    @Transactional
     public void mailSend(MemberMailRequestDTO mailDto) {
         SimpleMailMessage message = new SimpleMailMessage();
 
@@ -151,6 +157,7 @@ public class MemberService {
         mailSender.send(message);
     }
 
+    @Transactional
     public void updateMember(MemberEditRequestDTO memberEditDTO) {
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
@@ -161,6 +168,7 @@ public class MemberService {
         memberEntity.updateNickname(memberEditDTO.getNickname());
     }
 
+    @Transactional
     public boolean checkPassword(String nickname, String password) {
         Optional<Member> member = memberRepository.findByNicknameAndDeletedFalse(nickname);
 

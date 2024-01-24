@@ -17,20 +17,21 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
+    @Transactional
     public void save(ArticleRequestDTO articleDTO) {
         Article articleEntity = Article.toSaveEntity(articleDTO);
         articleRepository.save(articleEntity);
     }
 
+    @Transactional
     public List<ArticleRequestDTO> findAll() {
         List<Article> articleEntityList = articleRepository.findAll();
         List<ArticleRequestDTO> articleDTOList = new ArrayList<>();
@@ -40,13 +41,15 @@ public class ArticleService {
         }
         return articleDTOList;
     }
-  
+
+    @Transactional
     public ArticleRequestDTO findById(Long id) {
         return articleRepository.findById(id)
                 .map(ArticleRequestDTO::toArticleDTO)
                 .orElseThrow(() -> new ArticleNotFoundException());
     }
 
+    @Transactional
     public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
         Article articleEntity = Article.toUpdateEntity(articleDTO);
         Article updateArticle = articleRepository.save(articleEntity);
@@ -58,6 +61,7 @@ public class ArticleService {
         articleRepository.deleteById(id);
     }
 
+    @Transactional
     public Page<ArticleRequestDTO> paging(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
         int pageLimit = 3; // 한 페이지에 보여줄 글 갯수
