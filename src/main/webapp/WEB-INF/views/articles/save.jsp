@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="dev.linkcentral.database.entity.Member" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,14 @@
     <title>글작성</title>
 </head>
 <body>
+<%
+    Member currentUser = (Member) session.getAttribute("member");
+    String currentUsername = "";
+    if (currentUser != null) {
+        currentUsername = currentUser.getNickname();
+    }
+%>
+
 <form action="/api/v1/article/save" method="post">
     writer: <input type="text" name="writer" value="${member.nickname}" readonly> <br>
     title: <input type="text" name="title"> <br>
