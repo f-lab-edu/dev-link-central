@@ -20,7 +20,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class MemberService {
 
     private static final String FROM_ADDRESS = "alstjr706@gmail.com";
@@ -29,7 +28,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Member joinMember(MemberSaveRequestDTO memberDTO) {
         String nickname = memberDTO.getNickname();
         checkForDuplicate(memberDTO, nickname);
@@ -63,7 +62,7 @@ public class MemberService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Member> loginMember(String email, String password) {
         Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(email);
         if (member.isPresent()) {
@@ -76,7 +75,7 @@ public class MemberService {
         return Optional.empty();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean isNicknameDuplicated(String nickname) {
         boolean isDuplicated = memberRepository.existsByNicknameAndDeletedFalse(nickname);
 
@@ -86,7 +85,7 @@ public class MemberService {
         return isDuplicated;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean userEmailCheck(String userEmail, String userName) {
         Optional<Member> member = memberRepository.findByEmailAndNameAndDeletedFalse(userEmail, userName);
 
@@ -99,7 +98,6 @@ public class MemberService {
     /**
      * DTO에 사용자가 원하는 내용과 제목을 저장
      */
-    @Transactional
     public MemberMailRequestDTO createMailAndChangePassword(String userEmail, String userName) {
         MemberMailRequestDTO dto = new MemberMailRequestDTO();
         String generatedPassword = generateTempPassword();
@@ -116,7 +114,7 @@ public class MemberService {
     /**
      * 이메일로 발송된 임시비밀번호로 해당 유저의 패스워드 변경
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public void updatePassword(String generatedPassword, String userEmail) {
         String passwordHash = passwordEncoder.encode(generatedPassword);
         Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
@@ -146,7 +144,6 @@ public class MemberService {
     /**
      * 메일 보내기
      */
-    @Transactional
     public void mailSend(MemberMailRequestDTO mailDto) {
         SimpleMailMessage message = new SimpleMailMessage();
 
@@ -157,7 +154,7 @@ public class MemberService {
         mailSender.send(message);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public void updateMember(MemberEditRequestDTO memberEditDTO) {
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
@@ -168,7 +165,7 @@ public class MemberService {
         memberEntity.updateNickname(memberEditDTO.getNickname());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean checkPassword(String nickname, String password) {
         Optional<Member> member = memberRepository.findByNicknameAndDeletedFalse(nickname);
 
@@ -179,7 +176,7 @@ public class MemberService {
         return false;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean deleteMember(String nickname, String password) {
         Member member = memberRepository.findByNicknameAndDeletedFalse(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("닉네임이 존재하지 않습니다."));

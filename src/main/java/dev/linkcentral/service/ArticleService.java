@@ -20,18 +20,17 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public void save(ArticleRequestDTO articleDTO) {
         Article articleEntity = Article.toSaveEntity(articleDTO);
         articleRepository.save(articleEntity);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ArticleRequestDTO> findAll() {
         List<Article> articleEntityList = articleRepository.findAll();
         List<ArticleRequestDTO> articleDTOList = new ArrayList<>();
@@ -42,26 +41,26 @@ public class ArticleService {
         return articleDTOList;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ArticleRequestDTO findById(Long id) {
         return articleRepository.findById(id)
                 .map(ArticleRequestDTO::toArticleDTO)
                 .orElseThrow(() -> new ArticleNotFoundException());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
         Article articleEntity = Article.toUpdateEntity(articleDTO);
         Article updateArticle = articleRepository.save(articleEntity);
         return findById(updateArticle.getId());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public void delete(Long id) {
         articleRepository.deleteById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<ArticleRequestDTO> paging(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
         int pageLimit = 3; // 한 페이지에 보여줄 글 갯수
