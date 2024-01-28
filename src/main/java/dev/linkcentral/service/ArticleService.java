@@ -210,4 +210,16 @@ public class ArticleService {
         comment.updateContent(commentDTO.getContents());
         articleCommentRepository.save(comment);
     }
+
+    @Transactional
+    public void deleteComment(Long commentId, String currentNickname) {
+        ArticleComment comment = articleCommentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
+
+        if (!comment.getWriterNickname().equals(currentNickname)) {
+            throw new IllegalArgumentException("댓글 삭제 권한이 없습니다.");
+        }
+
+        articleCommentRepository.delete(comment);
+    }
 }
