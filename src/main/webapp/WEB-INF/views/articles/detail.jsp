@@ -1,6 +1,7 @@
 <%@ page import="dev.linkcentral.service.dto.request.ArticleRequestDTO" %>
 <%@ page import="dev.linkcentral.service.dto.request.ArticleCommentRequestDTO" %>
 <%@ page import="java.util.List" %>
+<%@ page import="dev.linkcentral.database.entity.Member" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -39,6 +40,55 @@
                 }
             });
         }
+
+        // 댓글 수정 버튼 클릭 시 호출될 함수
+        function editComment(commentId) {
+            // 수정할 댓글의 내용을 입력할 input 필드와 저장 버튼 생성
+            var commentContent = $("#comment-content-" + commentId).text();
+            var editHtml = "<input type='text' id='edit-content-" + commentId + "' value='" + commentContent + "'>";
+            editHtml += "<button onclick='submitCommentEdit(" + commentId + ")'>저장</button>";
+            $("#comment-row-" + commentId).html(editHtml);
+        }
+
+        // 새로운 댓글 추가 함수
+        const commentWrite = () => {
+            const contents = document.getElementById("contents").value;
+            const id = '<%= article.getId() %>';
+            $.ajax({
+                type: "post",
+                url: "/api/v1/article/comment/save",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    "contents": contents,
+                    "articleId": id
+                }),
+                success: function (res) {
+                    // 댓글 추가 후 목록 새로고침
+                    location.reload();
+                },
+                error: function (err) {
+                    console.log("요청실패", err);
+                }
+            });
+        }
+
+        // AJAX를 통해 수정된 댓글 내용을 서버에 전송
+        function submitCommentEdit(commentId) {
+            var newContent = $("#edit-content-" + commentId).val();
+            $.ajax({
+                url: "/api/v1/article/comment/update/" + commentId,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify({ contents: newContent }),
+                success: function() {
+                    // 성공 시 댓글 목록을 다시 로드
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    alert("댓글 수정 실패: " + error);
+                }
+            });
+        }
     </script>
 
     <script>
@@ -67,30 +117,8 @@
         });
     </script>
 
-    <script>
-        // 서버에 '좋아요' 상태를 변경해달라는 요청
-        function toggleLike() {
-            $.post("/api/v1/article/" + articleId + "/like", function () {
-                updateLikesCount();
-            }).fail(function () {
-                console.log("좋아요 변경 요청 실패");
-            });
-        }
-
-        function updateLikesCount() {
-            // 캐시 방지를 위해 타임스탬프를 URL에 추가
-            // 캐시된 데이터 대신 최신 데이터를 가져오기 위해 타임스탬프를 사용
-            var timestamp = new Date().getTime();
-            var query = "/api/v1/article/" + articleId + "/likes-count?_=" + timestamp;
-
-            $.get(query, function (likesCount) {
-                $('#likesCount').text(likesCount);
-            });
-        }
-
-        $(document).ready(function () {
-            updateLikesCount();
-        });
+    <script type="text/javascript">
+        var loggedInUserNickname = '<c:out value="${member.nickname}"/>'; // 로그인한 사용자의 닉네임
     </script>
 
     <script>
@@ -106,18 +134,21 @@
                     "articleId": id
                 }),
                 success: function (res) {
-                    console.log("요청성공", res);
                     let output = "<table>";
                     output += "<tr><th>댓글번호</th>";
                     output += "<th>작성자</th>";
                     output += "<th>내용</th>";
                     output += "<th>작성시간</th></tr>";
                     for (let i in res) {
-                        output += "<tr>";
+                        output += "<tr id='comment-row-" + res[i].id + "'>";
                         output += "<td>" + res[i].id + "</td>";
                         output += "<td>" + res[i].nickname + "</td>";
-                        output += "<td>" + res[i].contents + "</td>";
+                        output += "<td id='comment-content-" + res[i].id + "'>" + res[i].contents + "</td>";
                         output += "<td>" + res[i].createdAt + "</td>";
+
+                        if (loggedInUserNickname === res[i].nickname) {
+                            output += "<td><button onclick='editComment(" + res[i].id + ")'>수정</button></td>";
+                        }
                         output += "</tr>";
                     }
                     output += "</table>";
@@ -194,11 +225,17 @@
             if (commentList != null) {
                 for (ArticleCommentRequestDTO comment : commentList) {
         %>
-        <tr>
+        <tr id="comment-row-<%= comment.getId() %>">
             <td><%= comment.getId() %></td>
             <td><%= comment.getNickname() %></td>
-            <td><%= comment.getContents() %></td>
+            <td id="comment-content-<%= comment.getId() %>"><%= comment.getContents() %></td>
             <td><%= comment.getCreatedAt() %></td>
+            <% if (session.getAttribute("member") != null &&
+                    comment.getNickname().equals(((Member)session.getAttribute("member")).getNickname())) { %>
+            <td>
+                <button onclick="editComment(<%= comment.getId() %>)">수정</button>
+            </td>
+            <% } %>
         </tr>
         <%
                 }
@@ -206,6 +243,7 @@
         %>
     </table>
 </div>
+
 
 
 </body>
