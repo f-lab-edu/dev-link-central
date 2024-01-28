@@ -161,6 +161,25 @@
             });
         }
     </script>
+
+
+    <script>
+        function deleteComment(commentId) {
+            if(confirm("댓글을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/api/v1/article/comment/delete/" + commentId,
+                    type: "DELETE",
+                    success: function() {
+                        alert("댓글이 삭제되었습니다.");
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert("댓글 삭제 실패: " + error);
+                    }
+                });
+            }
+        }
+    </script>
 </head>
 <body>
 
@@ -234,6 +253,7 @@
                     comment.getNickname().equals(((Member)session.getAttribute("member")).getNickname())) { %>
             <td>
                 <button onclick="editComment(<%= comment.getId() %>)">수정</button>
+                <button onclick="deleteComment(<%= comment.getId() %>)">삭제</button>
             </td>
             <% } %>
         </tr>
