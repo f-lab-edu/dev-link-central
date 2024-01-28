@@ -148,4 +148,15 @@ public class ArticleController {
         articleService.updateComment(commentId, commentDTO, member.getNickname());
         return ResponseEntity.ok().build();
     }
+
+    @ResponseBody
+    @DeleteMapping("/comment/delete/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, HttpSession session) {
+        Member member = (Member) session.getAttribute("member");
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        articleService.deleteComment(commentId, member.getNickname());
+        return ResponseEntity.ok().build();
+    }
 }
