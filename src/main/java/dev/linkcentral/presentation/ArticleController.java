@@ -132,4 +132,17 @@ public class ArticleController {
         List<ArticleCommentRequestDTO> commentDTOList = articleService.commentFindAll(commentDTO.getArticleId());
         return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
     }
+
+    @ResponseBody
+    @PutMapping("/comment/update/{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId,
+                                           @RequestBody ArticleCommentRequestDTO commentDTO,
+                                           HttpSession session) {
+        Member member = (Member) session.getAttribute("member");
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        articleService.updateComment(commentId, commentDTO, member.getNickname());
+        return ResponseEntity.ok().build();
+    }
 }
