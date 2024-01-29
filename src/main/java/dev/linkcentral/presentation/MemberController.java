@@ -62,6 +62,7 @@ public class MemberController {
             return "/home";
         }
         session.setAttribute("member", member.get());
+        session.setAttribute("memberId", member.get().getId());
         member.map(Member::getName).ifPresent(memberName -> model.addAttribute("memberName", memberName));
         return "/members/login";
     }
