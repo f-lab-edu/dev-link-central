@@ -22,6 +22,12 @@ public class Profile extends AuditingFields {
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
+    public Profile(Member member, String bio, String imageUrl) {
+        this.member = member;
+        this.bio = bio;
+        this.imageUrl = imageUrl;
+    }
+
     protected Profile() {
     }
 
