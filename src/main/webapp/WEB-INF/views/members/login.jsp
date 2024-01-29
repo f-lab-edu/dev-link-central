@@ -49,7 +49,7 @@
             window.location.href = '/logout';
         }
 
-        function editProfile() {
+        function memberEditProfile() {
             window.location.href = '/edit-form';
         }
 
@@ -59,6 +59,15 @@
 
         function studyRecruitmentArticlePaging() {
             window.location.href = "/api/v1/article/paging";
+        }
+
+        function profileView() {
+            var memberId = '<%= session.getAttribute("memberId") %>';
+            if (memberId === null || memberId === '') {
+                alert('회원 ID가 존재하지 않습니다.');
+                return;
+            }
+            window.location.href = '/api/v1/profile/view?memberId=' + memberId;
         }
     </script>
 </head>
@@ -71,9 +80,11 @@
 
     <button onclick="logout()">로그아웃</button>
 
-    <button onclick="editProfile()">회원수정</button>
+    <button onclick="memberEditProfile()">회원수정</button>
 
     <button onclick="deletePage()">회원탈퇴</button>
+
+    <button onclick="profileView()">프로필 보기</button>
 
     <button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판 페이징 목록</button>
 </div>
