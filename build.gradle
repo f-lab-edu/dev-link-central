@@ -68,7 +68,12 @@ dependencies {
 
 	// validator
 	implementation 'org.hibernate.validator:hibernate-validator:6.2.1.Final'
+
+	// AWS (S3)
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
+
+
 
 
 tasks.named('bootBuildImage') {

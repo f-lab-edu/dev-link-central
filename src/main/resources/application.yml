@@ -37,6 +37,23 @@ spring:
           timeout: 5000
           starttls:
             enable: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+cloud:
+  aws:
+    s3:
+      bucket:
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key:
+      secret-key:
 
 logging:
   level:
@@ -45,4 +62,7 @@ logging:
         type:
           # 쿼리에 물음표로 출력되는 바인드 파라미터 출력
           descriptor.sql: trace
-#    org.hibernate.sql: debug
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
