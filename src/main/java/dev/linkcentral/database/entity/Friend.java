@@ -1,11 +1,15 @@
 package dev.linkcentral.database.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 public class Friend extends AuditingFields {
 
     @Id
@@ -20,6 +24,14 @@ public class Friend extends AuditingFields {
     @JoinColumn(name = "receiver_id")
     private Member receiver;
 
+    // 친구 요청 상태
+    @Enumerated(EnumType.STRING)
+    private FriendStatus status;
+
     protected Friend() {
+    }
+
+    public void updateFriendStatus(FriendStatus status) {
+        this.status = status;
     }
 }
