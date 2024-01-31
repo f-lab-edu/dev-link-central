@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -22,17 +23,27 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/view")
-    public String viewProfile(@RequestParam Long memberId, Model model, HttpSession session) {
-        // 특정 memberId에 대한 프로필 정보를 조회
-        ProfileRequestDTO profile = profileService.getProfile(memberId);
-        model.addAttribute("profile", profile);
-
-        // 세션에서 현재 로그인된 회원 정보 가져오기
-        Member member = (Member) session.getAttribute("member");
-        if (member != null) {
-            model.addAttribute("loginUserName", member.getName());
+    public String viewProfile(@RequestParam(value = "memberId", required = false) Long memberId, Model model, HttpSession session) {
+        if (memberId == null) {
+            model.addAttribute("error", "memberId가 제공되지 않았습니다.");
+            return "profile/view";
         }
-        return "profile/view";
+
+        try {
+            ProfileRequestDTO profile = profileService.getProfile(memberId);
+            model.addAttribute("profile", profile);
+
+            Member loggedInMember = (Member) session.getAttribute("member");
+            if (loggedInMember != null) {
+                model.addAttribute("loggedInUserId", loggedInMember.getId());
+                model.addAttribute("loggedInUserName", loggedInMember.getName());
+                model.addAttribute("viewedMemberId", memberId);
+            }
+            return "profile/view";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("error", "해당 memberId에 대한 프로필을 찾을 수 없습니다.");
+            return "error";
+        }
     }
 
     @GetMapping("/edit")

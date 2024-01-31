@@ -18,13 +18,14 @@ public class ArticleRequestDTO {
     private String title;
     private String content;
     private String writer;
+    private Long writerId;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private int views;
 
     // Entity -> DTO 변환
     public static ArticleRequestDTO toArticleDTO(Article article) {
-        return ArticleRequestDTO.builder()
+        ArticleRequestDTO dto = ArticleRequestDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
@@ -32,6 +33,13 @@ public class ArticleRequestDTO {
                 .createdAt(article.getCreatedAt())
                 .modifiedAt(article.getModifiedAt())
                 .build();
+
+        // Member 객체가 존재하는 경우에만 writerId 설정
+        if (article.getMember() != null) {
+            dto.setWriterId(article.getMember().getId());
+        }
+
+        return dto;
     }
 
     public ArticleRequestDTO(Long id, String title, String writer, LocalDateTime createdAt) {

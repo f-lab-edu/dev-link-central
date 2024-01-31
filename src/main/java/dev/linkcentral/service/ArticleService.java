@@ -48,36 +48,38 @@ public class ArticleService {
     }
 
     public ArticleRequestDTO findById(Long id, HttpSession session) {
-        Optional<Article> optionalArticleEntity = articleRepository.findById(id);
-        if (optionalArticleEntity.isPresent()) {
-            Article articleEntity = optionalArticleEntity.get();
+        return articleRepository.findById(id)
+                .map(articleEntity -> {
+                    // 세션에서 조회된 게시글 ID 확인
+                    Set<Long> viewedArticles = (Set<Long>) session.getAttribute("viewedArticles");
+                    if (viewedArticles == null) {
+                        viewedArticles = new HashSet<>();
+                    }
 
-            // 세션에서 조회된 게시글 ID 확인
-            Set<Long> viewedArticles = (Set<Long>) session.getAttribute("viewedArticles");
-            if (viewedArticles == null) {
-                viewedArticles = new HashSet<>();
-            }
+                    // 해당 게시글을 처음 조회하는 경우에만 조회수 증가
+                    if (!viewedArticles.contains(id)) {
+                        ArticleStatistic articleStatistic = articleStatisticRepository.findByArticle(articleEntity)
+                                .orElseGet(() -> new ArticleStatistic(articleEntity));
 
-            // 해당 게시글을 처음 조회하는 경우에만 조회수 증가
-            if (!viewedArticles.contains(id)) {
-                ArticleStatistic articleStatistic = articleStatisticRepository.findByArticle(articleEntity)
-                        .orElseGet(() -> new ArticleStatistic(articleEntity));
+                        articleStatistic.incrementViews();
+                        articleStatisticRepository.save(articleStatistic);
+                        viewedArticles.add(id);
+                        session.setAttribute("viewedArticles", viewedArticles);
+                    }
 
-                articleStatistic.incrementViews();
-                articleStatisticRepository.save(articleStatistic);
-                viewedArticles.add(id);
-                session.setAttribute("viewedArticles", viewedArticles);
-            }
+                    ArticleRequestDTO articleDTO = ArticleRequestDTO.toArticleDTO(articleEntity);
+                    // Member 객체가 null이 아닐 때만 writerId 설정
+                    if (articleEntity.getMember() != null) {
+                        articleDTO.setWriterId(articleEntity.getMember().getId());
+                    }
 
-            ArticleRequestDTO articleDTO = ArticleRequestDTO.toArticleDTO(articleEntity);
-
-            // 조회수 설정
-            articleStatisticRepository.findByArticle(articleEntity).ifPresent(
-                    articleStatistic -> articleDTO.setViews(articleStatistic.getViews())
-            );
-            return articleDTO;
-        }
-        return null;
+                    // 조회수 설정
+                    articleStatisticRepository.findByArticle(articleEntity).ifPresent(
+                            articleStatistic -> articleDTO.setViews(articleStatistic.getViews())
+                    );
+                    return articleDTO;
+                })
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다.")); // 게시글이 없는 경우 예외 발생
     }
 
     public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
