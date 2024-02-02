@@ -28,7 +28,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Member joinMember(MemberSaveRequestDTO memberDTO) {
         String nickname = memberDTO.getNickname();
         checkForDuplicate(memberDTO, nickname);
@@ -114,7 +114,7 @@ public class MemberService {
     /**
      * 이메일로 발송된 임시비밀번호로 해당 유저의 패스워드 변경
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public void updatePassword(String generatedPassword, String userEmail) {
         String passwordHash = passwordEncoder.encode(generatedPassword);
         Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
@@ -154,7 +154,7 @@ public class MemberService {
         mailSender.send(message);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void updateMember(MemberEditRequestDTO memberEditDTO) {
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
@@ -176,7 +176,7 @@ public class MemberService {
         return false;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public boolean deleteMember(String nickname, String password) {
         Member member = memberRepository.findByNicknameAndDeletedFalse(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("닉네임이 존재하지 않습니다."));

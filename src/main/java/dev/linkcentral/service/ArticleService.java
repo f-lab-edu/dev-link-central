@@ -24,7 +24,7 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void save(ArticleRequestDTO articleDTO) {
         Article articleEntity = Article.toSaveEntity(articleDTO);
         articleRepository.save(articleEntity);
@@ -48,14 +48,14 @@ public class ArticleService {
                 .orElseThrow(() -> new ArticleNotFoundException());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
         Article articleEntity = Article.toUpdateEntity(articleDTO);
         Article updateArticle = articleRepository.save(articleEntity);
         return findById(updateArticle.getId());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void delete(Long id) {
         articleRepository.deleteById(id);
     }
