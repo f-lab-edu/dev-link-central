@@ -1,5 +1,6 @@
 <%@ page import="dev.linkcentral.service.dto.request.ArticleRequestDTO" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,22 +15,22 @@
 
         function updateReq() {
             console.log("수정 요청");
-            location.href = "/article/update/" + articleId;
+            location.href = "/api/v1/article/update/" + articleId;
         }
 
         function listReq() {
             console.log("목록 요청");
-            location.href = "/article/";
+            location.href = "/api/v1/article/paging?page=${page}";
         }
 
         function deleteReq() {
             console.log("삭제 요청");
             $.ajax({
-                url: "/article/delete/" + articleId,
+                url: "/api/v1/article/delete/" + articleId,
                 type: "DELETE",
                 success: function (response) {
                     alert("게시글이 삭제되었습니다.");
-                    location.href = "/article/";
+                    location.href = "/api/v1/article/paging?page=${page}";
                 },
                 error: function(error) {
                     alert("삭제 중 오류가 발생했습니다: " + error);

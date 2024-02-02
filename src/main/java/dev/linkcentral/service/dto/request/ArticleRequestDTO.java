@@ -32,4 +32,11 @@ public class ArticleRequestDTO {
                 .modifiedAt(article.getModifiedAt())
                 .build();
     }
+
+    public ArticleRequestDTO(Long id, String title, String writer, LocalDateTime createdAt) {
+        this.id = id;
+        this.title = title;
+        this.writer = writer;
+        this.createdAt = createdAt;
+    }
 }

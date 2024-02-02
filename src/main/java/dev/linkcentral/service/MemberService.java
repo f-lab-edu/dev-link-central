@@ -28,6 +28,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
+    @Transactional
     public Member joinMember(MemberSaveRequestDTO memberDTO) {
         String nickname = memberDTO.getNickname();
         checkForDuplicate(memberDTO, nickname);
@@ -61,6 +62,7 @@ public class MemberService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Optional<Member> loginMember(String email, String password) {
         Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(email);
         if (member.isPresent()) {
@@ -73,6 +75,7 @@ public class MemberService {
         return Optional.empty();
     }
 
+    @Transactional(readOnly = true)
     public boolean isNicknameDuplicated(String nickname) {
         boolean isDuplicated = memberRepository.existsByNicknameAndDeletedFalse(nickname);
 
@@ -82,6 +85,7 @@ public class MemberService {
         return isDuplicated;
     }
 
+    @Transactional(readOnly = true)
     public boolean userEmailCheck(String userEmail, String userName) {
         Optional<Member> member = memberRepository.findByEmailAndNameAndDeletedFalse(userEmail, userName);
 
@@ -94,7 +98,6 @@ public class MemberService {
     /**
      * DTO에 사용자가 원하는 내용과 제목을 저장
      */
-    @Transactional
     public MemberMailRequestDTO createMailAndChangePassword(String userEmail, String userName) {
         MemberMailRequestDTO dto = new MemberMailRequestDTO();
         String generatedPassword = generateTempPassword();
@@ -151,6 +154,7 @@ public class MemberService {
         mailSender.send(message);
     }
 
+    @Transactional
     public void updateMember(MemberEditRequestDTO memberEditDTO) {
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
@@ -161,6 +165,7 @@ public class MemberService {
         memberEntity.updateNickname(memberEditDTO.getNickname());
     }
 
+    @Transactional(readOnly = true)
     public boolean checkPassword(String nickname, String password) {
         Optional<Member> member = memberRepository.findByNicknameAndDeletedFalse(nickname);
 

@@ -69,12 +69,8 @@
             window.location.href = "/api/v1/article/save";
         }
 
-        function studyRecruitmentArticleList() {
-            window.location.href = "/article/";
-        }
-
-        function studyRecruitmentArticleList() {
-            window.location.href = "/article/";
+        function studyRecruitmentArticlePaging() {
+            window.location.href = "/api/v1/article/paging";
         }
     </script>
 
@@ -100,14 +96,11 @@
 <p>처음이신가요? 회원가입은 여기서 해주세요!</p>
 <a class="signup-button" href="/members/join-form">회원가입하기</a>
 
-<!-- 비밀번호 찾기 버튼 추가 -->
 <a class="password-reset-button" href="/reset-password">비밀번호 찾기</a>
-
-
 
 <button onclick="studyRecruitmentArticle()">스터디 모집 게시판 글등록</button>
 
-<button onclick="studyRecruitmentArticleList()">스터디 모집 게시판 글목록</button>
+<button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판 페이징목록</button>
 
 
 </body>
