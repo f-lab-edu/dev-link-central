@@ -25,12 +25,6 @@
 
         function deleteReq() {
             console.log("삭제 요청");
-            location.href = "/api/v1/article/delete/" + articleId;
-        }
-
-        function listReq() {
-            console.log("목록 요청");
-            location.href = "/api/v1/article/";
             $.ajax({
                 url: "/api/v1/article/delete/" + articleId,
                 type: "DELETE",
@@ -42,7 +36,6 @@
                     alert("삭제 중 오류가 발생했습니다: " + error);
                 }
             });
-            location.href = "/api/v1/article/paging?page=${page}";
         }
     </script>
 </head>
