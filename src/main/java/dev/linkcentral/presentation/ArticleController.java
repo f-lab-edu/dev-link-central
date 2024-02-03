@@ -29,7 +29,7 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @GetMapping("/save")
-    public String saveForm() {
+    public String saveForm() { // TODO(jsp 페이지를 응답하는 controller와 response body 페이지를 응답하는 controller 분리) -> 권한 관리 용이
         return "/articles/save";
     }
 
@@ -66,7 +66,7 @@ public class ArticleController {
         return "/articles/detail";
     }
 
-    @GetMapping("/update/{id}")
+    @GetMapping("/update/{id}") // TODO(update -> update-form), RESTful API -> url에 리소스를 명시, 행위는 HTTP Method로 구분
     public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
         ArticleRequestDTO articleDTO = articleService.findById(id, session);
         model.addAttribute("articleUpdate", articleDTO);
@@ -74,14 +74,14 @@ public class ArticleController {
     }
 
     @ResponseBody
-    @PutMapping("/update")
+    @PutMapping("/update") // TODO(update -> update-form), RESTful API -> url에 리소스를 명시, 행위는 HTTP Method로 구분
     public ArticleEditResponseDTO update(@RequestBody ArticleUpdateRequestDTO articleDTO, Model model) {
         ArticleRequestDTO article = articleService.update(articleDTO);
         model.addAttribute("article", article);
         return new ArticleEditResponseDTO(HttpStatus.OK.value());
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/delete/{id}") // TODO(update -> update-form), RESTful API -> url에 리소스를 명시, 행위는 HTTP Method로 구분
     public String delete(@PathVariable Long id) {
         articleService.delete(id);
         return "redirect:/api/v1/article/";
@@ -106,6 +106,8 @@ public class ArticleController {
     @PostMapping("/{id}/like")
     public ResponseEntity<?> toggleLike(@PathVariable Long id, HttpSession session) {
         Member member = (Member) session.getAttribute("member");
+
+        // TODO: spring security를 활용(SpringSecurityContextHolder), 공통로직은 별도의 클래스의 메서드로 추출
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
@@ -119,9 +121,10 @@ public class ArticleController {
         return ResponseEntity.ok(likesCount);
     }
 
-    @PostMapping("/comment/save")
+    @PostMapping("/comment/save") // TODO(update -> update-form), RESTful API -> url에 리소스를 명시, 행위는 HTTP Method로 구분
     @ResponseBody
     public ResponseEntity<?> commentSave(@RequestBody ArticleCommentRequestDTO commentDTO, HttpSession session) {
+        // TODO: spring security를 활용(SpringSecurityContextHolder), 공통로직은 별도의 클래스의 메서드로 추출
         Member member = (Member) session.getAttribute("member");
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
@@ -134,10 +137,11 @@ public class ArticleController {
     }
 
     @ResponseBody
-    @PutMapping("/comment/update/{commentId}")
+    @PutMapping("/comment/update/{commentId}") // TODO(update -> update-form), RESTful API -> url에 리소스를 명시, 행위는 HTTP Method로 구분
     public ResponseEntity<?> updateComment(@PathVariable Long commentId,
                                            @RequestBody ArticleCommentRequestDTO commentDTO,
                                            HttpSession session) {
+        // TODO: spring security를 활용(SpringSecurityContextHolder), 공통로직은 별도의 클래스의 메서드로 추출
         Member member = (Member) session.getAttribute("member");
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
@@ -147,8 +151,9 @@ public class ArticleController {
     }
 
     @ResponseBody
-    @DeleteMapping("/comment/delete/{commentId}")
+    @DeleteMapping("/comment/delete/{commentId}") // TODO(update -> update-form), RESTful API -> url에 리소스를 명시, 행위는 HTTP Method로 구분
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId, HttpSession session) {
+        // TODO: spring security를 활용(SpringSecurityContextHolder), 공통로직은 별도의 클래스의 메서드로 추출
         Member member = (Member) session.getAttribute("member");
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");

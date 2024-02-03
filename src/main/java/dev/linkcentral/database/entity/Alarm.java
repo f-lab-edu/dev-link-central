@@ -20,7 +20,7 @@ public class Alarm extends AuditingFields {
     @Column(columnDefinition = "TEXT")
     private String message;
 
-    @Column(name = "target_id")
+    @Column(name = "target_id") // TODO(targetMemberId or targetId) -> member와 헷갈림
     private int targetMember;
 
     @Column(length = 100)

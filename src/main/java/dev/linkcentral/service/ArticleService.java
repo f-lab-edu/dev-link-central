@@ -21,6 +21,8 @@ import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
+// TODO: 메서드 네이밍 방식 통일 e.g. updateComment, commentSave
+// TODO: unit test 작성 -> unit test를 통해 각 메서드가 어떤 의도를 가지고 있는지 파악할 수 있도록
 
 @Service
 @Slf4j
@@ -32,11 +34,13 @@ public class ArticleService {
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleCommentRepository articleCommentRepository;
 
+    // TODO: Transactional
     public void save(ArticleRequestDTO articleDTO) {
         Article articleEntity = Article.toSaveEntity(articleDTO);
         articleRepository.save(articleEntity);
     }
 
+    // TODO: Transactional
     public List<ArticleRequestDTO> findAll() {
         List<Article> articleEntityList = articleRepository.findAll();
         List<ArticleRequestDTO> articleDTOList = new ArrayList<>();
@@ -47,6 +51,7 @@ public class ArticleService {
         return articleDTOList;
     }
 
+    // TODO: Transactional
     public ArticleRequestDTO findById(Long id, HttpSession session) {
         return articleRepository.findById(id)
                 .map(articleEntity -> {
@@ -82,6 +87,7 @@ public class ArticleService {
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다.")); // 게시글이 없는 경우 예외 발생
     }
 
+    // TODO: Transactional
     public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
         Article articleEntity = Article.toUpdateEntity(articleDTO);
         Article updateArticle = articleRepository.save(articleEntity);
@@ -94,10 +100,12 @@ public class ArticleService {
         return null;
     }
 
+    // TODO: Transactional
     public void delete(Long id) {
         articleRepository.deleteById(id);
     }
 
+    // TODO: Transactional
     public Page<ArticleRequestDTO> paging(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
         int pageLimit = 3; // 한 페이지에 보여줄 글 갯수
@@ -134,6 +142,7 @@ public class ArticleService {
     }
 
     // 특정 게시글의 "좋아요" 총 갯수를 반환
+    // TODO: Transactional
     public int getLikesCount(Long articleId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
