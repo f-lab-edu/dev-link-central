@@ -39,7 +39,7 @@ public class ArticleController {
             return "/home";
         }
 
-        log.info("info articleSaveDTO={}", articleDTO);
+        articleDTO.setWriter(member.getNickname());
         articleService.save(articleDTO);
         return "redirect:/api/v1/article/paging";
     }

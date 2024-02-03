@@ -7,7 +7,7 @@
 </head>
 <body>
 <form action="/api/v1/article/save" method="post">
-    writer: <input type="text" name="writer"> <br>
+    writer: <input type="text" name="writer" value="${member.nickname}" readonly> <br>
     title: <input type="text" name="title"> <br>
     content: <textarea name="content" cols="30" rows="10"></textarea> <br>
     <input type="submit" value="글작성">
