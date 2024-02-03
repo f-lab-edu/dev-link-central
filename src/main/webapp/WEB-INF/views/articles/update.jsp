@@ -6,7 +6,6 @@
   <meta charset="UTF-8">
   <title>update</title>
 
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -34,7 +33,7 @@
         contentType: "application/json",
         success: function(response) {
           console.log("글이 업데이트되었습니다.");
-          location.href = "/api/v1/article/";
+          location.href = "/api/v1/article/paging?page=${page}";
         },
         error: function(error) {
           console.error("글 업데이트 중 오류가 발생했습니다.");

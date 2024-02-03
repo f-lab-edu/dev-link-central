@@ -20,6 +20,20 @@ public class ArticleRequestDTO {
     private String writer;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private int views;
+
+    // Entity -> DTO 변환
+    public static ArticleRequestDTO toArticleDTOWithViews(Article article, int views) {
+        return ArticleRequestDTO.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .content(article.getContent())
+                .writer(article.getWriter())
+                .createdAt(article.getCreatedAt())
+                .modifiedAt(article.getModifiedAt())
+                .views(views)
+                .build();
+    }
 
     // Entity -> DTO 변환
     public static ArticleRequestDTO toArticleDTO(Article article) {

@@ -23,12 +23,15 @@ public class ArticleStatistic extends AuditingFields {
     protected ArticleStatistic() {
     }
 
+    public ArticleStatistic(Article article) {
+        this.article = article;
+    }
 
     public void updateLikes(int like) {
         this.likes = like;
     }
 
-    public void updateViews(int view) {
-        this.views = view;
+    public void incrementViews() {
+        this.views++;
     }
 }

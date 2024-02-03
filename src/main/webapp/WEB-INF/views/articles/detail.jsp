@@ -75,6 +75,10 @@
         <td><%= article.getContent() %>
         </td>
     </tr>
+    <tr>
+        <th>조회수</th>
+        <td><%= article.getViews() %></td>
+    </tr>
 </table>
 <button onclick="listReq()">목록</button>
 <button onclick="updateReq()">수정</button>
