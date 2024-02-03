@@ -1,8 +1,13 @@
 package dev.linkcentral.service;
 
-import dev.linkcentral.common.exception.ArticleNotFoundException;
+import dev.linkcentral.common.exception.CustomOptimisticLockException;
 import dev.linkcentral.database.entity.Article;
+import dev.linkcentral.database.entity.ArticleStatistic;
+import dev.linkcentral.database.entity.ArticleView;
+import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.ArticleRepository;
+import dev.linkcentral.database.repository.ArticleStatisticRepository;
+import dev.linkcentral.database.repository.ArticleViewRepository;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +19,27 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.OptimisticLockException;
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.HttpSession;
+import java.util.*;
+
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ArticleService {
 
+    private static int RETRY_COUNT = 0;
+    private static final int MAX_RETRIES = 3; // 최대 재시도 횟수를 정의
+
     private final ArticleRepository articleRepository;
+    private final ArticleStatisticRepository articleStatisticRepository;
+    private final ArticleViewRepository articleViewRepository;
 
     @Transactional
     public void save(ArticleRequestDTO articleDTO) {
@@ -41,18 +58,58 @@ public class ArticleService {
         return articleDTOList;
     }
 
-    @Transactional(readOnly = true)
-    public ArticleRequestDTO findById(Long id) {
+    @Transactional
+    public ArticleRequestDTO findById(Long id, Member member) {
         return articleRepository.findById(id)
-                .map(ArticleRequestDTO::toArticleDTO)
-                .orElseThrow(() -> new ArticleNotFoundException());
+                .map(article -> {
+                    viewCountUpdate(member, article);
+                    ArticleStatistic statistic = articleStatisticRepository.findByArticle(article)
+                            .orElse(new ArticleStatistic());
+                    return ArticleRequestDTO.toArticleDTOWithViews(article, statistic.getViews());
+                }).orElse(null);
+    }
+
+    @Transactional
+    public void viewCountUpdate(Member member, Article article) {
+        while (RETRY_COUNT < MAX_RETRIES) {
+            try {
+                if (isFirstView(member, article)) {
+                    ArticleStatistic articleStatistic = articleStatisticRepository.findByArticle(article)
+                            .orElseGet(() -> new ArticleStatistic(article));
+                    articleStatistic.incrementViews();
+                    articleStatisticRepository.save(articleStatistic);
+                }
+                break; // 성공적으로 완료시 루프 탈출
+            } catch (OptimisticLockException e) {
+                RETRY_COUNT++;
+                if (RETRY_COUNT >= MAX_RETRIES) {
+                    throw new CustomOptimisticLockException("조회수 업데이트를 위한 최대 재시도 횟수 초과");
+                }
+            }
+        }
+    }
+
+    private boolean isFirstView(Member member, Article article) {
+        boolean alreadyViewed = articleViewRepository.existsByMemberAndArticle(member, article);
+        if (alreadyViewed) {
+            return false; // 이미 조회한 경우
+        }
+        ArticleView articleView = new ArticleView(member, article);
+        articleViewRepository.save(articleView);
+        return true; // 처음 조회한 경우
     }
 
     @Transactional
     public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
         Article articleEntity = Article.toUpdateEntity(articleDTO);
         Article updateArticle = articleRepository.save(articleEntity);
-        return findById(updateArticle.getId());
+
+        Optional<Article> optionalArticleEntity = articleRepository.findById(updateArticle.getId());
+        if (optionalArticleEntity.isPresent()) {
+            Article article = optionalArticleEntity.get();
+            return ArticleRequestDTO.toArticleDTO(article);
+        }
+        return null;
     }
 
     @Transactional
