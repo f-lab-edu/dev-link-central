@@ -20,7 +20,10 @@ public class ArticleStatistic extends AuditingFields {
 
     private int views;
 
-    protected ArticleStatistic() {
+    @Version
+    private Long version; // 낙관적 락
+
+    public ArticleStatistic() {
     }
 
     public ArticleStatistic(Article article) {
