@@ -142,7 +142,7 @@
         <p class="profile-bio">소개: ${profile.bio}</p>
 
         <!-- 프로필 수정 버튼 -->
-        <a href="/api/v1/profile/edit?memberId=${profile.memberId}" class="profile-button edit-button">프로필 수정</a>
+        <a href="/api/v1/view/profile/edit?memberId=${profile.memberId}" class="profile-button edit-button">프로필 수정</a>
 
         <!-- 친구 관계에 따라 버튼 표시 -->
         <%-- 서버 측에서 친구 관계 상태 설정 필요 --%>

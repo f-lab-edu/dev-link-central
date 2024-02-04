@@ -21,8 +21,6 @@ import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
-// TODO: 메서드 네이밍 방식 통일 e.g. updateComment, commentSave
-// TODO: unit test 작성 -> unit test를 통해 각 메서드가 어떤 의도를 가지고 있는지 파악할 수 있도록
 
 @Service
 @Slf4j
@@ -34,14 +32,14 @@ public class ArticleService {
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleCommentRepository articleCommentRepository;
 
-    // TODO: Transactional
-    public void save(ArticleRequestDTO articleDTO) {
+    @Transactional
+    public void saveArticle(ArticleRequestDTO articleDTO) {
         Article articleEntity = Article.toSaveEntity(articleDTO);
         articleRepository.save(articleEntity);
     }
 
-    // TODO: Transactional
-    public List<ArticleRequestDTO> findAll() {
+    @Transactional(readOnly = true)
+    public List<ArticleRequestDTO> findAllArticles() {
         List<Article> articleEntityList = articleRepository.findAll();
         List<ArticleRequestDTO> articleDTOList = new ArrayList<>();
 
@@ -51,8 +49,8 @@ public class ArticleService {
         return articleDTOList;
     }
 
-    // TODO: Transactional
-    public ArticleRequestDTO findById(Long id, HttpSession session) {
+    @Transactional
+    public ArticleRequestDTO findArticleById(Long id, HttpSession session) {
         return articleRepository.findById(id)
                 .map(articleEntity -> {
                     // 세션에서 조회된 게시글 ID 확인
@@ -87,8 +85,8 @@ public class ArticleService {
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다.")); // 게시글이 없는 경우 예외 발생
     }
 
-    // TODO: Transactional
-    public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
+    @Transactional
+    public ArticleRequestDTO updateArticle(ArticleUpdateRequestDTO articleDTO) {
         Article articleEntity = Article.toUpdateEntity(articleDTO);
         Article updateArticle = articleRepository.save(articleEntity);
 
@@ -100,13 +98,13 @@ public class ArticleService {
         return null;
     }
 
-    // TODO: Transactional
-    public void delete(Long id) {
+    @Transactional
+    public void deleteArticle(Long id) {
         articleRepository.deleteById(id);
     }
 
-    // TODO: Transactional
-    public Page<ArticleRequestDTO> paging(Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<ArticleRequestDTO> paginateArticles(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
         int pageLimit = 3; // 한 페이지에 보여줄 글 갯수
 
@@ -122,7 +120,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public void toggleLike(Long articleId, Member member) {
+    public void toggleArticleLike(Long articleId, Member member) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
@@ -142,15 +140,15 @@ public class ArticleService {
     }
 
     // 특정 게시글의 "좋아요" 총 갯수를 반환
-    // TODO: Transactional
-    public int getLikesCount(Long articleId) {
+    @Transactional(readOnly = true)
+    public int countArticleLikes(Long articleId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         return (int) articleLikeRepository.countByArticle(article);
     }
 
     @Transactional
-    public Long commentSave(ArticleCommentRequestDTO commentDTO, String writerNickname) {
+    public Long saveComment(ArticleCommentRequestDTO commentDTO, String writerNickname) {
         Optional<Article> optionalArticle = articleRepository.findById(commentDTO.getArticleId());
         if (optionalArticle.isPresent()) {
             Article article = optionalArticle.get();
@@ -162,7 +160,8 @@ public class ArticleService {
         }
     }
 
-    public List<ArticleCommentRequestDTO> commentFindAll(Long articleId) {
+    @Transactional(readOnly = true)
+    public List<ArticleCommentRequestDTO> findAllComments(Long articleId) {
         Article article = articleRepository.findById(articleId).get();
         List<ArticleComment> commentList = articleCommentRepository.findAllByArticleOrderByIdDesc(article);
 

@@ -15,29 +15,28 @@ public class FriendController {
 
     @GetMapping("/getFriendshipId")
     public ResponseEntity<?> getFriendshipId(@RequestParam Long senderId, @RequestParam Long receiverId) {
-        Long friendId = friendService.getFriendshipId(senderId, receiverId);
+        Long friendId = friendService.findFriendshipId(senderId, receiverId);
         if (friendId != null) {
             return ResponseEntity.ok(friendId);
         }
         return ResponseEntity.notFound().build();
     }
 
-
     @PostMapping("/request")
     public ResponseEntity<?> sendFriendRequest(@RequestParam Long senderId, @RequestParam Long receiverId) {
-        friendService.sendFriendRequest(senderId, receiverId);
+        friendService.createFriendRequest(senderId, receiverId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/accept/{requestId}")
     public ResponseEntity<?> acceptFriendRequest(@PathVariable Long requestId) {
-        friendService.acceptFriendRequest(requestId);
+        friendService.updateFriendRequestStatus(requestId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{friendId}")
     public ResponseEntity<?> unfriend(@PathVariable Long friendId) {
-        friendService.unfriend(friendId);
+        friendService.deleteFriendship(friendId);
         return ResponseEntity.ok().build();
     }
 

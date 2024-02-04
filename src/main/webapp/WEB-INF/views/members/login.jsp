@@ -46,19 +46,19 @@
     <script>
         function logout() {
             alert("로그아웃 되었습니다.");
-            window.location.href = '/logout';
+            window.location.href = '/api/v1/view/member/logout';
         }
 
         function memberEditProfile() {
-            window.location.href = '/edit-form';
+            window.location.href = '/api/v1/view/member/edit-form';
         }
 
         function deletePage() {
-            window.location.href = "/api/delete-page";
+            window.location.href = "/api/v1/view/member/delete-page";
         }
 
         function studyRecruitmentArticlePaging() {
-            window.location.href = "/api/v1/article/paging";
+            window.location.href = "/api/v1/view/article/paging";
         }
 
         function profileView() {
@@ -67,7 +67,7 @@
                 alert('회원 ID가 존재하지 않습니다.');
                 return;
             }
-            window.location.href = '/api/v1/profile/view?memberId=' + memberId;
+            window.location.href = '/api/v1/view/profile/view?memberId=' + memberId;
         }
     </script>
 </head>

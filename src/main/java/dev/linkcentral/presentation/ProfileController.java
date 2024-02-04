@@ -22,38 +22,6 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    @GetMapping("/view")
-    public String viewProfile(@RequestParam(value = "memberId", required = false) Long memberId, Model model, HttpSession session) {
-        if (memberId == null) {
-            model.addAttribute("error", "memberId가 제공되지 않았습니다.");
-            return "profile/view";
-        }
-
-        try {
-            ProfileRequestDTO profile = profileService.getProfile(memberId);
-            model.addAttribute("profile", profile);
-
-            Member loggedInMember = (Member) session.getAttribute("member");
-            if (loggedInMember != null) {
-                model.addAttribute("loggedInUserId", loggedInMember.getId());
-                model.addAttribute("loggedInUserName", loggedInMember.getName());
-                model.addAttribute("viewedMemberId", memberId);
-            }
-            return "profile/view";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("error", "해당 memberId에 대한 프로필을 찾을 수 없습니다.");
-            return "error";
-        }
-    }
-
-    @GetMapping("/edit")
-    public String profileEditForm(@RequestParam Long memberId, Model model) {
-        // 프로필 수정 폼에 필요한 데이터를 가져옴
-        ProfileRequestDTO profile = profileService.getProfile(memberId);
-        model.addAttribute("profile", profile);
-        return "profile/edit";
-    }
-
     @PostMapping("/update")
     public String updateProfile(@ModelAttribute ProfileRequestDTO profileDTO,
                                 @RequestParam(value = "image", required = false) MultipartFile image,
@@ -66,6 +34,6 @@ public class ProfileController {
             log.error("프로필 업데이트 중 오류 발생", e);
             redirectAttributes.addFlashAttribute("message", "프로필 업데이트에 실패했습니다.");
         }
-        return "redirect:/api/v1/profile/view?memberId=" + profileDTO.getMemberId();
+        return "redirect:/api/v1/view/profile/view?memberId=" + profileDTO.getMemberId();
     }
 }

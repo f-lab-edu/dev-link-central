@@ -18,17 +18,17 @@
 
         function updateReq() {
             console.log("수정 요청");
-            location.href = "/api/v1/article/update/" + articleId;
+            location.href = "/api/v1/view/article/update-form/" + articleId;
         }
 
         function deleteReq() {
             console.log("삭제 요청");
-            location.href = "/api/v1/article/delete/" + articleId;
+            location.href = "/api/v1/view/article/delete-form/" + articleId;
         }
 
         function listReq() {
             console.log("목록 요청");
-            location.href = "/api/v1/article/paging?page=${page}";
+            location.href = "/api/v1/view/article/paging?page=${page}";
         }
 
         // 댓글 수정 버튼 클릭 시 호출될 함수
@@ -46,7 +46,7 @@
             const id = '<%= article.getId() %>';
             $.ajax({
                 type: "post",
-                url: "/api/v1/article/comment/save",
+                url: "/api/v1/article/comment",
                 contentType: "application/json",
                 data: JSON.stringify({
                     "contents": contents,
@@ -66,7 +66,7 @@
         function submitCommentEdit(commentId) {
             var newContent = $("#edit-content-" + commentId).val();
             $.ajax({
-                url: "/api/v1/article/comment/update/" + commentId,
+                url: "/api/v1/article/comment/" + commentId,
                 type: "PUT",
                 contentType: "application/json",
                 data: JSON.stringify({ contents: newContent }),
@@ -117,7 +117,7 @@
             const id = '<%= article.getId() %>';
             $.ajax({
                 type: "post",
-                url: "/api/v1/article/comment/save",
+                url: "/api/v1/article/comment",
                 contentType: "application/json",
                 data: JSON.stringify({
                     "contents": contents,
@@ -157,7 +157,7 @@
         function deleteComment(commentId) {
             if(confirm("댓글을 삭제하시겠습니까?")) {
                 $.ajax({
-                    url: "/api/v1/article/comment/delete/" + commentId,
+                    url: "/api/v1/article/comment/" + commentId,
                     type: "DELETE",
                     success: function() {
                         alert("댓글이 삭제되었습니다.");

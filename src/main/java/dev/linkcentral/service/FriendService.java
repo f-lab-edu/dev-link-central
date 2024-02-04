@@ -19,7 +19,7 @@ public class FriendService {
     private final FriendRepository friendRepository;
 
     @Transactional
-    public Long getFriendshipId(Long senderId, Long receiverId) {
+    public Long findFriendshipId(Long senderId, Long receiverId) {
         Member sender = memberRepository.findById(senderId)
                 .orElseThrow(() -> new EntityNotFoundException("요청자 ID를 찾을 수 없습니다."));
 
@@ -32,7 +32,7 @@ public class FriendService {
     }
 
     @Transactional
-    public void sendFriendRequest(Long senderId, Long receiverId) {
+    public void createFriendRequest(Long senderId, Long receiverId) {
         Member sender = memberRepository.findById(senderId)
                 .orElseThrow(() -> new EntityNotFoundException("보낸 사람을 찾을 수 없음"));
 
@@ -49,7 +49,7 @@ public class FriendService {
     }
 
     @Transactional
-    public boolean areFriends(Long senderId, Long receiverId) {
+    public boolean checkFriendship(Long senderId, Long receiverId) {
         Member sender = memberRepository.findById(senderId).orElse(null);
         Member receiver = memberRepository.findById(receiverId).orElse(null);
         if (sender == null || receiver == null) {
@@ -59,7 +59,7 @@ public class FriendService {
     }
 
     @Transactional
-    public void acceptFriendRequest(Long requestId) {
+    public void updateFriendRequestStatus(Long requestId) {
         Friend friendRequest = friendRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("친구 요청을 찾을 수 없습니다."));
 
@@ -68,7 +68,7 @@ public class FriendService {
     }
 
     @Transactional
-    public void unfriend(Long friendId) {
+    public void deleteFriendship(Long friendId) {
         Friend friendship = friendRepository.findById(friendId)
                 .orElseThrow(() -> new EntityNotFoundException("친구 관계를 찾을 수 없습니다."));
 

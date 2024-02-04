@@ -76,7 +76,7 @@
 </head>
 <body>
 <div class="container">
-    <form action="/delete" method="post">
+    <form action="/api/v1/member/delete" method="post">
         <label class="form-label mt-4">회원 탈퇴</label>
 
         <c:choose>

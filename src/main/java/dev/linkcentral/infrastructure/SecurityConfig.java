@@ -8,7 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-// TODO: JWT 토큰 인증 방식 (예전 PR에 있었던 것 같은데...?)
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

@@ -77,7 +77,7 @@
                 if (nickname) {
                     $.ajax({
                         type: "GET",
-                        url: "/members/" + nickname + "/exists",
+                        url: "/api/v1/member/" + nickname + "/exists",
                         success: function (result) {
                             if (result) {
                                 // result가 true인 경우 -> 닉네임이 DB에 있다
@@ -139,7 +139,7 @@
 <body>
 
 <div class="container">
-    <form action="/new" method="post" onsubmit="return validatePassword()">
+    <form action="/api/v1/member/new" method="post" onsubmit="return validatePassword()">
         <div class="form_group">
             <label for="name">이름</label>
             <input type="text" id="name" name="name" placeholder="이름을 입력하세요.">
