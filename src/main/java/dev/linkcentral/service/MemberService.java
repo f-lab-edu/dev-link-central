@@ -28,20 +28,21 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
 
-    public Member joinMember(MemberSaveRequestDTO memberDTO) {
+    @Transactional
+    public Member registerMember(MemberSaveRequestDTO memberDTO) {
         String nickname = memberDTO.getNickname();
-        checkForDuplicate(memberDTO, nickname);
+        validateForDuplicates(memberDTO, nickname);
 
         try {
             memberDTO.updateRole("USER");
-            Member memberEntity = getMemberEntity(memberDTO);
+            Member memberEntity = createMemberFromDTO(memberDTO);
             return memberRepository.save(memberEntity);
         } catch (Exception e) {
             throw new MemberRegistrationException("회원 등록 중 오류가 발생했습니다.", e);
         }
     }
 
-    private Member getMemberEntity(MemberSaveRequestDTO memberDTO) {
+    private Member createMemberFromDTO(MemberSaveRequestDTO memberDTO) {
         return Member.builder()
                 .name(memberDTO.getName())
                 .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
@@ -51,7 +52,7 @@ public class MemberService {
                 .build();
     }
 
-    private void checkForDuplicate(MemberSaveRequestDTO memberDTO, String nickname) {
+    private void validateForDuplicates(MemberSaveRequestDTO memberDTO, String nickname) {
         if (memberRepository.existsByNicknameAndDeletedFalse(nickname)) {
             throw new DuplicateNicknameException("닉네임이 이미 사용 중입니다.");
         }
@@ -61,7 +62,8 @@ public class MemberService {
         }
     }
 
-    public Optional<Member> loginMember(String email, String password) {
+    @Transactional(readOnly = true)
+    public Optional<Member> authenticateMember(String email, String password) {
         Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(email);
         if (member.isPresent()) {
             String passwordHash = member.get().getPasswordHash();
@@ -73,7 +75,8 @@ public class MemberService {
         return Optional.empty();
     }
 
-    public boolean isNicknameDuplicated(String nickname) {
+    @Transactional(readOnly = true)
+    public boolean validateNicknameDuplication(String nickname) {
         boolean isDuplicated = memberRepository.existsByNicknameAndDeletedFalse(nickname);
 
         if (isDuplicated) {
@@ -82,7 +85,8 @@ public class MemberService {
         return isDuplicated;
     }
 
-    public boolean userEmailCheck(String userEmail, String userName) {
+    @Transactional(readOnly = true)
+    public boolean validateUserEmail(String userEmail, String userName) {
         Optional<Member> member = memberRepository.findByEmailAndNameAndDeletedFalse(userEmail, userName);
 
         if (!member.isPresent()) {
@@ -94,17 +98,16 @@ public class MemberService {
     /**
      * DTO에 사용자가 원하는 내용과 제목을 저장
      */
-    @Transactional
-    public MemberMailRequestDTO createMailAndChangePassword(String userEmail, String userName) {
+    public MemberMailRequestDTO createMailForPasswordReset(String userEmail, String userName) {
         MemberMailRequestDTO dto = new MemberMailRequestDTO();
-        String generatedPassword = generateTempPassword();
+        String generatedPassword = createTemporaryPassword();
 
         dto.setAddress(userEmail);
         dto.setTitle(userName + "님의 HOTTHINK 임시비밀번호 안내 이메일 입니다.");
         dto.setMessage("안녕하세요. HOTTHINK 임시비밀번호 안내 관련 이메일 입니다."
                 + "[" + userName + "]" + "님의 임시 비밀번호는 " + generatedPassword + " 입니다.");
 
-        updatePassword(generatedPassword, userEmail);
+        resetPassword(generatedPassword, userEmail);
         return dto;
     }
 
@@ -112,7 +115,7 @@ public class MemberService {
      * 이메일로 발송된 임시비밀번호로 해당 유저의 패스워드 변경
      */
     @Transactional
-    public void updatePassword(String generatedPassword, String userEmail) {
+    public void resetPassword(String generatedPassword, String userEmail) {
         String passwordHash = passwordEncoder.encode(generatedPassword);
         Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
 
@@ -125,7 +128,7 @@ public class MemberService {
     /**
      * 10자리의 랜덤난수를 생성하는 메소드
      */
-    public String generateTempPassword() {
+    public String createTemporaryPassword() {
         char[] charSet = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
                 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
         StringBuilder str = new StringBuilder();
@@ -141,7 +144,7 @@ public class MemberService {
     /**
      * 메일 보내기
      */
-    public void mailSend(MemberMailRequestDTO mailDto) {
+    public void sendMail(MemberMailRequestDTO mailDto) {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(mailDto.getAddress());    // 받는사람 주소
@@ -151,7 +154,8 @@ public class MemberService {
         mailSender.send(message);
     }
 
-    public void updateMember(MemberEditRequestDTO memberEditDTO) {
+    @Transactional
+    public void editMember(MemberEditRequestDTO memberEditDTO) {
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
 
@@ -161,7 +165,8 @@ public class MemberService {
         memberEntity.updateNickname(memberEditDTO.getNickname());
     }
 
-    public boolean checkPassword(String nickname, String password) {
+    @Transactional(readOnly = true)
+    public boolean validatePassword(String nickname, String password) {
         Optional<Member> member = memberRepository.findByNicknameAndDeletedFalse(nickname);
 
         if (member.isPresent()) {
@@ -172,7 +177,7 @@ public class MemberService {
     }
 
     @Transactional
-    public boolean deleteMember(String nickname, String password) {
+    public boolean removeMember(String nickname, String password) {
         Member member = memberRepository.findByNicknameAndDeletedFalse(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("닉네임이 존재하지 않습니다."));
 
