@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/articles/save").authenticated() // 게시글 작성 경로에 대한 접근은 인증된 사용자에게만 허용
+                .antMatchers("/api/v1/article/**").authenticated() // 게시글 작성 경로에 대한 접근은 인증된 사용자에게만 허용
                 .and()
                 .logout()                         // 로그아웃 설정 추가
                     .logoutSuccessUrl("/")        // 로그아웃 성공 시 리다이렉트할 URL
