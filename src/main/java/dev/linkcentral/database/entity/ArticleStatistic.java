@@ -38,6 +38,12 @@ public class ArticleStatistic extends AuditingFields {
         this.likes++;
     }
 
+    public ArticleStatistic(Article article, int likes, int views) {
+        this.article = article;
+        this.likes = likes;
+        this.views = views;
+    }
+
     public void decrementLikes() {
         if (this.likes > 0) {
             this.likes--;
