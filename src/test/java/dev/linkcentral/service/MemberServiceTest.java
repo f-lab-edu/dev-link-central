@@ -54,9 +54,9 @@ public class MemberServiceTest {
         return memberDTO;
     }
 
-    @DisplayName("회원 가입이 진행되고, DB에 데이터가 제대로 저장되었는지 검사한다.")
+    @DisplayName("회원 가입시 데이터베이스 저장 검증")
     @Test
-    void verify_user_data_saved_on_sign_up() {
+    void save_member_and_verify_database() {
         // given
         MemberSaveRequestDTO memberDTO = createTestMemberSaveDTO();
         Member mockMember = createTestMember();
@@ -72,9 +72,9 @@ public class MemberServiceTest {
         assertEquals(mockMember.getNickname(), savedMember.getNickname());
     }
 
-    @DisplayName("회원 가입 시, 사용자(=USER)로 등급으로 등록되는지 검사한다.")
+    @DisplayName("회원 가입시 사용자 등급 USER로 설정 검증")
     @Test
-    void verify_user_grade_on_sign_up() {
+    void sign_up_with_user_role() {
         // given
         MemberSaveRequestDTO memberDTO = createTestMemberSaveDTO();
         Member savedMember = createTestMember();
@@ -87,7 +87,7 @@ public class MemberServiceTest {
         assertEquals("USER", result.getRole());
     }
 
-    @DisplayName("회원 가입 시, 중복된 이메일을 입력하면 예외 처리한다.")
+    @DisplayName("회원 가입 시, 이메일 중복시 예외 발생 검증")
     @Test
     void register_with_duplicate_email_exception() {
         // given
@@ -102,7 +102,7 @@ public class MemberServiceTest {
         });
     }
 
-    @DisplayName("회원 가입 시, 중복된 닉네임을 입력하면 예외 처리한다.")
+    @DisplayName("회원 가입 시, 닉네임 중복시 예외 발생 검증")
     @Test
     void register_with_duplicate_nickname_exception() {
         // given
@@ -117,9 +117,9 @@ public class MemberServiceTest {
         });
     }
 
-    @DisplayName("로그인이 성공적으로 되는지 검사하는 테스트")
+    @DisplayName("로그인 성공 검증")
     @Test
-    void login_success() {
+    void verify_login_success() {
         // given
         String email = "test@naver.com";
         String password = "1234";
@@ -139,9 +139,9 @@ public class MemberServiceTest {
         assertEquals(email, loginMember.get().getEmail());
     }
 
-    @DisplayName("암호화된 패스워드와 평문 패스워드가 일치한지 검사한다.")
+    @DisplayName("암호화된 패스워드와 평문 패스워드가 일치 검증")
     @Test
-    void check_password_encryption_match() {
+    void verify_password_encryption_match() {
         // given
         String plainPassword = "1234";
         String encodedPassword = passwordEncoder.encode(plainPassword);
@@ -153,9 +153,9 @@ public class MemberServiceTest {
         assertTrue(passwordEncoder.matches(plainPassword, encodedPassword));
     }
 
-    @DisplayName("DB에 중복된 닉네임이 있다면, 예외 처리한다.")
+    @DisplayName("닉네임 중복시 예외 발생 검증")
     @Test
-    void check_duplicate_nickname_exception() {
+    void user_duplicate_nickname_exception() {
         // given
         String nickname = "apple";
 
@@ -168,9 +168,9 @@ public class MemberServiceTest {
         });
     }
 
-    @DisplayName("[비밀번호 찾기] DB에 저장된 유저의 이름과 이메일이 일치하지 않을 경우 예외 처리한다.")
+    @DisplayName("이메일과 이름이 불일치시 예외 발생 검증")
     @Test
-    void user_name_email_mismatch_exception1() {
+    void username_email_mismatch_exception() {
         // given
         String inputEmail = "alstjr@naver.com";
         String inputName = "heedo";
@@ -184,9 +184,9 @@ public class MemberServiceTest {
         });
     }
 
-    @DisplayName("회원 정보를 수정하고 DB에 저장된 데이터를 검사한다.")
+    @DisplayName("회원 정보 수정 후 데이터베이스 저장 검증")
     @Test
-    void modify_member_information() {
+    void modify_member_information_and_verify() {
         // given
         Member originalMember = createTestMember();
         MemberEditRequestDTO memberEditDTO = new MemberEditRequestDTO(
@@ -211,9 +211,9 @@ public class MemberServiceTest {
         assertEquals("encodedNewPassword", originalMember.getPasswordHash());
     }
 
-    @DisplayName("로그인 되어 있는 패스워드와 현재 사용중인 유저의 비밀번호를 입력받아 일치하는지 검사한다.")
+    @DisplayName("로그인 되어 있는 유저 패스워드와 입력받은 비밀번호 일치 여부 검증")
     @Test
-    void check_password_match() {
+    void verify_current_password_match() {
         // given
         String nickname = "apple";
         String correctPassword = "1234";
@@ -238,9 +238,9 @@ public class MemberServiceTest {
         assertFalse(matchIncorrectPassword);
     }
 
-    @DisplayName("유저를 삭제할 경우, 소프트 삭제로 이루어졌는지 검사한다.")
+    @DisplayName("유저 소프트 삭제 검증")
     @Test
-    void user_soft_delete_check() {
+    void verify_user_soft_deletion() {
         // given
         String nickname = "apple";
         String correctPassword = "1234";
