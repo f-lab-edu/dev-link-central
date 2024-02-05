@@ -63,7 +63,7 @@ class MemberServiceTest {
         MemberSaveRequestDTO memberDTO = createTestMemberSaveRequestDTO();
 
         // when
-        Member savedMember = memberService.joinMember(memberDTO);
+        Member savedMember = memberService.registerMember(memberDTO);
         Member registeredMember = memberRepository.findById(savedMember.getId()).orElse(null);
 
         // then
@@ -80,7 +80,7 @@ class MemberServiceTest {
         MemberSaveRequestDTO memberDTO = createTestMemberSaveRequestDTO();
 
         // when
-        Member savedMember = memberService.joinMember(memberDTO);
+        Member savedMember = memberService.registerMember(memberDTO);
 
         // then
         assertEquals("USER", savedMember.getRole());
@@ -102,7 +102,7 @@ class MemberServiceTest {
 
         // when & then
         assertThrows(DuplicateEmailException.class, () -> {
-            memberService.joinMember(newMemberDTO);
+            memberService.registerMember(newMemberDTO);
         });
     }
 
@@ -121,7 +121,7 @@ class MemberServiceTest {
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> {
-            memberService.joinMember(newMemberDTO);
+            memberService.registerMember(newMemberDTO);
         });
     }
 
@@ -136,7 +136,7 @@ class MemberServiceTest {
         memberRepository.save(member);
 
         // when
-        Optional<Member> loggedInMember = memberService.loginMember(inputEmail, inputPassword);
+        Optional<Member> loggedInMember = memberService.authenticateMember(inputEmail, inputPassword);
 
         // then
         assertTrue(loggedInMember.isPresent());
@@ -165,7 +165,7 @@ class MemberServiceTest {
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> {
-            memberService.isNicknameDuplicated(nickname);
+            memberService.validateNicknameDuplication(nickname);
         });
     }
 
@@ -181,7 +181,7 @@ class MemberServiceTest {
 
         // when & then
         assertThrows(MemberEmailNotFoundException.class, () -> {
-            memberService.userEmailCheck(inputEmail, inputName);
+            memberService.validateUserEmail(inputEmail, inputName);
         });
     }
 
@@ -198,7 +198,7 @@ class MemberServiceTest {
                 "heedo",
                 "7777",
                 "mango");
-        memberService.updateMember(editDTO);
+        memberService.editMember(editDTO);
 
         // then
         Member updatedMember = memberRepository.findById(originalMember.getId())
@@ -220,7 +220,7 @@ class MemberServiceTest {
         memberRepository.save(originalMember);
 
         // when & then
-        assertFalse(memberService.checkPassword(inputNickname, inputPassword));
+        assertFalse(memberService.validatePassword(inputNickname, inputPassword));
     }
 
     @DisplayName("유저를 삭제할 경우, 소프트 삭제로 이루어졌는지 검사한다.")
@@ -233,7 +233,7 @@ class MemberServiceTest {
         memberRepository.saveAndFlush(testMember);
 
         // When
-        memberService.deleteMember(testMember.getNickname(), inputPassword);
+        memberService.removeMember(testMember.getNickname(), inputPassword);
 
         // 캐시 초기화
         // 캐시된 데이터 대신 데이터베이스에서 최신 데이터를 가져오기 위해.
