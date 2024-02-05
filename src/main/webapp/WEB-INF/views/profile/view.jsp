@@ -131,27 +131,27 @@
 </head>
 <body>
 
-    <div class="profile-container">
-        <h1>프로필</h1>
-        <c:if test="${not empty loggedInUserName}">
-            <h2>사용자 이름: ${loggedInUserName}</h2>
-        </c:if>
+<div class="profile-container">
+    <h1>프로필</h1>
+    <c:if test="${not empty loggedInUserName}">
+        <h2>사용자 이름: ${loggedInUserName}</h2>
+    </c:if>
 
-        <!-- 조건부 이미지 표시 -->
-        <img class="profile-image" src="${not empty profile.imageUrl ? profile.imageUrl : '/images/default.png'}" alt="Profile Image">
-        <p class="profile-bio">소개: ${profile.bio}</p>
+    <!-- 조건부 이미지 표시 -->
+    <img class="profile-image" src="${not empty profile.imageUrl ? profile.imageUrl : '/images/default.png'}" alt="Profile Image">
+    <p class="profile-bio">소개: ${profile.bio}</p>
 
-        <!-- 프로필 수정 버튼 -->
-        <a href="/api/v1/profile/edit?memberId=${profile.memberId}" class="profile-button edit-button">프로필 수정</a>
+    <!-- 프로필 수정 버튼 -->
+    <a href="/api/v1/view/profile/edit?memberId=${profile.memberId}" class="profile-button edit-button">프로필 수정</a>
 
-        <!-- 친구 관계에 따라 버튼 표시 -->
-        <%-- 서버 측에서 친구 관계 상태 설정 필요 --%>
-        <button id="sendFriendRequestBtn" class="profile-button">친구 요청</button>
-        <button id="unfriendBtn" class="profile-button">친구 끊기</button>
-    </div>
+    <!-- 친구 관계에 따라 버튼 표시 -->
+    <%-- 서버 측에서 친구 관계 상태 설정 필요 --%>
+    <button id="sendFriendRequestBtn" class="profile-button">친구 요청</button>
+    <button id="unfriendBtn" class="profile-button">친구 끊기</button>
+</div>
 
-    <!-- 이전 화면으로 돌아가기 버튼 -->
-    <button onclick="goBack()" class="profile-button">이전 화면으로</button>
+<!-- 이전 화면으로 돌아가기 버튼 -->
+<button onclick="goBack()" class="profile-button">이전 화면으로</button>
 
 </body>
 </html>

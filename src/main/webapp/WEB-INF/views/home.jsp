@@ -66,11 +66,11 @@
 
     <script>
         function studyRecruitmentArticleList() {
-            window.location.href = "/api/v1/article/";
+            window.location.href = "/api/v1/view/article/";
         }
 
         function studyRecruitmentArticlePaging() {
-            window.location.href = "/api/v1/article/paging";
+            window.location.href = "/api/v1/view/article/paging";
         }
     </script>
 
@@ -79,7 +79,7 @@
 <h2 style="color: #333;">안녕하세요!</h2>
 <p>로그인을 해주세요 :)</p>
 
-<form action="/login" method="post">
+<form action="/api/v1/member/login" method="post">
     <div>
         <label for="email">이메일: </label>
         <input id="email" name="email" type="email" required>
@@ -94,10 +94,10 @@
 <p>${loginMessage}</p>
 
 <p>처음이신가요? 회원가입은 여기서 해주세요!</p>
-<a class="signup-button" href="/members/join-form">회원가입하기</a>
+<a class="signup-button" href="/api/v1/view/member/join-form">회원가입하기</a>
 
 <!-- 비밀번호 찾기 버튼 추가 -->
-<a class="password-reset-button" href="/reset-password">비밀번호 찾기</a>
+<a class="password-reset-button" href="/api/v1/view/member/reset-password">비밀번호 찾기</a>
 
 <button onclick="studyRecruitmentArticleList()">스터디 모집 게시판 글목록</button>
 
