@@ -2,18 +2,8 @@ package dev.linkcentral.service;
 
 import dev.linkcentral.common.exception.CustomOptimisticLockException;
 import dev.linkcentral.database.entity.*;
-import dev.linkcentral.database.repository.ArticleLikeRepository;
-import dev.linkcentral.database.entity.Article;
-import dev.linkcentral.database.entity.ArticleLike;
-import dev.linkcentral.database.entity.ArticleStatistic;
-import dev.linkcentral.database.entity.ArticleView;
-import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.database.repository.ArticleLikeRepository;
-import dev.linkcentral.database.entity.ArticleStatistic;
-import dev.linkcentral.database.repository.ArticleRepository;
-import dev.linkcentral.database.repository.ArticleStatisticRepository;
+import dev.linkcentral.database.repository.*;
 import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
-import dev.linkcentral.database.repository.ArticleViewRepository;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpSession;
-import java.util.*;
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.List;
