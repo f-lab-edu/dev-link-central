@@ -6,16 +6,24 @@ import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
+import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +35,20 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    @Transactional
+    public JwtTokenDTO signIn(String username, String password) {
+        Member member = memberRepository.findByEmailAndDeletedFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
+
+        if (!passwordEncoder.matches(password, member.getPasswordHash())) {
+            throw new IllegalArgumentException("아이디 혹은 비밀번호가 일치하지 않습니다.");
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
+        return jwtTokenProvider.generateToken(authentication);
+    }
 
     @Transactional
     public Member joinMember(MemberSaveRequestDTO memberDTO) {
@@ -34,21 +56,22 @@ public class MemberService {
         checkForDuplicate(memberDTO, nickname);
 
         try {
-            memberDTO.updateRole("USER");
-            Member memberEntity = getMemberEntity(memberDTO);
+            List<String> roles = new ArrayList<>();
+            roles.add("USER");  // USER 권한 부여
+            Member memberEntity = getMemberEntity(memberDTO, roles);
             return memberRepository.save(memberEntity);
         } catch (Exception e) {
             throw new MemberRegistrationException("회원 등록 중 오류가 발생했습니다.", e);
         }
     }
 
-    private Member getMemberEntity(MemberSaveRequestDTO memberDTO) {
+    private Member getMemberEntity(MemberSaveRequestDTO memberDTO, List<String> roles) {
         return Member.builder()
                 .name(memberDTO.getName())
                 .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
                 .email(memberDTO.getEmail())
                 .nickname(memberDTO.getNickname())
-                .role(memberDTO.getRole())
+                .roles(roles) // 권한 설정 추가
                 .build();
     }
 

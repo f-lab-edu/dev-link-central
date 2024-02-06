@@ -3,27 +3,34 @@ package dev.linkcentral.presentation;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.service.MemberService;
+import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.request.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
-import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.response.MemberEditResponseDTO;
 import dev.linkcentral.service.dto.response.MemberPasswordResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Controller
+@RequestMapping("/api/v1/member")
 public class MemberController {
 
     private final MemberService memberService;
@@ -33,17 +40,17 @@ public class MemberController {
         return "/home";
     }
 
-    @GetMapping("/members/join-form")
+    @GetMapping("/join-form")
     public String joinMember() {
         return "/members/join";
     }
 
     @ResponseBody
-    @PostMapping("/new")
-    public ResponseEntity<String> createMember(@ModelAttribute MemberSaveRequestDTO memberDTO) {
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@ModelAttribute MemberSaveRequestDTO memberDTO) {
         try {
             Member member = memberService.joinMember(memberDTO);
-            return ResponseEntity.status(HttpStatus.FOUND).header("Location", "/").build();
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (DuplicateNicknameException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("닉네임이 이미 사용 중입니다.");
         } catch (MemberRegistrationException e) {
@@ -54,30 +61,43 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute MemberLoginRequestDTO MemberLoginDTO, HttpSession session, Model model) {
-        Optional<Member> member = memberService.loginMember(MemberLoginDTO.getEmail(), MemberLoginDTO.getPassword());
-
-        if (member.isEmpty()) {
-            model.addAttribute("loginMessage", "아이디 혹은 비밀번호가 일치하지 않습니다.");
-            return "/home";
+    public ResponseEntity<?> login(@RequestBody MemberLoginRequestDTO memberLoginDTO) {
+        try {
+            JwtTokenDTO jwtToken = memberService.signIn(memberLoginDTO.getEmail(), memberLoginDTO.getPassword());
+            return ResponseEntity.ok(jwtToken);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 혹은 비밀번호가 일치하지 않습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 처리 중 오류 발생");
         }
-        session.setAttribute("member", member.get());
-        member.map(Member::getName).ifPresent(memberName -> model.addAttribute("memberName", memberName));
-        return "/members/login";
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate(); // 세션 무효화
-        return "redirect:/";
+    @ResponseBody
+    @GetMapping("/login-success")
+    public String loginSuccess(Model model, HttpServletRequest request) {
+        String baseUrl = String.format("%s://%s:%d",request.getScheme(),  request.getServerName(), request.getServerPort());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Authentication 객체: {}", authentication);
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            log.info("인증 성공.");
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            model.addAttribute("memberName", userDetails.getUsername());
+            return baseUrl + "/members/login"; // Redirect를 사용할 수 없는 이유는 ajax에서 redirect를 지원하지 않음
+        } else {
+            return baseUrl + "/";
+        }
     }
 
-    @GetMapping("/members/{nickname}/exists")
+    @GetMapping("/{nickname}/exists")
     public ResponseEntity<Boolean> isNicknameDuplicated(@PathVariable String nickname) {
         return ResponseEntity.ok(memberService.isNicknameDuplicated(nickname));
     }
 
-    @GetMapping("reset-password")
+    @GetMapping("/reset-password")
     public String mailAndChangePassword() {
         return "/members/reset-password";
     }
@@ -125,7 +145,7 @@ public class MemberController {
         return new MemberEditResponseDTO(HttpStatus.OK.value());
     }
 
-    @GetMapping("/api/delete-page")
+    @GetMapping("/delete-page")
     public String logout() {
         return "/members/delete";
     }

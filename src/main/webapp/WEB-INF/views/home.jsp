@@ -4,7 +4,14 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- jQuery library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+
+    <!-- Bootstrap JS 및 jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     <title>프로젝트!</title>
     <style>
         body {
@@ -72,6 +79,42 @@
         function studyRecruitmentArticlePaging() {
             window.location.href = "/api/v1/article/paging";
         }
+
+        $(document).ready(function () {
+            // 로그인 버튼 클릭 이벤트
+            $("#loginButton").click(function () {
+                var email = $("#email").val();
+                var password = $("#password").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/v1/member/login",
+                    contentType: "application/json",
+                    data: JSON.stringify({ email: email, password: password }),
+                    success: function (response) {
+                        localStorage.setItem("jwt", response.accessToken);
+                        alert("로그인 성공!");
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/v1/member/login-success',
+                            headers: {
+                                'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                            },
+                            success: function(response) {
+                                window.location.href = response;
+                            },
+                            error: function (xhr) {
+                                alert("이동 실패");
+                            }
+                        });
+                    },
+                    error: function (xhr) {
+                        var errorMsg = xhr.responseJSON ? xhr.responseJSON.message : "로그인 실패";
+                        alert(errorMsg);
+                    }
+                });
+            });
+        });
     </script>
 
 </head>
@@ -94,9 +137,10 @@
 <p>${loginMessage}</p>
 
 <p>처음이신가요? 회원가입은 여기서 해주세요!</p>
-<a class="signup-button" href="/members/join-form">회원가입하기</a>
+<a class="signup-button" href="/api/v1/member/join-form">회원가입하기</a>
 
-<a class="password-reset-button" href="/reset-password">비밀번호 찾기</a>
+<!-- 비밀번호 찾기 버튼 추가 -->
+<a class="password-reset-button" href="/api/v1/member/reset-password">비밀번호 찾기</a>
 
 <button onclick="studyRecruitmentArticle()">스터디 모집 게시판 글등록</button>
 

@@ -45,8 +45,10 @@
 
     <script>
         function logout() {
-            alert("로그아웃 되었습니다.");
-            window.location.href = '/logout';
+            // JWT 토큰 삭제
+            localStorage.removeItem('jwtToken');
+            // 로그아웃 후 홈페이지로 리디렉션
+            window.location.href = '/';
         }
 
         function editProfile() {

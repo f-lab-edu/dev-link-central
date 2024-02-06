@@ -1,16 +1,24 @@
 package dev.linkcentral.infrastructure;
 
+import dev.linkcentral.infrastructure.jwt.JwtAuthenticationFilter;
+import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -18,20 +26,39 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()                 // CSRF 방지
-                .formLogin().disable()            // 기본 로그인 페이지 없애기
-                .headers().frameOptions().disable()
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests()
-                .antMatchers("/articles/save").authenticated() // 게시글 작성 경로에 대한 접근은 인증된 사용자에게만 허용
+                .authorizeHttpRequests()
+                .antMatchers(
+                        "/",
+                        "/members/login", // TODO: jsp page의 경우 모두 접근 가능하도록 설정 추가
+                        "/api/v1/member/join-form",
+                        "/api/v1/member/register",
+                        "/api/v1/member/login",
+                        "/api/v1/member/{nickname}/exists",
+                        "/api/v1/member/reset-password",
+                        "/api/v1/member/forgot-password",
+                        "/api/v1/member/send-email/update-password",
+                        "/api/v1/member/check-current-password",
+                        "/api/v1/member/login-success"
+                ).permitAll()
+                .antMatchers(
+                        "/api/v1/member/edit-form",
+                        "/api/v1/member/edit",
+                        "/api/v1/member/delete-page",
+                        "/api/v1/member/delete",
+                        "/api/v1/article/save"
+                ).hasRole("USER")
+                .anyRequest().authenticated()
                 .and()
-                .logout()                         // 로그아웃 설정 추가
-                    .logoutSuccessUrl("/")        // 로그아웃 성공 시 리다이렉트할 URL
-                    .invalidateHttpSession(true)  // 세션 무효화
-                    .deleteCookies("JSESSIONID")  // JSESSIONID 쿠키 삭제
-                    .permitAll();
-        return http.build();
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
+
+        httpSecurity.cors();
+        return httpSecurity.build();
     }
 }
