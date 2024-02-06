@@ -37,6 +37,10 @@ spring:
           timeout: 5000
           starttls:
             enable: true
+jwt:
+  secret: 1789b3b4ea03854cdd5e9ed6acfd938b02513fbd5a320f6b163edb3fe7b46693
+
+
 
 logging:
   level:
