@@ -48,7 +48,7 @@
                 let userName = $("#userName").val();
                 $.ajax({
                     type: "GET",
-                    url: "/forgot-password",
+                    url: "/api/v1/member/forgot-password",
                     data: {
                         "userEmail": userEmail,
                         "userName": userName
@@ -63,7 +63,7 @@
                                 if (OK) {
                                     $.ajax({
                                         type: "POST",
-                                        url: "/send-email/update-password",
+                                        url: "/api/v1/member/send-email/update-password",
                                         data: {
                                             "userEmail": userEmail,
                                             "userName": userName
@@ -83,7 +83,6 @@
     </script>
     <script>
         function cancelButtonClicked() {
-            // 이동하고 싶은 페이지의 URL을 설정
             window.location.href = "/";
         }
     </script>

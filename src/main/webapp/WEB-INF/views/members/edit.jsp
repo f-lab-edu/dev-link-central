@@ -134,7 +134,7 @@
 
                 $.ajax({
                     type: "PUT",
-                    url: "/edit",
+                    url: "/api/v1/member/edit",
                     data: formData,
                     processData: false,
                     contentType: false

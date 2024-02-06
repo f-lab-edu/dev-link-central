@@ -64,6 +64,48 @@
             updateLikesCount();
         });
     </script>
+
+    <script>
+        const commentWrite = () => {
+            const contents = document.getElementById("contents").value;
+            const id = '<%= article.getId() %>';
+            $.ajax({
+                type: "post",
+                url: "/api/v1/article/comment/save",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    "contents": contents,
+                    "articleId": id
+                }),
+                success: function (res) {
+                    console.log("요청성공", res);
+                    let output = "<table>";
+                    output += "<tr><th>댓글번호</th>";
+                    output += "<th>작성자</th>";
+                    output += "<th>내용</th>";
+                    output += "<th>작성시간</th></tr>";
+                    for (let i in res) {
+                        output += "<tr>";
+                        output += "<td>" + res[i].id + "</td>";
+                        output += "<td>" + res[i].nickname + "</td>";
+                        output += "<td>" + res[i].contents + "</td>";
+                        output += "<td>" + res[i].createdAt + "</td>";
+                        output += "</tr>";
+                    }
+                    output += "</table>";
+                    document.getElementById('comment-list').innerHTML = output;
+                    document.getElementById('contents').value = '';
+                },
+                error: function (err) {
+                    console.log("요청실패", err);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            updateLikesCount();
+        });
+    </script>
 </head>
 <body>
 
@@ -96,7 +138,8 @@
     </tr>
     <tr>
         <th>조회수</th>
-        <td><%= article.getViews() %></td>
+        <td><%= article.getViews() %>
+        </td>
     </tr>
 </table>
 <button onclick="listReq()">목록</button>
@@ -105,6 +148,41 @@
 
 <button id="likeButton" onclick="toggleLike()">좋아요</button>
 <span id="likesCount">0</span> 좋아요
+
+<!-- 댓글 작성 부분 -->
+<div id="comment-write">
+    <input type="text" id="contents" placeholder="내용">
+    <button id="comment-write-btn" onclick="commentWrite()">댓글작성</button>
+</div>
+
+
+<%--댓글 출력 부분--%>
+<div id="comment-list">
+    <table>
+        <tr>
+            <th>댓글번호</th>
+            <th>작성자</th>
+            <th>내용</th>
+            <th>작성시간</th>
+        </tr>
+        <%
+            List<ArticleCommentRequestDTO> commentList = (List<ArticleCommentRequestDTO>) request.getAttribute("commentList");
+            if (commentList != null) {
+                for (ArticleCommentRequestDTO comment : commentList) {
+        %>
+        <tr>
+            <td><%= comment.getId() %></td>
+            <td><%= comment.getNickname() %></td>
+            <td><%= comment.getContents() %></td>
+            <td><%= comment.getCreatedAt() %></td>
+        </tr>
+        <%
+                }
+            }
+        %>
+    </table>
+</div>
+
 
 </body>
 </html>

@@ -73,19 +73,6 @@ class InternalMemberServiceTest {
         assertEquals(savedMember.getNickname(), registeredMember.getNickname());
     }
 
-    @DisplayName("회원 가입 시, 사용자(=USER)로 등급으로 등록되는지 검사한다.")
-    @Test
-    void verify_user_grade_on_sign_up() {
-        // given
-        MemberSaveRequestDTO memberDTO = createTestMemberSaveRequestDTO();
-
-        // when
-        Member savedMember = memberService.joinMember(memberDTO);
-
-        // then
-        assertEquals("USER", savedMember.getRole());
-    }
-
     @DisplayName("회원 가입 시, 중복된 이메일을 입력하면 예외 처리한다.")
     @Test
     @Transactional

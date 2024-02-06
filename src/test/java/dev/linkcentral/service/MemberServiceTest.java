@@ -16,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +41,6 @@ public class MemberServiceTest {
                 .passwordHash(passwordEncoder.encode("1234"))
                 .email("test@naver.com")
                 .nickname("apple")
-                .role("USER")
                 .deleted(false)
                 .build();
         return member;
@@ -70,21 +71,6 @@ public class MemberServiceTest {
         assertEquals(mockMember.getName(), savedMember.getName());
         assertEquals(mockMember.getEmail(), savedMember.getEmail());
         assertEquals(mockMember.getNickname(), savedMember.getNickname());
-    }
-
-    @DisplayName("회원 가입 시, 사용자(=USER)로 등급으로 등록되는지 검사한다.")
-    @Test
-    void verify_user_grade_on_sign_up() {
-        // given
-        MemberSaveRequestDTO memberDTO = createTestMemberSaveDTO();
-        Member savedMember = createTestMember();
-
-        // when
-        when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
-        Member result = memberService.joinMember(memberDTO);
-
-        // then
-        assertEquals("USER", result.getRole());
     }
 
     @DisplayName("회원 가입 시, 중복된 이메일을 입력하면 예외 처리한다.")

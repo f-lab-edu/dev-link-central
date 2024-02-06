@@ -9,8 +9,13 @@ import dev.linkcentral.database.entity.ArticleStatistic;
 import dev.linkcentral.database.entity.ArticleView;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.ArticleLikeRepository;
+import dev.linkcentral.database.entity.ArticleStatistic;
+import dev.linkcentral.database.entity.*;
+import dev.linkcentral.database.repository.ArticleCommentRepository;
+import dev.linkcentral.database.repository.ArticleLikeRepository;
 import dev.linkcentral.database.repository.ArticleRepository;
 import dev.linkcentral.database.repository.ArticleStatisticRepository;
+import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
 import dev.linkcentral.database.repository.ArticleViewRepository;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
@@ -23,6 +28,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpSession;
+import java.util.*;
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +49,7 @@ public class ArticleService {
     private final ArticleStatisticRepository articleStatisticRepository;
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleViewRepository articleViewRepository;
+    private final ArticleCommentRepository articleCommentRepository;
 
     @Transactional
     public void save(ArticleRequestDTO articleDTO) {
@@ -159,5 +168,30 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         return (int) articleLikeRepository.countByArticle(article);
+    }
+
+    @Transactional
+    public Long commentSave(ArticleCommentRequestDTO commentDTO, String writerNickname) {
+        Optional<Article> optionalArticle = articleRepository.findById(commentDTO.getArticleId());
+        if (optionalArticle.isPresent()) {
+            Article article = optionalArticle.get();
+            ArticleComment commentEntity = ArticleComment.toSaveEntity(commentDTO, article, writerNickname);
+            articleCommentRepository.save(commentEntity);
+            return commentEntity.getId();
+        } else {
+            throw new EntityNotFoundException("ID가 포함된 게시글을 찾을 수 없습니다.");
+        }
+    }
+
+    public List<ArticleCommentRequestDTO> commentFindAll(Long articleId) {
+        Article article = articleRepository.findById(articleId).get();
+        List<ArticleComment> commentList = articleCommentRepository.findAllByArticleOrderByIdDesc(article);
+
+        List<ArticleCommentRequestDTO> commentDTOList = new ArrayList<>();
+        for (ArticleComment comment : commentList) {
+            ArticleCommentRequestDTO commentDTO = ArticleCommentRequestDTO.toCommentDTO(comment, articleId);
+            commentDTOList.add(commentDTO);
+        }
+        return commentDTOList;
     }
 }
