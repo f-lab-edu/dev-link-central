@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -82,7 +83,8 @@ public class MemberController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Authentication 객체: {}", authentication);
 
-        if (authentication != null && authentication.isAuthenticated()) {
+        //  if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             log.info("인증 성공.");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             model.addAttribute("memberName", userDetails.getUsername());

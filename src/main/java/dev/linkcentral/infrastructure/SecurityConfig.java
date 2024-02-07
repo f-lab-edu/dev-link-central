@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .antMatchers(
                         "/",
-                        "/members/login", // TODO: jsp page의 경우 모두 접근 가능하도록 설정 추가
+                        "/members/login",
                         "/api/v1/member/join-form",
                         "/api/v1/member/register",
                         "/api/v1/member/login",

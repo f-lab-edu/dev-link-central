@@ -81,8 +81,9 @@
         }
 
         $(document).ready(function () {
-            // 로그인 버튼 클릭 이벤트
-            $("#loginButton").click(function () {
+            $("#loginButton").click(function (e) {
+                e.preventDefault(); // 기본 form 제출을 방지합니다.
+
                 var email = $("#email").val();
                 var password = $("#password").val();
 
@@ -92,25 +93,34 @@
                     contentType: "application/json",
                     data: JSON.stringify({ email: email, password: password }),
                     success: function (response) {
-                        localStorage.setItem("jwt", response.accessToken);
-                        alert("로그인 성공!");
-                        $.ajax({
-                            type: "GET",
-                            url: '/api/v1/member/login-success',
-                            headers: {
-                                'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                            },
-                            success: function(response) {
-                                window.location.href = response;
-                            },
-                            error: function (xhr) {
-                                alert("이동 실패");
-                            }
-                        });
+                        console.log("로그인 응답: ", response); // 응답 구조를 확인하기 위한 로깅
+
+                        // 'accessToken' 키를 사용하여 토큰을 로컬 스토리지에 저장합니다.
+                        if(response && response.accessToken) {
+                            localStorage.setItem("jwt", response.accessToken);
+                            alert("로그인 성공!");
+                            $.ajax({
+                                type: "GET",
+                                url: '/api/v1/member/login-success',
+                                headers: {
+                                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                                },
+                                success: function(response) {
+                                    window.location.href = response;
+                                },
+                                error: function (xhr) {
+                                    alert("이동 실패");
+                                }
+                            });
+                        } else {
+                            // 응답에서 'accessToken'을 찾을 수 없는 경우
+                            console.error("응답에서 accessToken을 찾을 수 없습니다.");
+                            alert("로그인 실패: 응답에서 토큰을 찾을 수 없습니다.");
+                        }
                     },
                     error: function (xhr) {
-                        var errorMsg = xhr.responseJSON ? xhr.responseJSON.message : "로그인 실패";
-                        alert(errorMsg);
+                        console.error("로그인 요청 실패: ", xhr);
+                        alert("로그인 요청 실패");
                     }
                 });
             });
@@ -122,7 +132,8 @@
 <h2 style="color: #333;">안녕하세요!</h2>
 <p>로그인을 해주세요 :)</p>
 
-<form action="/login" method="post">
+<%--<form action="/login" method="post">--%>
+<form id="loginForm">
     <div>
         <label for="email">이메일: </label>
         <input id="email" name="email" type="email" required>
@@ -131,7 +142,7 @@
         <label for="password">패스워드: </label>
         <input id="password" name="password" type="password" required>
     </div>
-    <input type="submit" value="로그인하기">
+    <input type="submit" value="로그인하기" id="loginButton">
 </form>
 
 <p>${loginMessage}</p>
