@@ -16,12 +16,14 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +47,8 @@ public class MemberService {
             throw new IllegalArgumentException("아이디 혹은 비밀번호가 일치하지 않습니다.");
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
+        Collection<? extends GrantedAuthority> authorities = member.getAuthorities();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password, authorities);
         return jwtTokenProvider.generateToken(authentication);
     }
 

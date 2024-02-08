@@ -52,7 +52,7 @@ public class SecurityConfig {
                         "/api/v1/member/delete-page",
                         "/api/v1/member/delete",
                         "/api/v1/article/save"
-                ).hasRole("USER")
+                ).hasAuthority("USER")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

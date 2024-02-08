@@ -82,7 +82,7 @@
 
         $(document).ready(function () {
             $("#loginButton").click(function (e) {
-                e.preventDefault(); // 기본 form 제출을 방지합니다.
+                e.preventDefault(); // 기본 form 제출을 방지
 
                 var email = $("#email").val();
                 var password = $("#password").val();
@@ -95,7 +95,7 @@
                     success: function (response) {
                         console.log("로그인 응답: ", response); // 응답 구조를 확인하기 위한 로깅
 
-                        // 'accessToken' 키를 사용하여 토큰을 로컬 스토리지에 저장합니다.
+                        // 'accessToken' 키를 사용하여 토큰을 로컬 스토리지에 저장
                         if(response && response.accessToken) {
                             localStorage.setItem("jwt", response.accessToken);
                             alert("로그인 성공!");
