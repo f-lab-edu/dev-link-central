@@ -96,7 +96,7 @@
 
                 $(".error-message").remove();
 
-                $.post("/check-current-password", { id: $("#id").val(), password: currentPassword })
+                $.post("/api/v1/member/check-current-password", { id: $("#id").val(), password: currentPassword })
                     .done(function (resp) {
                         console.log("Response:", resp); // 응답 로그 추가
 

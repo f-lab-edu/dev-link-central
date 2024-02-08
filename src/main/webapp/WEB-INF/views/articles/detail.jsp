@@ -1,4 +1,6 @@
 <%@ page import="dev.linkcentral.service.dto.request.ArticleRequestDTO" %>
+<%@ page import="dev.linkcentral.service.dto.request.ArticleCommentRequestDTO" %>
+<%@ page import="java.util.List" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -15,18 +17,19 @@
 
         function updateReq() {
             console.log("수정 요청");
-            location.href = "/api/v1/article/update/" + articleId;
+            location.href = "/api/v1/view/article/update-form/" + articleId;
         }
 
         function listReq() {
             console.log("목록 요청");
-            location.href = "/api/v1/article/paging?page=${page}";
+            location.href = "/api/v1/view/article/paging?page=${page}";
         }
 
+        // TODO: DELETE 요청 API 수정 작업 필요
         function deleteReq() {
             console.log("삭제 요청");
             $.ajax({
-                url: "/api/v1/article/delete/" + articleId,
+                url: "/api/v1/view/article/delete-form/" + articleId,
                 type: "DELETE",
                 success: function (response) {
                     alert("게시글이 삭제되었습니다.");
@@ -71,7 +74,7 @@
             const id = '<%= article.getId() %>';
             $.ajax({
                 type: "post",
-                url: "/api/v1/article/comment/save",
+                url: "/api/v1/article/comment",
                 contentType: "application/json",
                 data: JSON.stringify({
                     "contents": contents,

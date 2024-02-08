@@ -63,7 +63,7 @@
         function editProfile() {
             $.ajax({
                 type: "GET",
-                url: '/api/v1/member/edit-form',
+                url: '/api/v1/view/member/edit-form',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
@@ -77,11 +77,11 @@
         }
 
         function deletePage() {
-            window.location.href = "/api/delete-page";
+            window.location.href = "/api/v1/view/member/delete-page";
         }
 
         function studyRecruitmentArticlePaging() {
-            window.location.href = "/api/v1/article/paging";
+            window.location.href = "/api/v1/view/article/paging";
         }
     </script>
 </head>
