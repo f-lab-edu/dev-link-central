@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -62,16 +63,16 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody MemberLoginRequestDTO memberLoginDTO) {
+    public ResponseEntity<JwtTokenDTO> login(@RequestBody MemberLoginRequestDTO memberLoginDTO) {
         try {
             JwtTokenDTO jwtToken = memberService.signIn(memberLoginDTO.getEmail(), memberLoginDTO.getPassword());
-            return ResponseEntity.ok(jwtToken);
+            return ResponseEntity.ok(jwtToken); // 정상적인 경우 JwtTokenDTO 반환
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 본문 없이 상태 코드만 반환
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 혹은 비밀번호가 일치하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 본문 없이 상태 코드만 반환
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그인 처리 중 오류 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 본문 없이 상태 코드만 반환
         }
     }
 
@@ -122,14 +123,12 @@ public class MemberController {
     }
 
     @GetMapping("/edit-form")
-    public String memberEdit(HttpSession session, Model model) {
-        Member member = (Member) session.getAttribute("member");
-
-        if (member == null) {
-            return "redirect:/login";
+    public ResponseEntity<?> editForm(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        model.addAttribute("member", member);
-        return "/members/edit";
+        String editFormUrl = "/members/edit";
+        return ResponseEntity.ok(Collections.singletonMap("url", editFormUrl));
     }
 
     @ResponseBody
