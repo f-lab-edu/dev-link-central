@@ -38,7 +38,7 @@ spring:
           starttls:
             enable: true
 jwt:
-  secret: ${JWT_SECRET:default_secret_value}
+  secret: ${JWT_SECRET:ZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWUK}
 
 
 logging:

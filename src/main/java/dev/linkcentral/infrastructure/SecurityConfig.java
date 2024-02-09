@@ -3,6 +3,7 @@ package dev.linkcentral.infrastructure;
 import dev.linkcentral.infrastructure.jwt.JwtAuthenticationFilter;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,21 +36,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .antMatchers(
                         "/",
-                        "members/login",
-                        "/api/v1/member/login",
-                        "/api/v1/member/login-success",
-                        "/api/v1/view/member/**",
-                        "/api/v1/view/article/**"
-
-                ).permitAll()
+                        "/api/v1/public/**",
+                        "/api/v1/view/**"
+                )
+                .permitAll()
                 .antMatchers(
-                        "/api/v1/member/**",
                         "/api/v1/article/**"
                 ).hasAuthority("USER")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class);
+                                 UsernamePasswordAuthenticationFilter.class);
 
         httpSecurity.cors();
         return httpSecurity.build();

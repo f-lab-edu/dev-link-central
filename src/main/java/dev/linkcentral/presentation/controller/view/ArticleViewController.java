@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation;
+package dev.linkcentral.presentation.controller.view;
 
 
 import dev.linkcentral.database.entity.Member;

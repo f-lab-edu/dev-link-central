@@ -90,8 +90,6 @@
     <h1>프로젝트!</h1>
 </header>
 <div class="container">
-    <p><%= request.getAttribute("memberName") %>님 환영합니다!</p>
-
     <button onclick="logout()">로그아웃</button>
 
     <button onclick="editProfile()">회원수정</button>

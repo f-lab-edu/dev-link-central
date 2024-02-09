@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation;
+package dev.linkcentral.presentation.controller.closed;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.ArticleService;

@@ -81,7 +81,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "/api/v1/member/" + nickname + "/exists",
+                    url: "/api/v1/public/member/" + nickname + "/exists",
                     success: function (result) {
                         // 서버가 true를 반환하면 닉네임이 중복.
                         if (result) {
@@ -112,7 +112,7 @@
 
                     $.ajax({
                         type: "POST",
-                        url: "/api/v1/member/register",
+                        url: "/api/v1/public/member/register",
                         data: formData,
                         success: function () {
                             alert("회원가입 성공");

@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation;
+package dev.linkcentral.presentation.controller.view;
 
 import dev.linkcentral.database.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,11 @@ public class MemberViewController {
     @GetMapping("/")
     public String Home() {
         return "/home";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "/members/login";
     }
 
     @GetMapping("/join-form")
