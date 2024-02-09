@@ -25,11 +25,10 @@
             location.href = "/api/v1/view/article/paging?page=${page}";
         }
 
-        // TODO: DELETE 요청 API 수정 작업 필요
         function deleteReq() {
             console.log("삭제 요청");
             $.ajax({
-                url: "/api/v1/view/article/delete-form/" + articleId,
+                url: "/api/v1/article/delete/" + articleId,
                 type: "DELETE",
                 success: function (response) {
                     alert("게시글이 삭제되었습니다.");
