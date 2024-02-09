@@ -16,8 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +62,7 @@ public class MemberServiceTest {
         when(memberRepository.save(any(Member.class))).thenReturn(mockMember);
 
         // when
-        Member savedMember = memberService.joinMember(memberDTO);
+        Member savedMember = memberService.registerMember(memberDTO);
 
         // then
         assertEquals(mockMember.getId(), savedMember.getId());
@@ -84,7 +82,7 @@ public class MemberServiceTest {
 
         // when & then
         assertThrows(DuplicateEmailException.class, () -> {
-            memberService.joinMember(newMemberDTO);
+            memberService.registerMember(newMemberDTO);
         });
     }
 
@@ -99,7 +97,7 @@ public class MemberServiceTest {
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> {
-            memberService.joinMember(newMemberDTO);
+            memberService.registerMember(newMemberDTO);
         });
     }
 
@@ -118,7 +116,7 @@ public class MemberServiceTest {
                 .thenReturn(true);
 
         // when
-        Optional<Member> loginMember = memberService.loginMember(email, password);
+        Optional<Member> loginMember = memberService.authenticateMember(email, password);
 
         // then
         assertTrue(loginMember.isPresent());
@@ -150,7 +148,7 @@ public class MemberServiceTest {
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> {
-            memberService.isNicknameDuplicated(nickname);
+            memberService.validateNicknameDuplication(nickname);
         });
     }
 
@@ -166,7 +164,7 @@ public class MemberServiceTest {
 
         // when & then
         assertThrows(MemberEmailNotFoundException.class, () -> {
-            memberService.userEmailCheck(inputEmail, inputName);
+            memberService.validateUserEmail(inputEmail, inputName);
         });
     }
 
@@ -189,7 +187,7 @@ public class MemberServiceTest {
                 .thenReturn("encodedNewPassword");
 
         // when
-        memberService.updateMember(memberEditDTO);
+        memberService.editMember(memberEditDTO);
 
         // then
         assertEquals("heedo", originalMember.getName());
@@ -216,8 +214,8 @@ public class MemberServiceTest {
                 .thenReturn(false);
 
         // when
-        boolean matchCorrectPassword = memberService.checkPassword(nickname, correctPassword);
-        boolean matchIncorrectPassword = memberService.checkPassword(nickname, incorrectPassword);
+        boolean matchCorrectPassword = memberService.validatePassword(nickname, correctPassword);
+        boolean matchIncorrectPassword = memberService.validatePassword(nickname, incorrectPassword);
 
         // then
         assertTrue(matchCorrectPassword);
@@ -239,7 +237,7 @@ public class MemberServiceTest {
                 .thenReturn(true);
 
         // when
-        boolean isDeleted = memberService.deleteMember(nickname, correctPassword);
+        boolean isDeleted = memberService.removeMember(nickname, correctPassword);
 
         // then
         assertTrue(isDeleted);

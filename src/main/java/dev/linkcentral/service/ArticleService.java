@@ -37,13 +37,13 @@ public class ArticleService {
     private final ArticleCommentRepository articleCommentRepository;
 
     @Transactional
-    public void save(ArticleRequestDTO articleDTO) {
+    public void saveArticle(ArticleRequestDTO articleDTO) {
         Article articleEntity = Article.toSaveEntity(articleDTO);
         articleRepository.save(articleEntity);
     }
 
     @Transactional(readOnly = true)
-    public List<ArticleRequestDTO> findAll() {
+    public List<ArticleRequestDTO> findAllArticles() {
         List<Article> articleEntityList = articleRepository.findAll();
         List<ArticleRequestDTO> articleDTOList = new ArrayList<>();
 
@@ -54,7 +54,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleRequestDTO findById(Long id, Member member) {
+    public ArticleRequestDTO findArticleById(Long id, Member member) {
         return articleRepository.findById(id)
                 .map(article -> {
                     viewCountUpdate(member, article);
@@ -95,7 +95,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleRequestDTO update(ArticleUpdateRequestDTO articleDTO) {
+    public ArticleRequestDTO updateArticle(ArticleUpdateRequestDTO articleDTO) {
         Article articleEntity = Article.toUpdateEntity(articleDTO);
         Article updateArticle = articleRepository.save(articleEntity);
 
@@ -108,12 +108,12 @@ public class ArticleService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void deleteArticle(Long id) {
         articleRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleRequestDTO> paging(Pageable pageable) {
+    public Page<ArticleRequestDTO> paginateArticles(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
         int pageLimit = 3; // 한 페이지에 보여줄 글 갯수
 
@@ -129,7 +129,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public void toggleLike(Long articleId, Member member) {
+    public void toggleArticleLike(Long articleId, Member member) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
@@ -149,14 +149,14 @@ public class ArticleService {
     }
 
     // 특정 게시글의 "좋아요" 총 갯수를 반환
-    public int getLikesCount(Long articleId) {
+    public int countArticleLikes(Long articleId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         return (int) articleLikeRepository.countByArticle(article);
     }
 
     @Transactional
-    public Long commentSave(ArticleCommentRequestDTO commentDTO, String writerNickname) {
+    public Long saveComment(ArticleCommentRequestDTO commentDTO, String writerNickname) {
         Optional<Article> optionalArticle = articleRepository.findById(commentDTO.getArticleId());
         if (optionalArticle.isPresent()) {
             Article article = optionalArticle.get();
@@ -168,7 +168,7 @@ public class ArticleService {
         }
     }
 
-    public List<ArticleCommentRequestDTO> commentFindAll(Long articleId) {
+    public List<ArticleCommentRequestDTO> findAllComments(Long articleId) {
         Article article = articleRepository.findById(articleId).get();
         List<ArticleComment> commentList = articleCommentRepository.findAllByArticleOrderByIdDesc(article);
 
