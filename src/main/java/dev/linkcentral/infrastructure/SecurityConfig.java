@@ -35,23 +35,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .antMatchers(
                         "/",
-                        "/members/login",
-                        "/api/v1/member/join-form",
-                        "/api/v1/member/register",
+                        "members/login",
                         "/api/v1/member/login",
-                        "/api/v1/member/{nickname}/exists",
-                        "/api/v1/member/reset-password",
-                        "/api/v1/member/forgot-password",
-                        "/api/v1/member/send-email/update-password",
-                        "/api/v1/member/check-current-password",
-                        "/api/v1/member/login-success"
+                        "/api/v1/member/login-success",
+                        "/api/v1/view/member/**",
+                        "/api/v1/view/article/**"
+
                 ).permitAll()
                 .antMatchers(
-                        "/api/v1/member/edit-form",
-                        "/api/v1/member/edit",
-                        "/api/v1/member/delete-page",
-                        "/api/v1/member/delete",
-                        "/api/v1/article/save"
+                        "/api/v1/member/**",
+                        "/api/v1/article/**"
                 ).hasAuthority("USER")
                 .anyRequest().authenticated()
                 .and()
