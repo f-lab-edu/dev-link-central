@@ -8,9 +8,6 @@ import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import dev.linkcentral.service.dto.response.ArticleEditResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,11 +25,6 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-    @GetMapping("/save")
-    public String saveForm() {
-        return "/articles/save";
-    }
-
     @PostMapping("/save")
     public String save(@ModelAttribute ArticleRequestDTO articleDTO, HttpSession session) {
         Member member = (Member) session.getAttribute("member");
@@ -41,44 +33,14 @@ public class ArticleController {
         }
 
         articleDTO.setWriter(member.getNickname());
-        articleService.save(articleDTO);
-        return "redirect:/api/v1/article/paging";
-    }
-
-    @GetMapping("/")
-    public String findAll(Model model) {
-        List<ArticleRequestDTO> articleList = articleService.findAll();
-        model.addAttribute("articleList", articleList);
-        return "/articles/list";
-    }
-
-    @GetMapping("/{id}")
-    public String findById(@PageableDefault(page = 1) Pageable pageable,
-                           @PathVariable Long id, Model model, HttpSession session) {
-        Member member = (Member) session.getAttribute("member");
-        ArticleRequestDTO articleDTO = articleService.findById(id, member);
-
-        // 댓글 목록 가져오기
-        List<ArticleCommentRequestDTO> commentDTOList = articleService.commentFindAll(id);
-        model.addAttribute("commentList", commentDTOList);
-
-        model.addAttribute("article", articleDTO);
-        model.addAttribute("page", pageable.getPageNumber());
-        return "/articles/detail";
-    }
-
-    @GetMapping("/update/{id}")
-    public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-        Member member = (Member) session.getAttribute("member");
-        ArticleRequestDTO articleDTO = articleService.findById(id, member);
-        model.addAttribute("articleUpdate", articleDTO);
-        return "/articles/update";
+        articleService.saveArticle(articleDTO);
+        return "redirect:/api/v1/view/article/paging";
     }
 
     @ResponseBody
-    @PutMapping("/update")
+    @PutMapping
     public ArticleEditResponseDTO update(@RequestBody ArticleUpdateRequestDTO articleDTO, Model model) {
-        ArticleRequestDTO article = articleService.update(articleDTO);
+        ArticleRequestDTO article = articleService.updateArticle(articleDTO);
         model.addAttribute("article", article);
         return new ArticleEditResponseDTO(HttpStatus.OK.value());
     }
@@ -86,24 +48,8 @@ public class ArticleController {
     @DeleteMapping("/delete/{id}")
     @ResponseBody
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        articleService.delete(id);
+        articleService.deleteArticle(id);
         return ResponseEntity.ok().body("성공적으로 삭제되었습니다.");
-    }
-
-    @GetMapping("/paging")
-    public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
-        Page<ArticleRequestDTO> articlePage = articleService.paging(pageable);
-        List<ArticleRequestDTO> articleList = articlePage.getContent(); // Page에서 List로 변환
-
-        int blockLimit = 3;
-        int startPage = (((int) Math.ceil(((double) pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
-        int endPage = Math.min((startPage + blockLimit - 1), articlePage.getTotalPages());
-
-        model.addAttribute("articleList", articleList); // List로 전달
-        model.addAttribute("articlePage", articlePage); // 페이지 정보 전달
-        model.addAttribute("startPage", startPage);     // 시작 페이지
-        model.addAttribute("endPage", endPage);         // 마지막 페이지
-        return "/articles/paging";
     }
 
     @PostMapping("/{id}/like")
@@ -112,27 +58,27 @@ public class ArticleController {
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
-        articleService.toggleLike(id, member);
+        articleService.toggleArticleLike(id, member);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/likes-count")
     public ResponseEntity<Integer> getLikesCount(@PathVariable Long id) {
-        int likesCount = articleService.getLikesCount(id);
+        int likesCount = articleService.countArticleLikes(id);
         return ResponseEntity.ok(likesCount);
     }
 
-    @PostMapping("/comment/save")
+    @PostMapping("/comment")
     @ResponseBody
     public ResponseEntity<?> commentSave(@RequestBody ArticleCommentRequestDTO commentDTO, HttpSession session) {
         Member member = (Member) session.getAttribute("member");
         if (member == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
         }
-        Long saveArticleId = articleService.commentSave(commentDTO, member.getNickname());
+        Long saveArticleId = articleService.saveComment(commentDTO, member.getNickname());
 
         // 작성 성공하면 댓글 목록을 가져와서 반환
-        List<ArticleCommentRequestDTO> commentDTOList = articleService.commentFindAll(commentDTO.getArticleId());
+        List<ArticleCommentRequestDTO> commentDTOList = articleService.findAllComments(commentDTO.getArticleId());
         return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
     }
 }

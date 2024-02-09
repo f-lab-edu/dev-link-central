@@ -37,21 +37,11 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/")
-    public String Home() {
-        return "/home";
-    }
-
-    @GetMapping("/join-form")
-    public String joinMember() {
-        return "/members/join";
-    }
-
     @ResponseBody
     @PostMapping("/register")
     public ResponseEntity<?> register(@ModelAttribute MemberSaveRequestDTO memberDTO) {
         try {
-            Member member = memberService.joinMember(memberDTO);
+            Member member = memberService.registerMember(memberDTO);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (DuplicateNicknameException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("닉네임이 이미 사용 중입니다.");
@@ -65,7 +55,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<JwtTokenDTO> login(@RequestBody MemberLoginRequestDTO memberLoginDTO) {
         try {
-            JwtTokenDTO jwtToken = memberService.signIn(memberLoginDTO.getEmail(), memberLoginDTO.getPassword());
+            JwtTokenDTO jwtToken = memberService.authenticateAndGenerateJwtToken(memberLoginDTO.getEmail(), memberLoginDTO.getPassword());
             return ResponseEntity.ok(jwtToken); // 정상적인 경우 JwtTokenDTO 반환
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 본문 없이 상태 코드만 반환
@@ -79,12 +69,11 @@ public class MemberController {
     @ResponseBody
     @GetMapping("/login-success")
     public String loginSuccess(Model model, HttpServletRequest request) {
-        String baseUrl = String.format("%s://%s:%d",request.getScheme(),  request.getServerName(), request.getServerPort());
+        String baseUrl = String.format("%s://%s:%d", request.getScheme(), request.getServerName(), request.getServerPort());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Authentication 객체: {}", authentication);
 
-        //  if (authentication != null && authentication.isAuthenticated()) {
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             log.info("인증 성공.");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -97,19 +86,14 @@ public class MemberController {
 
     @GetMapping("/{nickname}/exists")
     public ResponseEntity<Boolean> isNicknameDuplicated(@PathVariable String nickname) {
-        return ResponseEntity.ok(memberService.isNicknameDuplicated(nickname));
-    }
-
-    @GetMapping("/reset-password")
-    public String mailAndChangePassword() {
-        return "/members/reset-password";
+        return ResponseEntity.ok(memberService.validateNicknameDuplication(nickname));
     }
 
     @ResponseBody
     @GetMapping("/forgot-password")
     public MemberPasswordResponseDTO isPasswordValid(String userEmail, String userName) {
         // 이메일과 이름이 일치하는 사용자가 있는지 확인.
-        boolean pwFindCheck = memberService.userEmailCheck(userEmail, userName);
+        boolean pwFindCheck = memberService.validateUserEmail(userEmail, userName);
         return new MemberPasswordResponseDTO(pwFindCheck);
     }
 
@@ -118,8 +102,8 @@ public class MemberController {
      */
     @PostMapping("/send-email/update-password")
     public void sendEmail(String userEmail, String userName) {
-        MemberMailRequestDTO dto = memberService.createMailAndChangePassword(userEmail, userName);
-        memberService.mailSend(dto);
+        MemberMailRequestDTO dto = memberService.createMailForPasswordReset(userEmail, userName);
+        memberService.sendMail(dto);
     }
 
     @GetMapping("/edit-form")
@@ -135,31 +119,26 @@ public class MemberController {
     @PostMapping("/check-current-password")
     public MemberPasswordResponseDTO checkPassword(@RequestParam String password, HttpSession session) {
         Member member = (Member) session.getAttribute("member");
-        boolean result = memberService.checkPassword(member.getNickname(), password);
+        boolean result = memberService.validatePassword(member.getNickname(), password);
         return new MemberPasswordResponseDTO(result);
     }
 
     @ResponseBody
     @PutMapping("/edit")
     public MemberEditResponseDTO memberUpdate(@ModelAttribute MemberEditRequestDTO memberEditDTO) {
-        memberService.updateMember(memberEditDTO);
+        memberService.editMember(memberEditDTO);
         return new MemberEditResponseDTO(HttpStatus.OK.value());
     }
 
-    @GetMapping("/delete-page")
-    public String logout() {
-        return "/members/delete";
-    }
-
-    @PostMapping("/delete")
-    public String checkPassword(@RequestParam String password, HttpSession session, Model model) {
+    @DeleteMapping("/delete")
+    @ResponseBody
+    public ResponseEntity<String> softDeleteMember(@RequestParam String password, HttpSession session, Model model) {
         Member member = (Member) session.getAttribute("member");
-        boolean result = memberService.deleteMember(member.getNickname(), password);
+        boolean result = memberService.removeMember(member.getNickname(), password);
 
         if (result) {
-            return "redirect:/";
+            return ResponseEntity.ok().body("회원 탈퇴가 완료되었습니다.");
         }
-        model.addAttribute("message", "비밀번호가 일치하지 않습니다.");
-        return "members/delete";
+        return ResponseEntity.badRequest().body("회원 탈퇴 처리 중 오류가 발생했습니다.");
     }
 }
