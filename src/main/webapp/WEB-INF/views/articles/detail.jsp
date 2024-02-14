@@ -9,7 +9,9 @@
     <meta charset="UTF-8">
     <title>detail</title>
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"
-            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+            crossorigin="anonymous">
+    </script>
 
     <script>
         <% ArticleRequestDTO article = (ArticleRequestDTO) request.getAttribute("article"); %>
@@ -17,12 +19,12 @@
 
         function updateReq() {
             console.log("수정 요청");
-            location.href = "/api/v1/view/article/update-form/" + articleId;
+            window.location.href = "/api/v1/view/article/update-form/" + articleId;
         }
 
         function listReq() {
             console.log("목록 요청");
-            location.href = "/api/v1/view/article/paging?page=${page}";
+            window.location.href = "/api/v1/view/article/paging?page=${page}";
         }
 
         function deleteReq() {
@@ -32,7 +34,7 @@
                 type: "DELETE",
                 success: function (response) {
                     alert("게시글이 삭제되었습니다.");
-                    location.href = "/api/v1/article/paging?page=${page}";
+                    window.location.href = "/api/v1/article/paging?page=${page}";
                 },
                 error: function(error) {
                     alert("삭제 중 오류가 발생했습니다: " + error);

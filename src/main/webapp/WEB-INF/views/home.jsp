@@ -85,29 +85,17 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/api/v1/member/login",
+                    url: "/api/v1/public/member/login",
                     contentType: "application/json",
-                    data: JSON.stringify({ email: email, password: password }),
+                    data: JSON.stringify({email: email, password: password}),
+
                     success: function (response) {
-                        console.log("로그인 응답: ", response); // 응답 구조를 확인하기 위한 로깅
+                        console.log("로그인 응답: ", response);
 
                         // 'accessToken' 키를 사용하여 토큰을 로컬 스토리지에 저장
-                        if(response && response.accessToken) {
+                        if (response && response.accessToken) {
                             localStorage.setItem("jwt", response.accessToken);
-                            alert("로그인 성공!");
-                            $.ajax({
-                                type: "GET",
-                                url: '/api/v1/member/login-success',
-                                headers: {
-                                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                                },
-                                success: function(response) {
-                                    window.location.href = response;
-                                },
-                                error: function (xhr) {
-                                    alert("이동 실패");
-                                }
-                            });
+                            window.location.href = response.redirectUrl
                         } else {
                             // 응답에서 'accessToken'을 찾을 수 없는 경우
                             console.error("응답에서 accessToken을 찾을 수 없습니다.");
@@ -122,6 +110,7 @@
             });
         });
     </script>
+
 
 </head>
 <body>
@@ -151,7 +140,5 @@
 <button onclick="studyRecruitmentArticle()">스터디 모집 게시판 글등록</button>
 
 <button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판 페이징목록</button>
-
-
 </body>
 </html>

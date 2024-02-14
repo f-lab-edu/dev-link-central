@@ -69,7 +69,7 @@
                                             "userName": userName
                                         }
                                     });
-                                    window.location = "/api/v1/view/member/"; // 로그인 화면으로 이동
+                                    window.location.href = "/api/v1/view/member/"; // 로그인 화면으로 이동
                                 }
                             });
                             $('#checkMsg').html('<p style="color:darkblue"></p>');

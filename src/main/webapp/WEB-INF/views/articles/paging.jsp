@@ -9,7 +9,7 @@
 
     <script>
         function saveReq() {
-            location.href = "/api/v1/view/article/save-form";
+            window.location.href = "/api/v1/view/article/save-form";
         }
     </script>
 </head>

@@ -141,7 +141,7 @@
                 })
                     .done(function (resp) {
                         alert("회원 수정이 완료되었습니다.");
-                        location.href = "/";
+                        window.location.href = "/";
                     })
                     .fail(function (error) {
                         let errorMessage = "현재 비밀번호가 일치하지 않습니다.";
