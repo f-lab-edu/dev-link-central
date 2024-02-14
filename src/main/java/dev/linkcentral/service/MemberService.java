@@ -6,6 +6,7 @@ import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
+import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
@@ -37,6 +38,14 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
     private final JwtTokenProvider jwtTokenProvider;
+
+    // 현재 인증된 사용자의 Member 객체를 반환하는 메소드
+    @Transactional(readOnly = true)
+    public Member getCurrentMember() {
+        String email = SecurityUtils.getCurrentUserUsername();
+        return memberRepository.findByEmailAndDeletedFalse(email)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
+    }
 
     @Transactional
     public JwtTokenDTO authenticateAndGenerateJwtToken(String username, String password) {

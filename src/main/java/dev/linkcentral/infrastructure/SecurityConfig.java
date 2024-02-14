@@ -35,16 +35,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .antMatchers(
                         "/",
-                        "members/login",
-                        "/api/v1/member/login",
-                        "/api/v1/member/login-success",
-                        "/api/v1/view/member/**",
-                        "/api/v1/view/article/**"
-
-                ).permitAll()
+                        "/api/v1/public/**",
+                        "/api/v1/view/**"
+                )
+                .permitAll()
                 .antMatchers(
-                        "/api/v1/member/**",
-                        "/api/v1/article/**"
+//                        "/api/v1/member/**",
+//                        "/api/v1/article/**"
                 ).hasAuthority("USER")
                 .anyRequest().authenticated()
                 .and()

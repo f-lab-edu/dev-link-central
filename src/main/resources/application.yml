@@ -40,6 +40,9 @@ spring:
 jwt:
   secret: ${JWT_SECRET:default_secret_value}
 
+#jwt:
+#  secret: ${JWT_SECRET:ZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWUK}
+
 
 logging:
   level:
