@@ -96,7 +96,7 @@
 
                 $(".error-message").remove();
 
-                $.post("/check-current-password", { id: $("#id").val(), password: currentPassword })
+                $.post("/api/v1/member/check-current-password", { id: $("#id").val(), password: currentPassword })
                     .done(function (resp) {
                         console.log("Response:", resp); // 응답 로그 추가
 
@@ -134,14 +134,14 @@
 
                 $.ajax({
                     type: "PUT",
-                    url: "/edit",
+                    url: "/api/v1/member/edit",
                     data: formData,
                     processData: false,
                     contentType: false
                 })
                     .done(function (resp) {
                         alert("회원 수정이 완료되었습니다.");
-                        location.href = "/";
+                        window.location.href = "/";
                     })
                     .fail(function (error) {
                         let errorMessage = "현재 비밀번호가 일치하지 않습니다.";

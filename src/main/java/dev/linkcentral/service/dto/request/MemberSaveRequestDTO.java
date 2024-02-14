@@ -10,6 +10,8 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -34,10 +36,10 @@ public class MemberSaveRequestDTO {
     @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickname;
 
-    private String role;
+    private List<String> roles = new ArrayList<>();
 
-    public void updateRole(String role) {
-        this.role = role;
+    public void updateRole(List<String> roles) {
+        this.roles = roles;
     }
 
     public Member toEntity() {
@@ -45,7 +47,7 @@ public class MemberSaveRequestDTO {
                 .name(name)
                 .passwordHash(password)
                 .email(email)
-                .role(role)
+                .roles(roles)
                 .build();
     }
 }

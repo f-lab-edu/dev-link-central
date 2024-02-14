@@ -4,8 +4,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>회원 탈퇴</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- jQuery library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
 
+    <!-- Bootstrap JS 및 jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+    <title>회원 탈퇴</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -73,10 +83,31 @@
         }
     </style>
 
+    <script>
+        function deleteMember(event) {
+            event.preventDefault();
+            var password = $('#password').val();
+
+            $.ajax({
+                url: '/api/v1/member/delete?password=' + encodeURIComponent(password),
+                type: 'DELETE',
+                success: function(response) {
+                    alert('회원 탈퇴가 완료되었습니다.');
+                    window.location.href = '/api/v1/view/member/';
+                },
+                error: function(xhr, status, error) {
+                    // 요청이 실패했을 때의 동작
+                    alert('회원 탈퇴에 실패했습니다. 오류 메시지: ' + xhr.responseText);
+                }
+            });
+        }
+    </script>
+
 </head>
 <body>
 <div class="container">
-    <form action="/delete" method="post">
+    <%--<form action="/api/v1/member/delete" method="post">--%>
+    <form id="deleteForm" onsubmit="deleteMember(event)">
         <label class="form-label mt-4">회원 탈퇴</label>
 
         <c:choose>

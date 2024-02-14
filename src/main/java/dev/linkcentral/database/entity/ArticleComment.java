@@ -1,5 +1,6 @@
 package dev.linkcentral.database.entity;
 
+import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -19,6 +20,9 @@ public class ArticleComment extends AuditingFields {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(nullable = false)
+    private String writerNickname;
+
     protected ArticleComment() {
     }
 
@@ -26,4 +30,17 @@ public class ArticleComment extends AuditingFields {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    public void updateArticle(Article article) {
+        this.article = article;
+    }
+
+    public static ArticleComment toSaveEntity(ArticleCommentRequestDTO commentDTO, Article article, String writerNickname) {
+        ArticleComment articleComment = new ArticleComment();
+        articleComment.updateContent(commentDTO.getContents());
+        articleComment.updateArticle(article);
+        articleComment.writerNickname = writerNickname;
+        return articleComment;
+    }
+
 }

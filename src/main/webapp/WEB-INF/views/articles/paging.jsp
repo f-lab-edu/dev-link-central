@@ -9,7 +9,7 @@
 
     <script>
         function saveReq() {
-            location.href = "/api/v1/article/save";
+            window.location.href = "/api/v1/view/article/save-form";
         }
     </script>
 </head>
@@ -22,16 +22,16 @@
 <table>
     <tr>
         <th>id</th>
-        <th>title</th>
         <th>writer</th>
+        <th>title</th>
         <th>date</th>
     </tr>
     <c:if test="${not empty articleList}">
         <c:forEach items="${articleList}" var="article">
             <tr>
                 <td>${article.id}</td>
-                <td><a href="/api/v1/article/${article.id}?page=${articlePage.number + 1}">${article.title}</a></td>
-                <td>${article.writer}</td>
+                <td>${article.title}</td>
+                <td><a href="/api/v1/view/article/${article.id}?page=${articlePage.number + 1}">${article.writer}</a></td>
                 <td>${article.createdAt}</td>
             </tr>
         </c:forEach>
@@ -43,7 +43,7 @@
     </c:if>
 </table>
 
-<a href="/api/v1/article/paging?page=1">처음 페이지</a>
+<a href="/api/v1/view/article/paging?page=1">처음 페이지</a>
 
 <!-- 이전 페이지 링크 -->
 <c:choose>
@@ -51,7 +51,7 @@
         <a href="#">이전</a>
     </c:when>
     <c:otherwise>
-        <a href="/api/v1/article/paging?page=${articlePage.number}">이전</a>
+        <a href="/api/v1/view/article/paging?page=${articlePage.number}">이전</a>
     </c:otherwise>
 </c:choose>
 
@@ -63,7 +63,7 @@
             <span>${page}</span>
         </c:when>
         <c:otherwise>
-            <a href="/api/v1/article/paging?page=${page}">${page}</a>
+            <a href="/api/v1/view/article/paging?page=${page}">${page}</a>
         </c:otherwise>
     </c:choose>
 </c:forEach>
@@ -75,13 +75,13 @@
         <a href="#">다음</a>
     </c:when>
     <c:otherwise>
-        <a href="/api/v1/article/paging?page=${articlePage.number + 2}">다음</a>
+        <a href="/api/v1/view/article/paging?page=${articlePage.number + 2}">다음</a>
     </c:otherwise>
 </c:choose>
 
 
 <!-- 마지막 페이지 링크 -->
-<a href="/api/v1/article/paging?page=${articlePage.totalPages}">마지막 페이지</a>
+<a href="/api/v1/view/article/paging?page=${articlePage.totalPages}">마지막 페이지</a>
 
 </body>
 </html>

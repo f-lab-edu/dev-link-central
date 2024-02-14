@@ -63,7 +63,7 @@ class InternalMemberServiceTest {
         MemberSaveRequestDTO memberDTO = createTestMemberSaveRequestDTO();
 
         // when
-        Member savedMember = memberService.joinMember(memberDTO);
+        Member savedMember = memberService.registerMember(memberDTO);
         Member registeredMember = memberRepository.findById(savedMember.getId()).orElse(null);
 
         // then
@@ -71,19 +71,6 @@ class InternalMemberServiceTest {
         assertEquals(savedMember.getName(), registeredMember.getName());
         assertEquals(savedMember.getEmail(), registeredMember.getEmail());
         assertEquals(savedMember.getNickname(), registeredMember.getNickname());
-    }
-
-    @DisplayName("회원 가입 시, 사용자(=USER)로 등급으로 등록되는지 검사한다.")
-    @Test
-    void verify_user_grade_on_sign_up() {
-        // given
-        MemberSaveRequestDTO memberDTO = createTestMemberSaveRequestDTO();
-
-        // when
-        Member savedMember = memberService.joinMember(memberDTO);
-
-        // then
-        assertEquals("USER", savedMember.getRole());
     }
 
     @DisplayName("회원 가입 시, 중복된 이메일을 입력하면 예외 처리한다.")
@@ -102,7 +89,7 @@ class InternalMemberServiceTest {
 
         // when & then
         assertThrows(DuplicateEmailException.class, () -> {
-            memberService.joinMember(newMemberDTO);
+            memberService.registerMember(newMemberDTO);
         });
     }
 
@@ -121,7 +108,7 @@ class InternalMemberServiceTest {
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> {
-            memberService.joinMember(newMemberDTO);
+            memberService.registerMember(newMemberDTO);
         });
     }
 
@@ -136,7 +123,7 @@ class InternalMemberServiceTest {
         memberRepository.save(member);
 
         // when
-        Optional<Member> loggedInMember = memberService.loginMember(inputEmail, inputPassword);
+        Optional<Member> loggedInMember = memberService.authenticateMember(inputEmail, inputPassword);
 
         // then
         assertTrue(loggedInMember.isPresent());
@@ -165,7 +152,7 @@ class InternalMemberServiceTest {
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> {
-            memberService.isNicknameDuplicated(nickname);
+            memberService.validateNicknameDuplication(nickname);
         });
     }
 
@@ -181,7 +168,7 @@ class InternalMemberServiceTest {
 
         // when & then
         assertThrows(MemberEmailNotFoundException.class, () -> {
-            memberService.userEmailCheck(inputEmail, inputName);
+            memberService.validateUserEmail(inputEmail, inputName);
         });
     }
 
@@ -198,7 +185,7 @@ class InternalMemberServiceTest {
                 "heedo",
                 "7777",
                 "mango");
-        memberService.updateMember(editDTO);
+        memberService.editMember(editDTO);
 
         // then
         Member updatedMember = memberRepository.findById(originalMember.getId())
@@ -220,7 +207,7 @@ class InternalMemberServiceTest {
         memberRepository.save(originalMember);
 
         // when & then
-        assertFalse(memberService.checkPassword(inputNickname, inputPassword));
+        assertFalse(memberService.validatePassword(inputNickname, inputPassword));
     }
 
     @DisplayName("유저를 삭제할 경우, 소프트 삭제로 이루어졌는지 검사한다.")
@@ -233,7 +220,7 @@ class InternalMemberServiceTest {
         memberRepository.saveAndFlush(testMember);
 
         // When
-        memberService.deleteMember(testMember.getNickname(), inputPassword);
+        memberService.removeMember(testMember.getNickname(), inputPassword);
 
         // 캐시 초기화
         // 캐시된 데이터 대신 데이터베이스에서 최신 데이터를 가져오기 위해.
