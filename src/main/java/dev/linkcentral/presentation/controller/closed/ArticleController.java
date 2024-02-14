@@ -1,7 +1,8 @@
-package dev.linkcentral.presentation;
+package dev.linkcentral.presentation.controller.closed;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.ArticleService;
+import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -24,14 +24,11 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final MemberService memberService;
 
     @PostMapping("/save")
-    public String save(@ModelAttribute ArticleRequestDTO articleDTO, HttpSession session) {
-        Member member = (Member) session.getAttribute("member");
-        if (member == null) {
-            return "/home";
-        }
-
+    public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
+        Member member = memberService.getCurrentMember();
         articleDTO.setWriter(member.getNickname());
         articleService.saveArticle(articleDTO);
         return "redirect:/api/v1/view/article/paging";
@@ -53,11 +50,8 @@ public class ArticleController {
     }
 
     @PostMapping("/{id}/like")
-    public ResponseEntity<?> toggleLike(@PathVariable Long id, HttpSession session) {
-        Member member = (Member) session.getAttribute("member");
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-        }
+    public ResponseEntity<?> toggleLike(@PathVariable Long id) {
+        Member member = memberService.getCurrentMember();
         articleService.toggleArticleLike(id, member);
         return ResponseEntity.ok().build();
     }
@@ -70,14 +64,9 @@ public class ArticleController {
 
     @PostMapping("/comment")
     @ResponseBody
-    public ResponseEntity<?> commentSave(@RequestBody ArticleCommentRequestDTO commentDTO, HttpSession session) {
-        Member member = (Member) session.getAttribute("member");
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
-        }
+    public ResponseEntity<?> commentSave(@RequestBody ArticleCommentRequestDTO commentDTO) {
+        Member member = memberService.getCurrentMember();
         Long saveArticleId = articleService.saveComment(commentDTO, member.getNickname());
-
-        // 작성 성공하면 댓글 목록을 가져와서 반환
         List<ArticleCommentRequestDTO> commentDTOList = articleService.findAllComments(commentDTO.getArticleId());
         return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
     }

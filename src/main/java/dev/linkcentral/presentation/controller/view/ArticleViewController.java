@@ -1,8 +1,8 @@
-package dev.linkcentral.presentation;
-
+package dev.linkcentral.presentation.controller.view;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.ArticleService;
+import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -26,6 +25,7 @@ import java.util.List;
 public class ArticleViewController {
 
     private final ArticleService articleService;
+    private final MemberService memberService;
 
     @GetMapping("/save-form")
     public String saveForm() {
@@ -41,23 +41,24 @@ public class ArticleViewController {
 
     @GetMapping("/{id}")
     public String findById(@PageableDefault(page = 1) Pageable pageable,
-                           @PathVariable Long id, Model model, HttpSession session) {
-        Member member = (Member) session.getAttribute("member");
+                           @PathVariable Long id, Model model) {
+        Member member = memberService.getCurrentMember();
         ArticleRequestDTO articleDTO = articleService.findArticleById(id, member);
 
         // 댓글 목록 가져오기
         List<ArticleCommentRequestDTO> commentDTOList = articleService.findAllComments(id);
-        model.addAttribute("commentList", commentDTOList);
 
+        model.addAttribute("commentList", commentDTOList);
         model.addAttribute("article", articleDTO);
         model.addAttribute("page", pageable.getPageNumber());
         return "/articles/detail";
     }
 
     @GetMapping("/update/{id}")
-    public String updateForm(@PathVariable Long id, Model model, HttpSession session) {
-        Member member = (Member) session.getAttribute("member");
+    public String updateForm(@PathVariable Long id, Model model) {
+        Member member = memberService.getCurrentMember();
         ArticleRequestDTO articleDTO = articleService.findArticleById(id, member);
+
         model.addAttribute("articleUpdate", articleDTO);
         return "/articles/update";
     }
