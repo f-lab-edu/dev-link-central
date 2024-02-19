@@ -1,6 +1,8 @@
 package dev.linkcentral.presentation.controller.view;
 
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.infrastructure.SecurityUtils;
+import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +31,10 @@ public class ArticleViewController {
     private final MemberService memberService;
 
     @GetMapping("/save-form")
-    public String saveForm() {
-        return "/articles/save";
+    public String saveForm(Model model) {
+        Member currentMember = memberService.getCurrentMember();
+        model.addAttribute("nickname", currentMember.getNickname());
+        return "articles/save";
     }
 
     @GetMapping("/")
@@ -72,6 +77,16 @@ public class ArticleViewController {
         int startPage = (((int) Math.ceil(((double) pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
         int endPage = Math.min((startPage + blockLimit - 1), articlePage.getTotalPages());
 
+        // 요청 헤더에서 JWT 토큰 추출
+        boolean isAuthenticated = false;
+        try {
+            memberService.getCurrentMember();
+            isAuthenticated = true;
+        } catch (UsernameNotFoundException e) {
+            isAuthenticated = false;
+        }
+
+        model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("articleList", articleList); // List로 전달
         model.addAttribute("articlePage", articlePage); // 페이지 정보 전달
         model.addAttribute("startPage", startPage);     // 시작 페이지

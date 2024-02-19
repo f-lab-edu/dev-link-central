@@ -12,16 +12,53 @@
     </script>
 
     <script>
+        $(document).ready(function() {
+            // 로컬 스토리지에서 JWT 토큰 확인
+            const token = localStorage.getItem('jwt');
+            if (token) {
+                // 토큰이 존재하면 글작성 버튼 표시
+                $('#writeButton').show();
+            } else {
+                // 토큰이 없으면 글작성 버튼 숨김
+                $('#writeButton').hide();
+            }
+        });
+
         function saveReq() {
-            window.location.href = "/api/v1/view/article/save-form";
+            const token = localStorage.getItem('jwt');
+            if (token) {
+                // AJAX 요청을 통해 서버에 JWT 전달
+                $.ajax({
+                    url: '/api/v1/view/article/save-form',
+                    type: 'GET',
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                    },
+                    success: function(response) {
+                        // 서버로부터 응답이 성공적으로 돌아왔을 때
+                        // 응답으로 받은 HTML을 현재 페이지에 삽입하거나 새로운 페이지로 이동
+                        document.body.innerHTML = response; // 현재 페이지에 폼 삽입
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error: ' + error);
+                        alert('인증 오류가 발생했습니다. 로그인 페이지로 이동합니다.');
+                        window.location.href = '/';
+                    }
+                });
+            } else {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/login';
+            }
         }
     </script>
 </head>
 <body>
 
-<% if (session.getAttribute("member") != null) { %>
-<button onclick="saveReq()">글작성</button>
+<% if ((Boolean) request.getAttribute("isAuthenticated")) { %>
+    <button onclick="saveReq()">글작성</button>
 <% } %>
+
+<button id="writeButton" onclick="saveReq()" style="display:none;">글작성</button>
 
 <table>
     <tr>

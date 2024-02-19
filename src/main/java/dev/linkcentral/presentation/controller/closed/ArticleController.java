@@ -27,11 +27,15 @@ public class ArticleController {
     private final MemberService memberService;
 
     @PostMapping("/save")
-    public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
-        Member member = memberService.getCurrentMember();
-        articleDTO.setWriter(member.getNickname());
-        articleService.saveArticle(articleDTO);
-        return "redirect:/api/v1/view/article/paging";
+    public ResponseEntity<?> save(@RequestBody ArticleRequestDTO articleDTO) {
+        try {
+            Member member = memberService.getCurrentMember();
+            articleDTO.setWriter(member.getNickname());
+            articleService.saveArticle(articleDTO);
+            return ResponseEntity.ok("글이 성공적으로 작성되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("글 작성에 실패했습니다.");
+        }
     }
 
     @ResponseBody
