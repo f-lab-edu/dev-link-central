@@ -18,20 +18,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/public/member")
 public class MemberPublicController {
+
     private final MemberService memberService;
 
     @ResponseBody
     @PostMapping("/register")
-    public ResponseEntity<?> register(@ModelAttribute MemberSaveRequestDTO memberDTO) {
+    public ResponseEntity<?> register(@Valid @RequestBody MemberSaveRequestDTO memberDTO,
+                                      BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
         try {
             Member member = memberService.registerMember(memberDTO);
             return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -61,17 +71,12 @@ public class MemberPublicController {
                     .redirectUrl(redirectUrl)
                     .build()); // 정상적인 경우 JwtTokenDTO 반환
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 본문 없이 상태 코드만 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 본문 없이 상태 코드만 반환
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 본문 없이 상태 코드만 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    @GetMapping("/{nickname}/exists")
-    public ResponseEntity<Boolean> isNicknameDuplicated(@PathVariable String nickname) {
-        return ResponseEntity.ok(memberService.validateNicknameDuplication(nickname));
     }
 
     @ResponseBody

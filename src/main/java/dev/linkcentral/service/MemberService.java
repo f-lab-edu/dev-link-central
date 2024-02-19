@@ -97,19 +97,6 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Member> authenticateMember(String email, String password) {
-        Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(email);
-        if (member.isPresent()) {
-            String passwordHash = member.get().getPasswordHash();
-
-            if (passwordEncoder.matches(password, passwordHash)) {
-                return member;
-            }
-        }
-        return Optional.empty();
-    }
-
-    @Transactional(readOnly = true)
     public boolean validateNicknameDuplication(String nickname) {
         boolean isDuplicated = memberRepository.existsByNicknameAndDeletedFalse(nickname);
 
