@@ -20,9 +20,7 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
-        # 실행되는 쿼리 출력
         show_sql: true
-        # 콘솔창 출력 쿼리 가독성 좋게 포맷팅
         format_sql: true
         use_sql_comments: true
   mail:
@@ -38,11 +36,7 @@ spring:
           starttls:
             enable: true
 jwt:
-  secret: ${JWT_SECRET:default_secret_value}
-
-#jwt:
-#  secret: ${JWT_SECRET:ZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWUK}
-
+ secret: ${JWT_SECRET:ZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWUK}
 
 logging:
   level:
@@ -51,4 +45,19 @@ logging:
         type:
           # 쿼리에 물음표로 출력되는 바인드 파라미터 출력
           descriptor.sql: trace
-#    org.hibernate.sql: debug
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
+cloud:
+  aws:
+    s3:
+      bucket: mingseokbucket
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: ${AWS_S3_ACCESS_KEY}
+      secret-key: ${AWS_S3_SECRET_KEY}

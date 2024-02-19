@@ -83,6 +83,27 @@
         function studyRecruitmentArticlePaging() {
             window.location.href = "/api/v1/view/article/paging";
         }
+
+        function profileView() {
+            $.ajax({
+                type: "GET",
+                url: "/api/v1/profile/auth/member-info",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function(response) {
+                    var memberId = response.memberId;
+                    if (memberId === null || memberId === '') {
+                        alert('회원 ID가 존재하지 않습니다.');
+                        return;
+                    }
+                    window.location.href = "/api/v1/view/profile/view?memberId=" + memberId;
+                },
+                error: function(xhr) {
+                    alert("회원 정보를 가져올 수 없습니다: " + xhr.responseText);
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -95,6 +116,8 @@
     <button onclick="editProfile()">회원수정</button>
 
     <button onclick="deletePage()">회원탈퇴</button>
+
+    <button onclick="profileView()">프로필 보기</button>
 
     <button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판 페이징 목록</button>
 </div>
