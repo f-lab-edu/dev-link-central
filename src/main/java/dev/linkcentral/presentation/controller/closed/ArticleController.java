@@ -70,4 +70,21 @@ public class ArticleController {
         List<ArticleCommentRequestDTO> commentDTOList = articleService.findAllComments(commentDTO.getArticleId());
         return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
     }
+
+    @ResponseBody
+    @PutMapping("/comment/{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId,
+                                           @RequestBody ArticleCommentRequestDTO commentDTO) {
+        Member member = memberService.getCurrentMember();
+        articleService.updateComment(commentId, commentDTO, member.getNickname());
+        return ResponseEntity.ok().build();
+    }
+
+    @ResponseBody
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
+        Member member = memberService.getCurrentMember();
+        articleService.deleteComment(commentId, member.getNickname());
+        return ResponseEntity.ok().build();
+    }
 }

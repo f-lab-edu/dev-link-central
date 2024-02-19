@@ -1,6 +1,7 @@
 <%@ page import="dev.linkcentral.service.dto.request.ArticleRequestDTO" %>
 <%@ page import="dev.linkcentral.service.dto.request.ArticleCommentRequestDTO" %>
 <%@ page import="java.util.List" %>
+<%@ page import="dev.linkcentral.database.entity.Member" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -41,6 +42,33 @@
                 }
             });
         }
+
+        // 댓글 수정 버튼 클릭 시 호출될 함수
+        function editComment(commentId) {
+            // 수정할 댓글의 내용을 입력할 input 필드와 저장 버튼 생성
+            var commentContent = $("#comment-content-" + commentId).text();
+            var editHtml = "<input type='text' id='edit-content-" + commentId + "' value='" + commentContent + "'>";
+            editHtml += "<button onclick='submitCommentEdit(" + commentId + ")'>저장</button>";
+            $("#comment-row-" + commentId).html(editHtml);
+        }
+
+        // AJAX를 통해 수정된 댓글 내용을 서버에 전송
+        function submitCommentEdit(commentId) {
+            var newContent = $("#edit-content-" + commentId).val();
+            $.ajax({
+                url: "/api/v1/article/comment/" + commentId,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify({ contents: newContent }),
+                success: function() {
+                    // 성공 시 댓글 목록을 다시 로드
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    alert("댓글 수정 실패: " + error);
+                }
+            });
+        }
     </script>
 
     <script>
@@ -69,6 +97,10 @@
         });
     </script>
 
+    <script type="text/javascript">
+        var loggedInUserNickname = '<c:out value="${member.nickname}"/>'; // 로그인한 사용자의 닉네임
+    </script>
+
     <script>
         const commentWrite = () => {
             const contents = document.getElementById("contents").value;
@@ -82,18 +114,20 @@
                     "articleId": id
                 }),
                 success: function (res) {
-                    console.log("요청성공", res);
                     let output = "<table>";
                     output += "<tr><th>댓글번호</th>";
                     output += "<th>작성자</th>";
                     output += "<th>내용</th>";
                     output += "<th>작성시간</th></tr>";
                     for (let i in res) {
-                        output += "<tr>";
+                        output += "<tr id='comment-row-" + res[i].id + "'>";
                         output += "<td>" + res[i].id + "</td>";
                         output += "<td>" + res[i].nickname + "</td>";
-                        output += "<td>" + res[i].contents + "</td>";
+                        output += "<td id='comment-content-" + res[i].id + "'>" + res[i].contents + "</td>";
                         output += "<td>" + res[i].createdAt + "</td>";
+                        if (loggedInUserNickname === res[i].nickname) {
+                            output += "<td><button onclick='editComment(" + res[i].id + ")'>수정</button></td>";
+                        }
                         output += "</tr>";
                     }
                     output += "</table>";
@@ -108,6 +142,40 @@
 
         $(document).ready(function() {
             updateLikesCount();
+        });
+
+        function deleteComment(commentId) {
+            if(confirm("댓글을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/api/v1/article/comment/" + commentId,
+                    type: "DELETE",
+                    success: function() {
+                        alert("댓글이 삭제되었습니다.");
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert("댓글 삭제 실패: " + error);
+                    }
+                });
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // 로그인한 사용자의 닉네임
+            var loggedInUserNickname = '<c:out value="${member.nickname}"/>';
+
+            // 페이지 로드 후 댓글 목록의 각 항목에 대해 실행
+            $('.comment-row').each(function() {
+                var commentNickname = $(this).data('nickname'); // 댓글 작성자의 닉네임
+
+                // 로그인한 사용자가 댓글 작성자와 동일한 경우
+                if (commentNickname === loggedInUserNickname) {
+                    // 수정 및 삭제 버튼을 표시
+                    $(this).find('.comment-actions').show();
+                }
+            });
         });
     </script>
 </head>
@@ -160,7 +228,7 @@
 </div>
 
 
-<%--댓글 출력 부분--%>
+<%-- 댓글 목록 출력 부분 --%>
 <div id="comment-list">
     <table>
         <tr>
@@ -174,11 +242,15 @@
             if (commentList != null) {
                 for (ArticleCommentRequestDTO comment : commentList) {
         %>
-        <tr>
+        <tr class="comment-row" data-nickname="<%= comment.getNickname() %>">
             <td><%= comment.getId() %></td>
             <td><%= comment.getNickname() %></td>
             <td><%= comment.getContents() %></td>
             <td><%= comment.getCreatedAt() %></td>
+            <td class="comment-actions" style="display: none;">
+                <button onclick="editComment(<%= comment.getId() %>)">수정</button>
+                <button onclick="deleteComment(<%= comment.getId() %>)">삭제</button>
+            </td>
         </tr>
         <%
                 }
@@ -186,7 +258,6 @@
         %>
     </table>
 </div>
-
 
 </body>
 </html>

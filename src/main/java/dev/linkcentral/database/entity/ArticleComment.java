@@ -35,7 +35,8 @@ public class ArticleComment extends AuditingFields {
         this.article = article;
     }
 
-    public static ArticleComment toSaveEntity(ArticleCommentRequestDTO commentDTO, Article article, String writerNickname) {
+    public static ArticleComment toSaveEntity(ArticleCommentRequestDTO commentDTO,
+                                              Article article, String writerNickname) {
         ArticleComment articleComment = new ArticleComment();
         articleComment.updateContent(commentDTO.getContents());
         articleComment.updateArticle(article);
