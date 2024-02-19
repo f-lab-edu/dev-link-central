@@ -68,6 +68,12 @@ public class ArticleViewController {
         return "/articles/update";
     }
 
+    @GetMapping("/delete-form/{id}")
+    public String deleteForm(@PathVariable Long id) {
+        articleService.deleteArticle(id);
+        return "redirect:/api/v1/view/article/";
+    }
+
     @GetMapping("/paging")
     public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
         Page<ArticleRequestDTO> articlePage = articleService.paginateArticles(pageable);
