@@ -1,16 +1,24 @@
 package dev.linkcentral.presentation.controller.view;
 
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.infrastructure.jwt.JwtAuthenticationFilter;
+import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import dev.linkcentral.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 
 @Controller
@@ -41,26 +49,16 @@ public class MemberViewController {
         return "/members/reset-password";
     }
 
-//    @GetMapping("/edit-form")
-//    public String memberEdit(Model model) {
-//        Member member = memberService.getCurrentMember();
-//        if (member == null) {
-//            return "redirect:/api/v1/view/member/login";
-//        }
-//        model.addAttribute("member", member);
-//        return "/members/edit";
-//    }
-
-    /**
-     * 일단 여기서 테스트.
-     */
     @GetMapping("/edit-form")
-    public ResponseEntity<?> memberEdit() {
+    public String memberEdit(Model model) {
         Member member = memberService.getCurrentMember();
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        return ResponseEntity.ok(Collections.singletonMap("url", "/members/edit"));
+        model.addAttribute("member", member);
+        return "/members/edit";
+    }
+
+    @GetMapping("/edit-form2")
+    public String memberEdit2() {
+        return "/members/edit";
     }
 
     @GetMapping("/delete-page")

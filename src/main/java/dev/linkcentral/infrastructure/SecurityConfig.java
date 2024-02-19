@@ -1,7 +1,7 @@
 package dev.linkcentral.infrastructure;
 
-import dev.linkcentral.infrastructure.jwt.JwtAuthenticationFilter;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
+import dev.linkcentral.infrastructure.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,9 +40,9 @@ public class SecurityConfig {
                 )
                 .permitAll()
                 .antMatchers(
-//                        "/api/v1/member/**",
-//                        "/api/v1/article/**"
-                ).hasAuthority("USER")
+                        "/api/v1/member/**",
+                        "/api/v1/article/**"
+                ).hasAuthority("USER") // `USER` 권한을 가진 사용자만 접근 가능하도록 설정
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

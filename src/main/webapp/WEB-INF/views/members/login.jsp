@@ -57,21 +57,20 @@
             // JWT 토큰 삭제
             localStorage.removeItem('jwt');
             // 로그아웃 후 홈페이지로 리디렉션
-            window.location.href = '/';
+            window.location.href = "/";
         }
 
         function editProfile() {
             $.ajax({
-                type: "GET",
-                url: '/api/v1/view/member/edit-form',
+                url: "/api/v1/view/member/edit-form",
+                type: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
-                success: function(response) {
-                    window.location.href = response.url;
+                success: function(data) {
+                    // window.location.href = data
                 },
-                error: function (xhr) {
-                    alert("회원 정보 수정 페이지로 이동할 수 없습니다: " + xhr.responseText);
+                error: function(error) {
                 }
             });
         }
