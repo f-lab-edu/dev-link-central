@@ -6,6 +6,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+            crossorigin="anonymous">
+    </script>
 
     <script>
         function saveReq() {
@@ -30,7 +34,7 @@
         <c:forEach items="${articleList}" var="article">
             <tr>
                 <td>${article.id}</td>
-                <td>${article.title}</td>
+                <td><a href="/api/v1/view/profile/view?memberId=${article.writerId}">${article.title}</a></td>
                 <td><a href="/api/v1/view/article/${article.id}?page=${articlePage.number + 1}">${article.writer}</a></td>
                 <td>${article.createdAt}</td>
             </tr>
