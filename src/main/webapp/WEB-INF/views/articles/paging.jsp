@@ -38,6 +38,34 @@
                         // 서버로부터 응답이 성공적으로 돌아왔을 때
                         // 응답으로 받은 HTML을 현재 페이지에 삽입하거나 새로운 페이지로 이동
                         document.body.innerHTML = response; // 현재 페이지에 폼 삽입
+                        $("#saveArticleBtn").on("click", function (e){
+                            e.preventDefault();
+
+                            const formData = {
+                                writer: $('input[name="writer"]').val(),
+                                title: $('input[name="title"]').val(),
+                                content: $('textarea[name="content"]').val()
+                            };
+
+                            $.ajax({
+                                url: "/api/v1/article/save",
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(formData),
+                                beforeSend: function(xhr) {
+                                    xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('jwt'));
+                                },
+                                success: function(response) {
+                                    console.log('성공:', response);
+                                    alert('글이 성공적으로 작성되었습니다.');
+                                    window.location.href = "/api/v1/view/article/paging";
+                                },
+                                error: function(xhr, status, error) {
+                                    console.log('오류:', status, error);
+                                    alert('글 작성에 실패했습니다.');
+                                }
+                            });
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.error('Error: ' + error);
@@ -55,7 +83,7 @@
 <body>
 
 <% if ((Boolean) request.getAttribute("isAuthenticated")) { %>
-    <button onclick="saveReq()">글작성</button>
+<button onclick="saveReq()">글작성</button>
 <% } %>
 
 <button id="writeButton" onclick="saveReq()" style="display:none;">글작성</button>

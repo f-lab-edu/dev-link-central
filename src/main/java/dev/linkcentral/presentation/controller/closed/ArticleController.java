@@ -27,6 +27,7 @@ public class ArticleController {
     private final MemberService memberService;
 
     @PostMapping("/save")
+    @ResponseBody
     public ResponseEntity<?> save(@RequestBody ArticleRequestDTO articleDTO) {
         try {
             Member member = memberService.getCurrentMember();
@@ -38,8 +39,8 @@ public class ArticleController {
         }
     }
 
-    @ResponseBody
     @PutMapping
+    @ResponseBody
     public ArticleEditResponseDTO update(@RequestBody ArticleUpdateRequestDTO articleDTO, Model model) {
         ArticleRequestDTO article = articleService.updateArticle(articleDTO);
         model.addAttribute("article", article);
@@ -75,8 +76,8 @@ public class ArticleController {
         return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
     }
 
-    @ResponseBody
     @PutMapping("/comment/{commentId}")
+    @ResponseBody
     public ResponseEntity<?> updateComment(@PathVariable Long commentId,
                                            @RequestBody ArticleCommentRequestDTO commentDTO) {
         Member member = memberService.getCurrentMember();
@@ -84,8 +85,8 @@ public class ArticleController {
         return ResponseEntity.ok().build();
     }
 
-    @ResponseBody
     @DeleteMapping("/comment/{commentId}")
+    @ResponseBody
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
         Member member = memberService.getCurrentMember();
         articleService.deleteComment(commentId, member.getNickname());
