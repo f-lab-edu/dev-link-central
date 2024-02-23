@@ -4,7 +4,6 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.response.MemberEditResponseDTO;
-import dev.linkcentral.service.dto.response.MemberPasswordResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,14 +30,6 @@ public class MemberController {
         }
         String editFormUrl = "/members/edit";
         return ResponseEntity.ok(Collections.singletonMap("url", editFormUrl));
-    }
-
-    @ResponseBody
-    @PostMapping("/check-current-password")
-    public MemberPasswordResponseDTO checkPassword(@RequestParam String password) {
-        Member member = memberService.getCurrentMember();
-        boolean result = memberService.validatePassword(member.getNickname(), password);
-        return new MemberPasswordResponseDTO(result);
     }
 
     @ResponseBody

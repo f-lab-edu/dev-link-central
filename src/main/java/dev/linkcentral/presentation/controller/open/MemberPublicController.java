@@ -19,7 +19,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -94,5 +93,13 @@ public class MemberPublicController {
     public void sendEmail(String userEmail, String userName) {
         MemberMailRequestDTO dto = memberService.createMailForPasswordReset(userEmail, userName);
         memberService.sendMail(dto);
+    }
+
+    @ResponseBody
+    @PostMapping("/check-current-password")
+    public MemberPasswordResponseDTO checkPassword(@RequestParam String password) {
+        Member member = memberService.getCurrentMember();
+        boolean result = memberService.validatePassword(member.getNickname(), password);
+        return new MemberPasswordResponseDTO(result);
     }
 }
