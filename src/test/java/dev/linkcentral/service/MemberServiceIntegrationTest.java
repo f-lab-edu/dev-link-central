@@ -5,6 +5,7 @@ import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
 import org.junit.jupiter.api.DisplayName;
@@ -16,13 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
-class InternalMemberServiceTest {
+class MemberServiceIntegrationTest {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -56,9 +56,9 @@ class InternalMemberServiceTest {
         return memberDTO;
     }
 
-    @DisplayName("회원 가입이 진행되고, DB에 데이터가 제대로 저장되었는지 검사한다.")
+    @DisplayName("회원 가입시 데이터베이스 저장 검증")
     @Test
-    void verify_user_data_saved_on_sign_up() {
+    void save_member_and_verify_database() {
         // given
         MemberSaveRequestDTO memberDTO = createTestMemberSaveRequestDTO();
 
@@ -73,7 +73,7 @@ class InternalMemberServiceTest {
         assertEquals(savedMember.getNickname(), registeredMember.getNickname());
     }
 
-    @DisplayName("회원 가입 시, 중복된 이메일을 입력하면 예외 처리한다.")
+    @DisplayName("회원 가입 시, 이메일 중복시 예외 발생 검증")
     @Test
     @Transactional
     void register_with_duplicate_email_exception() {
@@ -93,7 +93,7 @@ class InternalMemberServiceTest {
         });
     }
 
-    @DisplayName("회원 가입 시, 중복된 닉네임을 입력하면 예외 처리한다.")
+    @DisplayName("회원 가입 시, 닉네임 중복시 예외 발생 검증")
     @Test
     void register_with_duplicate_nickname_exception() {
         // given
@@ -112,27 +112,36 @@ class InternalMemberServiceTest {
         });
     }
 
-    @DisplayName("로그인이 성공적으로 되는지 검사한다.")
+    @DisplayName("로그인 성공 및 JWT 토큰 생성 검증")
     @Test
-    void check_login_success() {
+    void verify_Login_Success_And_Jwt_Token_Generation() {
         // given
         String inputEmail = "test@naver.com";
         String inputPassword = "1234";
-
         Member member = createTestMember();
+
         memberRepository.save(member);
 
         // when
-        Optional<Member> loggedInMember = memberService.authenticateMember(inputEmail, inputPassword);
+        // 인증을 시도하고 JWT 토큰을 생성.
+        JwtTokenDTO jwtTokenDTO = memberService.authenticateAndGenerateJwtToken(inputEmail, inputPassword);
 
         // then
-        assertTrue(loggedInMember.isPresent());
-        assertEquals(inputEmail, loggedInMember.get().getEmail());
+        assertNotNull(jwtTokenDTO); // JWT 토큰 객체가 null이 아닌지 확인
+        assertNotNull(jwtTokenDTO.getAccessToken()); // 액세스 토큰이 null이 아닌지 확인
+        assertFalse(jwtTokenDTO.getAccessToken().isEmpty());
+
+        // 토큰 타입이 "Bearer"로 설정되었는지 확인
+        assertEquals("Bearer", jwtTokenDTO.getGrantType());
+
+        // 리프레시 토큰이 제공되는 경우, 해당 토큰도 유효한지 확인
+        assertNotNull(jwtTokenDTO.getRefreshToken());
+        assertFalse(jwtTokenDTO.getRefreshToken().isEmpty());
     }
 
-    @DisplayName("암호화된 패스워드와 평문 패스워드가 일치한지 검사한다.")
+    @DisplayName("암호화된 패스워드와 평문 패스워드가 일치 검증")
     @Test
-    void check_password_encryption_match() {
+    void verify_password_encryption_match() {
         // given
         String password = "1234";
         String encryptedPassword = passwordEncoder.encode(password);
@@ -141,13 +150,13 @@ class InternalMemberServiceTest {
         assertTrue(passwordEncoder.matches(password, encryptedPassword));
     }
 
-    @DisplayName("DB에 중복된 닉네임이 있다면, 예외 처리한다.")
+    @DisplayName("닉네임 중복시 예외 발생 검증")
     @Test
     void user_duplicate_nickname_exception() {
         // given
         String nickname = "apple";
-
         Member member = createTestMember();
+
         memberRepository.save(member);
 
         // when & then
@@ -156,14 +165,14 @@ class InternalMemberServiceTest {
         });
     }
 
-    @DisplayName("[비밀번호 찾기] DB에 저장된 유저의 이름과 이메일이 일치하지 않을 경우 예외 처리한다.")
+    @DisplayName("이메일과 이름이 불일치시 예외 발생 검증")
     @Test
-    void user_name_email_mismatch_exception() {
+    void username_email_mismatch_exception() {
         // given
         String inputEmail = "alstjr@naver.com";
         String inputName = "heedo";
-
         Member member = createTestMember();
+
         memberRepository.save(member);
 
         // when & then
@@ -172,9 +181,9 @@ class InternalMemberServiceTest {
         });
     }
 
-    @DisplayName("회원 정보를 수정하고 DB에 저장된 데이터를 검사한다.")
+    @DisplayName("회원 정보 수정 후 데이터베이스 저장 검증")
     @Test
-    void modify_member_information() {
+    void modify_member_information_and_verify() {
         // given
         Member originalMember = createTestMember();
         memberRepository.save(originalMember);
@@ -190,32 +199,30 @@ class InternalMemberServiceTest {
         // then
         Member updatedMember = memberRepository.findById(originalMember.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
-
         assertEquals("heedo", updatedMember.getName());
         assertEquals("mango", updatedMember.getNickname());
         assertTrue(passwordEncoder.matches("7777", updatedMember.getPasswordHash()));
     }
 
-    @DisplayName("로그인 되어 있는 패스워드와 현재 사용중인 유저의 비밀번호를 입력받아 일치하는지 검사한다.")
+    @DisplayName("로그인 되어 있는 유저 패스워드와 입력받은 비밀번호 일치 여부 검증")
     @Test
-    void check_password_match() {
+    void verify_current_password_match() {
         // given
         String inputNickname = "apple";
         String inputPassword = "wrongPassword";
-
         Member originalMember = createTestMember();
+
         memberRepository.save(originalMember);
 
         // when & then
         assertFalse(memberService.validatePassword(inputNickname, inputPassword));
     }
 
-    @DisplayName("유저를 삭제할 경우, 소프트 삭제로 이루어졌는지 검사한다.")
+    @DisplayName("유저 소프트 삭제 검증")
     @Test
-    void user_soft_delete_check() {
+    void verify_user_soft_deletion() {
         // given
         String inputPassword = "1234";
-
         Member testMember = createTestMember();
         memberRepository.saveAndFlush(testMember);
 

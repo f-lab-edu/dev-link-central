@@ -26,23 +26,28 @@ public class ArticleController {
     private final ArticleService articleService;
     private final MemberService memberService;
 
-    @PostMapping("/save")
-    public String save(@ModelAttribute ArticleRequestDTO articleDTO) {
-        Member member = memberService.getCurrentMember();
-        articleDTO.setWriter(member.getNickname());
-        articleService.saveArticle(articleDTO);
-        return "redirect:/api/v1/view/article/paging";
+    @PostMapping
+    @ResponseBody
+    public ResponseEntity<?> save(@RequestBody ArticleRequestDTO articleDTO) {
+        try {
+            Member member = memberService.getCurrentMember();
+            articleDTO.setWriter(member.getNickname());
+            articleService.saveArticle(articleDTO);
+            return ResponseEntity.ok("글이 성공적으로 작성되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("글 작성에 실패했습니다.");
+        }
     }
 
-    @ResponseBody
     @PutMapping
+    @ResponseBody
     public ArticleEditResponseDTO update(@RequestBody ArticleUpdateRequestDTO articleDTO, Model model) {
         ArticleRequestDTO article = articleService.updateArticle(articleDTO);
         model.addAttribute("article", article);
         return new ArticleEditResponseDTO(HttpStatus.OK.value());
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<String> delete(@PathVariable Long id) {
         articleService.deleteArticle(id);
@@ -69,5 +74,22 @@ public class ArticleController {
         Long saveArticleId = articleService.saveComment(commentDTO, member.getNickname());
         List<ArticleCommentRequestDTO> commentDTOList = articleService.findAllComments(commentDTO.getArticleId());
         return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
+    }
+
+    @PutMapping("/comment/{commentId}")
+    @ResponseBody
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId,
+                                           @RequestBody ArticleCommentRequestDTO commentDTO) {
+        Member member = memberService.getCurrentMember();
+        articleService.updateComment(commentId, commentDTO, member.getNickname());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/comment/{commentId}")
+    @ResponseBody
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
+        Member member = memberService.getCurrentMember();
+        articleService.deleteComment(commentId, member.getNickname());
+        return ResponseEntity.ok().build();
     }
 }

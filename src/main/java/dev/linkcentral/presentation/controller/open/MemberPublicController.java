@@ -18,20 +18,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/public/member")
 public class MemberPublicController {
+
     private final MemberService memberService;
 
-    @ResponseBody
     @PostMapping("/register")
-    public ResponseEntity<?> register(@ModelAttribute MemberSaveRequestDTO memberDTO) {
+    @ResponseBody
+    public ResponseEntity<?> register(@Valid @RequestBody MemberSaveRequestDTO memberDTO,
+                                      BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
         try {
             Member member = memberService.registerMember(memberDTO);
             return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -61,21 +70,16 @@ public class MemberPublicController {
                     .redirectUrl(redirectUrl)
                     .build()); // 정상적인 경우 JwtTokenDTO 반환
         } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 본문 없이 상태 코드만 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 본문 없이 상태 코드만 반환
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 본문 없이 상태 코드만 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @GetMapping("/{nickname}/exists")
-    public ResponseEntity<Boolean> isNicknameDuplicated(@PathVariable String nickname) {
-        return ResponseEntity.ok(memberService.validateNicknameDuplication(nickname));
-    }
-
-    @ResponseBody
     @GetMapping("/forgot-password")
+    @ResponseBody
     public MemberPasswordResponseDTO isPasswordValid(String userEmail, String userName) {
         // 이메일과 이름이 일치하는 사용자가 있는지 확인.
         boolean pwFindCheck = memberService.validateUserEmail(userEmail, userName);
@@ -89,5 +93,13 @@ public class MemberPublicController {
     public void sendEmail(String userEmail, String userName) {
         MemberMailRequestDTO dto = memberService.createMailForPasswordReset(userEmail, userName);
         memberService.sendMail(dto);
+    }
+
+    @PostMapping("/check-current-password")
+    @ResponseBody
+    public MemberPasswordResponseDTO checkPassword(@RequestParam String password) {
+        Member member = memberService.getCurrentMember();
+        boolean result = memberService.validatePassword(member.getNickname(), password);
+        return new MemberPasswordResponseDTO(result);
     }
 }

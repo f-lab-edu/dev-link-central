@@ -89,11 +89,11 @@
             var password = $('#password').val();
 
             $.ajax({
-                url: '/api/v1/member/delete?password=' + encodeURIComponent(password),
+                url: "/api/v1/member?password=" + encodeURIComponent(password),
                 type: 'DELETE',
                 success: function(response) {
                     alert('회원 탈퇴가 완료되었습니다.');
-                    window.location.href = '/api/v1/view/member/';
+                    window.location.href = "/api/v1/view/member/";
                 },
                 error: function(xhr, status, error) {
                     // 요청이 실패했을 때의 동작
@@ -106,7 +106,6 @@
 </head>
 <body>
 <div class="container">
-    <%--<form action="/api/v1/member/delete" method="post">--%>
     <form id="deleteForm" onsubmit="deleteMember(event)">
         <label class="form-label mt-4">회원 탈퇴</label>
 

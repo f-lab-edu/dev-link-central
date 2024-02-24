@@ -1,15 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Page Title</title>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
 
     <!-- Bootstrap JS 및 jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+            crossorigin="anonymous">
+    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- SweetAlert2 JS -->
@@ -80,79 +83,6 @@
             margin-top: 5px;
         }
     </style>
-
-    <script>
-        $(document).ready(function () {
-            init();
-
-            function init() {
-                $("#btn-update").on("click", function () {
-                    checkCurrentPassword();
-                });
-            }
-
-            function checkCurrentPassword() {
-                let currentPassword = $("#currentPassword").val();
-
-                $(".error-message").remove();
-
-                $.post("/api/v1/member/check-current-password", { id: $("#id").val(), password: currentPassword })
-                    .done(function (resp) {
-                        console.log("Response:", resp); // 응답 로그 추가
-
-                        if (resp.result) {
-                            update();
-                        } else {
-                            let errorMessage = "현재 비밀번호가 일치하지 않거나, 입력하지 않는 문구가 있습니다.";
-                            $("#currentPassword").after("<div class='error-message'>" + errorMessage + "</div>");
-                        }
-                    })
-                    .fail(function (error) {
-                        console.error("Error checking current password:", error);
-                    });
-            }
-
-            function update() {
-                let data = {
-                    id: $("#id").val(),
-                    name: $("#name").val(),
-                    password: $("#password").val(),
-                    nickname: $("#nickname").val()
-                };
-
-                console.log("업데이트 데이터:", data);
-
-                // 데이터 객체를 폼 데이터로 변환
-                let formData = new FormData();
-
-                // 빈 값 또는 null 값이 아닌 경우에만 FormData에 추가
-                Object.keys(data).forEach(key => {
-                    if (data[key] !== null && data[key] !== "") {
-                        formData.append(key, data[key]);
-                    }
-                });
-
-                $.ajax({
-                    type: "PUT",
-                    url: "/api/v1/member/edit",
-                    data: formData,
-                    processData: false,
-                    contentType: false
-                })
-                    .done(function (resp) {
-                        alert("회원 수정이 완료되었습니다.");
-                        window.location.href = "/";
-                    })
-                    .fail(function (error) {
-                        let errorMessage = "현재 비밀번호가 일치하지 않습니다.";
-
-                        if ($("#currentPassword + .error-message").length === 0) {
-                            $("#currentPassword").after("<div class='error-message'>" + errorMessage + "</div>");
-                        }
-                    });
-            }
-        });
-    </script>
 </head>
 <body>
 <div class="container">

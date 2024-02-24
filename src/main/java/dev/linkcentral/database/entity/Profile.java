@@ -25,6 +25,11 @@ public class Profile extends AuditingFields {
     protected Profile() {
     }
 
+    public Profile(Member member, String bio, String imageUrl) {
+        this.member = member;
+        this.bio = bio;
+        this.imageUrl = imageUrl;
+    }
 
     public void updateBio(String bio) {
         this.bio = bio;

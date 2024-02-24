@@ -6,6 +6,8 @@ import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.ArticleCommentRepository;
 import dev.linkcentral.database.repository.MemberRepository;
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
+import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -33,6 +36,9 @@ public class MemberServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private MemberService memberService;
@@ -57,9 +63,9 @@ public class MemberServiceTest {
         return memberDTO;
     }
 
-    @DisplayName("회원 가입이 진행되고, DB에 데이터가 제대로 저장되었는지 검사한다.")
+    @DisplayName("회원 가입시 데이터베이스 저장 검증")
     @Test
-    void verify_user_data_saved_on_sign_up() {
+    void save_member_and_verify_database() {
         // given
         MemberSaveRequestDTO memberDTO = createTestMemberSaveDTO();
         Member mockMember = createTestMember();
@@ -75,14 +81,12 @@ public class MemberServiceTest {
         assertEquals(mockMember.getNickname(), savedMember.getNickname());
     }
 
-    @DisplayName("회원 가입 시, 중복된 이메일을 입력하면 예외 처리한다.")
+    @DisplayName("회원 가입 시, 이메일 중복시 예외 발생 검증")
     @Test
     void register_with_duplicate_email_exception() {
         // given
         MemberSaveRequestDTO newMemberDTO = createTestMemberSaveDTO();
-
-        when(memberRepository.countByEmailIgnoringDeleted(newMemberDTO.getEmail()))
-                .thenReturn(1L);
+        when(memberRepository.countByEmailIgnoringDeleted(newMemberDTO.getEmail())).thenReturn(1L);
 
         // when & then
         assertThrows(DuplicateEmailException.class, () -> {
@@ -90,14 +94,12 @@ public class MemberServiceTest {
         });
     }
 
-    @DisplayName("회원 가입 시, 중복된 닉네임을 입력하면 예외 처리한다.")
+    @DisplayName("회원 가입 시, 닉네임 중복시 예외 발생 검증")
     @Test
     void register_with_duplicate_nickname_exception() {
         // given
         MemberSaveRequestDTO newMemberDTO = createTestMemberSaveDTO();
-
-        when(memberRepository.existsByNicknameAndDeletedFalse(newMemberDTO.getNickname()))
-                .thenReturn(true);
+        when(memberRepository.existsByNicknameAndDeletedFalse(newMemberDTO.getNickname())).thenReturn(true);
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> {
@@ -105,50 +107,54 @@ public class MemberServiceTest {
         });
     }
 
-    @DisplayName("로그인이 성공적으로 되는지 검사하는 테스트")
     @Test
-    void login_success() {
+    @DisplayName("로그인 성공 및 JWT 토큰 생성 검증")
+    void verify_Login_Success_And_Jwt_Token_Generation() {
         // given
-        String email = "test@naver.com";
-        String password = "1234";
+        String inputEmail = "test@naver.com";
+        String inputPassword = "1234";
         Member member = createTestMember();
 
-        when(memberRepository.findByEmailAndDeletedFalse(email))
-                .thenReturn(Optional.of(member));
+        // memberRepository.findByEmailAndDeletedFalse 메서드가 inputEmail에 대해 member 객체를 반환하도록 설정
+        when(memberRepository.findByEmailAndDeletedFalse(inputEmail)).thenReturn(Optional.of(member));
 
-        when(passwordEncoder.matches(password, member.getPasswordHash()))
-                .thenReturn(true);
+        // passwordEncoder.matches 메서드가 inputPassword와 member.getPasswordHash()가 일치한다고 가정
+        when(passwordEncoder.matches(inputPassword, member.getPasswordHash())).thenReturn(true);
+
+        // jwtTokenProvider.generateToken 호출 시 목 JwtTokenDTO 객체 반환 설정
+        JwtTokenDTO mockJwtTokenDTO = new JwtTokenDTO("Bearer",
+                "access_token_string",
+                "refresh_token_string");
+        when(jwtTokenProvider.generateToken(any(Authentication.class))).thenReturn(mockJwtTokenDTO);
 
         // when
-        Optional<Member> loginMember = memberService.authenticateMember(email, password);
+        JwtTokenDTO jwtTokenDTO = memberService.authenticateAndGenerateJwtToken(inputEmail, inputPassword);
 
         // then
-        assertTrue(loginMember.isPresent());
-        assertEquals(email, loginMember.get().getEmail());
+        assertNotNull(jwtTokenDTO);                                                  // JWT 토큰 객체가 null이 아닌지 확인
+        assertEquals("Bearer", jwtTokenDTO.getGrantType());                  // 토큰 타입이 "Bearer"로 설정되었는지 확인
+        assertEquals("access_token_string", jwtTokenDTO.getAccessToken());   // 액세스 토큰 값 검증
+        assertEquals("refresh_token_string", jwtTokenDTO.getRefreshToken()); // 리프레시 토큰 값 검증
     }
 
-    @DisplayName("암호화된 패스워드와 평문 패스워드가 일치한지 검사한다.")
+    @DisplayName("암호화된 패스워드와 평문 패스워드가 일치 검증")
     @Test
-    void check_password_encryption_match() {
+    void verify_password_encryption_match() {
         // given
         String plainPassword = "1234";
         String encodedPassword = passwordEncoder.encode(plainPassword);
-
-        when(passwordEncoder.matches(plainPassword, encodedPassword))
-                .thenReturn(true);
+        when(passwordEncoder.matches(plainPassword, encodedPassword)).thenReturn(true);
 
         // when & then
         assertTrue(passwordEncoder.matches(plainPassword, encodedPassword));
     }
 
-    @DisplayName("DB에 중복된 닉네임이 있다면, 예외 처리한다.")
+    @DisplayName("닉네임 중복시 예외 발생 검증")
     @Test
-    void check_duplicate_nickname_exception() {
+    void user_duplicate_nickname_exception() {
         // given
         String nickname = "apple";
-
-        when(memberRepository.existsByNicknameAndDeletedFalse(nickname))
-                .thenReturn(true);
+        when(memberRepository.existsByNicknameAndDeletedFalse(nickname)).thenReturn(true);
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> {
@@ -156,13 +162,12 @@ public class MemberServiceTest {
         });
     }
 
-    @DisplayName("[비밀번호 찾기] DB에 저장된 유저의 이름과 이메일이 일치하지 않을 경우 예외 처리한다.")
+    @DisplayName("이메일과 이름이 불일치시 예외 발생 검증")
     @Test
-    void user_name_email_mismatch_exception1() {
+    void username_email_mismatch_exception() {
         // given
         String inputEmail = "alstjr@naver.com";
         String inputName = "heedo";
-
         when(memberRepository.findByEmailAndNameAndDeletedFalse(inputEmail, inputName))
                 .thenReturn(Optional.empty());
 
@@ -172,23 +177,19 @@ public class MemberServiceTest {
         });
     }
 
-    @DisplayName("회원 정보를 수정하고 DB에 저장된 데이터를 검사한다.")
+    @DisplayName("회원 정보 수정 후 데이터베이스 저장 검증")
     @Test
-    void modify_member_information() {
+    void modify_member_information_and_verify() {
         // given
         Member originalMember = createTestMember();
         MemberEditRequestDTO memberEditDTO = new MemberEditRequestDTO(
                 originalMember.getId(),
                 "heedo",
                 "7777",
-                "mango"
-        );
+                "mango");
 
-        when(memberRepository.findById(originalMember.getId()))
-                .thenReturn(Optional.of(originalMember));
-
-        when(passwordEncoder.encode("7777"))
-                .thenReturn("encodedNewPassword");
+        when(memberRepository.findById(originalMember.getId())).thenReturn(Optional.of(originalMember));
+        when(passwordEncoder.encode("7777")).thenReturn("encodedNewPassword");
 
         // when
         memberService.editMember(memberEditDTO);
@@ -199,23 +200,18 @@ public class MemberServiceTest {
         assertEquals("encodedNewPassword", originalMember.getPasswordHash());
     }
 
-    @DisplayName("로그인 되어 있는 패스워드와 현재 사용중인 유저의 비밀번호를 입력받아 일치하는지 검사한다.")
+    @DisplayName("로그인 되어 있는 유저 패스워드와 입력받은 비밀번호 일치 여부 검증")
     @Test
-    void check_password_match() {
+    void verify_current_password_match() {
         // given
         String nickname = "apple";
         String correctPassword = "1234";
         String incorrectPassword = "wrongPassword";
         Member testMember = createTestMember();
 
-        when(memberRepository.findByNicknameAndDeletedFalse(nickname))
-                .thenReturn(Optional.of(testMember));
-
-        when(passwordEncoder.matches(correctPassword, testMember.getPasswordHash()))
-                .thenReturn(true);
-
-        when(passwordEncoder.matches(incorrectPassword, testMember.getPasswordHash()))
-                .thenReturn(false);
+        when(memberRepository.findByNicknameAndDeletedFalse(nickname)).thenReturn(Optional.of(testMember));
+        when(passwordEncoder.matches(correctPassword, testMember.getPasswordHash())).thenReturn(true);
+        when(passwordEncoder.matches(incorrectPassword, testMember.getPasswordHash())).thenReturn(false);
 
         // when
         boolean matchCorrectPassword = memberService.validatePassword(nickname, correctPassword);
@@ -226,19 +222,16 @@ public class MemberServiceTest {
         assertFalse(matchIncorrectPassword);
     }
 
-    @DisplayName("유저를 삭제할 경우, 소프트 삭제로 이루어졌는지 검사한다.")
+    @DisplayName("유저 소프트 삭제 검증")
     @Test
-    void user_soft_delete_check() {
+    void verify_user_soft_deletion() {
         // given
         String nickname = "apple";
         String correctPassword = "1234";
         Member testMember = createTestMember();
 
-        when(memberRepository.findByNicknameAndDeletedFalse(nickname))
-                .thenReturn(Optional.of(testMember));
-
-        when(passwordEncoder.matches(correctPassword, testMember.getPasswordHash()))
-                .thenReturn(true);
+        when(memberRepository.findByNicknameAndDeletedFalse(nickname)).thenReturn(Optional.of(testMember));
+        when(passwordEncoder.matches(correctPassword, testMember.getPasswordHash())).thenReturn(true);
 
         // when
         boolean isDeleted = memberService.removeMember(nickname, correctPassword);

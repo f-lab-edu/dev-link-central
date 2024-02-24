@@ -1,7 +1,8 @@
 ### TODO 리스트
-- 서버 테이블에 좋아요 테이블 2개 작성.
-- member 서버 테이블에 private String role; 컬럼 추가.
-- 회원 수정할 시, 닉네임 중복 체크 해야한다.
+- 페이징 처리 테스트 코드 실패
+- existsBySenderAndReceiverOrReceiverAndSender() 쿼리의 검색조건에 적합한 index를 생성
+- SpringBoot 전체를 띄우는 @IntegrationTEST의 경우 local database를 사용하다보면 기존에 데이터가 존재해서 성공 테스트가 실패
+   - 그래서 보통은 docker을 활용해 데이터베이스 container을 띄워서 테스트를 수행
 
 
 

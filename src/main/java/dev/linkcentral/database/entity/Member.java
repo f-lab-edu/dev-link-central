@@ -42,7 +42,7 @@ public class Member extends AuditingFields implements Serializable, UserDetails 
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    private boolean deleted = Boolean.FALSE; // 삭제 여부
+    private boolean deleted = Boolean.FALSE;
 
     protected Member() {
     }
