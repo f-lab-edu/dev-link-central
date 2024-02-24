@@ -23,7 +23,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/edit-form")
+    @GetMapping("/edit-form") // TODO: view package로 이동 ?
     public ResponseEntity<?> editForm(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");

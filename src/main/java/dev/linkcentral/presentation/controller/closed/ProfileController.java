@@ -41,6 +41,8 @@ public class ProfileController {
         return ResponseEntity.ok(Collections.singletonMap("memberId", member.getId()));
     }
 
+    // TODO: API는 하나의 역할만 하기 -> update profile + form redirection을 모두 하지 말고 update profile만 수행
+    // TODO: redirection은 jsp page에서 API 결과(성공/실패)에 따라 처리하도록 변경 가능
     @PostMapping("/update")
     public String updateProfile(@ModelAttribute ProfileRequestDTO profileDTO,
                                 @RequestParam(value = "image", required = false) MultipartFile image,

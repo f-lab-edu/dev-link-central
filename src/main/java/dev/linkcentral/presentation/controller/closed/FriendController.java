@@ -13,7 +13,7 @@ public class FriendController {
 
     private final FriendService friendService;
 
-    @GetMapping("/getFriendshipId")
+    @GetMapping("/getFriendshipId") // TODO: friendship-ids
     public ResponseEntity<?> getFriendshipId(@RequestParam Long senderId, @RequestParam Long receiverId) {
         Long friendId = friendService.findFriendshipId(senderId, receiverId);
         if (friendId != null) {

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@Controller // TODO: 모든 메서드의 @ResponseBody를 제거하고 @Controller -> @RestController로 변경
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/article")

@@ -39,7 +39,7 @@ public class ArticleViewController {
 
     @GetMapping("/")
     public String findAll(Model model) {
-        List<ArticleRequestDTO> articleList = articleService.findAllArticles();
+        List<ArticleRequestDTO> articleList = articleService.findAllArticles(); // TODO(pagination)
         model.addAttribute("articleList", articleList);
         return "/articles/list";
     }
@@ -59,7 +59,7 @@ public class ArticleViewController {
         return "/articles/detail";
     }
 
-    @GetMapping("/update/{id}")
+    @GetMapping("/update/{id}") // TODO: update-> update-form ?
     public String updateForm(@PathVariable Long id, Model model) {
         Member member = memberService.getCurrentMember();
         ArticleRequestDTO articleDTO = articleService.findArticleById(id, member);
@@ -84,7 +84,7 @@ public class ArticleViewController {
         int endPage = Math.min((startPage + blockLimit - 1), articlePage.getTotalPages());
 
         // 요청 헤더에서 JWT 토큰 추출
-        boolean isAuthenticated = false;
+        boolean isAuthenticated = false;   // TODO: SecurityUtils.isAuthenticated() 를 사용할 수 없을까? 만약 그렇다면 아래 try, catch도 제거할 수 없나 ?
         try {
             memberService.getCurrentMember();
             isAuthenticated = true;
