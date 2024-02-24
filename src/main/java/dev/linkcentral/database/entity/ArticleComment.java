@@ -1,6 +1,7 @@
 package dev.linkcentral.database.entity;
 
 import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -16,6 +17,10 @@ public class ArticleComment extends AuditingFields {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     private Article article;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -35,6 +40,10 @@ public class ArticleComment extends AuditingFields {
         this.article = article;
     }
 
+    public void updateMember(Member member) {
+        this.member = member;
+    }
+
     public static ArticleComment toSaveEntity(ArticleCommentRequestDTO commentDTO, Article article, String writerNickname) {
         ArticleComment articleComment = new ArticleComment();
         articleComment.updateContent(commentDTO.getContents());
@@ -43,4 +52,11 @@ public class ArticleComment extends AuditingFields {
         return articleComment;
     }
 
+    public static ArticleComment create(Article article, Member member, String content) {
+        ArticleComment comment = new ArticleComment();
+        comment.article = article;
+        comment.member = member;
+        comment.content = content;
+        return comment;
+    }
 }
