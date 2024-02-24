@@ -21,7 +21,7 @@ public class Alarm extends AuditingFields {
     private String message;
 
     @Column(name = "target_member_id")
-    private int targetMember;
+    private int targetMemberId;
 
     @Column(length = 100)
     private String type;
