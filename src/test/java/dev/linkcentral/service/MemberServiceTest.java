@@ -4,6 +4,7 @@ import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.repository.ArticleCommentRepository;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
 import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
@@ -15,10 +16,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)

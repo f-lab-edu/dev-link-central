@@ -16,12 +16,12 @@ public class ArticleCommentRequestDTO {
     private String nickname;
     private LocalDateTime createdAt;
 
-    public static ArticleCommentRequestDTO toCommentDTO(ArticleComment comment, Long articleId) {
+    public static ArticleCommentRequestDTO toCommentDTO(ArticleComment comment) {
         ArticleCommentRequestDTO commentDTO = new ArticleCommentRequestDTO();
         commentDTO.setId(comment.getId());
-        commentDTO.setArticleId(articleId);
+        commentDTO.setArticleId(comment.getArticle().getId()); // Article 엔티티에서 ID 가져오기
         commentDTO.setContents(comment.getContent());
-        commentDTO.setNickname(comment.getWriterNickname());
+        commentDTO.setNickname(comment.getMember().getNickname()); // Member 엔티티에서 닉네임 가져오기
         commentDTO.setCreatedAt(comment.getCreatedAt());
         return commentDTO;
     }
