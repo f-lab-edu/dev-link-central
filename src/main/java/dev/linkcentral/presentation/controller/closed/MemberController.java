@@ -32,14 +32,14 @@ public class MemberController {
         return ResponseEntity.ok(Collections.singletonMap("url", editFormUrl));
     }
 
+    @PutMapping
     @ResponseBody
-    @PutMapping("/edit")
     public MemberEditResponseDTO memberUpdate(@ModelAttribute MemberEditRequestDTO memberEditDTO) {
         memberService.editMember(memberEditDTO);
         return new MemberEditResponseDTO(HttpStatus.OK.value());
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     @ResponseBody
     public ResponseEntity<String> softDeleteMember(@RequestParam String password) {
         Member member = memberService.getCurrentMember();

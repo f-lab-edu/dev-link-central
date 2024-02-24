@@ -32,8 +32,8 @@ public class MemberPublicController {
 
     private final MemberService memberService;
 
-    @ResponseBody
     @PostMapping("/register")
+    @ResponseBody
     public ResponseEntity<?> register(@Valid @RequestBody MemberSaveRequestDTO memberDTO,
                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -78,8 +78,8 @@ public class MemberPublicController {
         }
     }
 
-    @ResponseBody
     @GetMapping("/forgot-password")
+    @ResponseBody
     public MemberPasswordResponseDTO isPasswordValid(String userEmail, String userName) {
         // 이메일과 이름이 일치하는 사용자가 있는지 확인.
         boolean pwFindCheck = memberService.validateUserEmail(userEmail, userName);
@@ -95,8 +95,8 @@ public class MemberPublicController {
         memberService.sendMail(dto);
     }
 
-    @ResponseBody
     @PostMapping("/check-current-password")
+    @ResponseBody
     public MemberPasswordResponseDTO checkPassword(@RequestParam String password) {
         Member member = memberService.getCurrentMember();
         boolean result = memberService.validatePassword(member.getNickname(), password);

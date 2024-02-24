@@ -26,7 +26,7 @@ public class ArticleController {
     private final ArticleService articleService;
     private final MemberService memberService;
 
-    @PostMapping("/save")
+    @PostMapping
     @ResponseBody
     public ResponseEntity<?> save(@RequestBody ArticleRequestDTO articleDTO) {
         try {
@@ -47,7 +47,7 @@ public class ArticleController {
         return new ArticleEditResponseDTO(HttpStatus.OK.value());
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<String> delete(@PathVariable Long id) {
         articleService.deleteArticle(id);

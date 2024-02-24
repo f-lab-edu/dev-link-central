@@ -132,7 +132,7 @@
 
                             $.ajax({
                                 type: "PUT",
-                                url: "/api/v1/member/edit",
+                                url: "/api/v1/member",
                                 data: formData,
                                 headers: {
                                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")

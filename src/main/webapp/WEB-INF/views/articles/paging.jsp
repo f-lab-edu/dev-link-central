@@ -48,7 +48,7 @@
                             };
 
                             $.ajax({
-                                url: "/api/v1/article/save",
+                                url: "/api/v1/article",
                                 type: 'POST',
                                 contentType: 'application/json',
                                 data: JSON.stringify(formData),

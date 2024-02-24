@@ -31,7 +31,7 @@
         function deleteReq() {
             console.log("삭제 요청");
             $.ajax({
-                url: "/api/v1/article/delete/" + articleId,
+                url: "/api/v1/article/" + articleId,
                 type: "DELETE",
                 success: function (response) {
                     alert("게시글이 삭제되었습니다.");

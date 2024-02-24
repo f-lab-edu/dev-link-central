@@ -89,7 +89,7 @@
             var password = $('#password').val();
 
             $.ajax({
-                url: "/api/v1/member/delete?password=" + encodeURIComponent(password),
+                url: "/api/v1/member?password=" + encodeURIComponent(password),
                 type: 'DELETE',
                 success: function(response) {
                     alert('회원 탈퇴가 완료되었습니다.');
