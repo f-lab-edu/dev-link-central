@@ -5,6 +5,8 @@ import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.repository.ArticleCommentRepository;
+import dev.linkcentral.database.repository.ArticleRepository;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
@@ -23,6 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

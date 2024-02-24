@@ -10,7 +10,6 @@
             integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
             crossorigin="anonymous">
     </script>
-
     <script>
         $(document).ready(function() {
             // 로컬 스토리지에서 JWT 토큰 확인

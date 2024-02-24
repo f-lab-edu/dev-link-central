@@ -20,6 +20,8 @@ import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.http.HttpSession;
+import java.util.*;
 
 
 @Service
@@ -30,6 +32,7 @@ public class ArticleService {
     private static int RETRY_COUNT = 0;
     private static final int MAX_RETRIES = 3; // 최대 재시도 횟수를 정의
 
+    private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
     private final ArticleStatisticRepository articleStatisticRepository;
     private final ArticleLikeRepository articleLikeRepository;
@@ -149,6 +152,7 @@ public class ArticleService {
     }
 
     // 특정 게시글의 "좋아요" 총 갯수를 반환
+    @Transactional(readOnly = true)
     public int countArticleLikes(Long articleId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
@@ -168,17 +172,29 @@ public class ArticleService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public Page<ArticleCommentRequestDTO> findCommentsByMember(Long memberId, Pageable pageable) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
+
+        return articleCommentRepository.findAllByMember(member, pageable)
+                .map(ArticleCommentRequestDTO::toCommentDTO);
+    }
+
+    @Transactional(readOnly = true)
     public List<ArticleCommentRequestDTO> findAllComments(Long articleId) {
-        Article article = articleRepository.findById(articleId).get();
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+
         List<ArticleComment> commentList = articleCommentRepository.findAllByArticleOrderByIdDesc(article);
 
         List<ArticleCommentRequestDTO> commentDTOList = new ArrayList<>();
         for (ArticleComment comment : commentList) {
-            ArticleCommentRequestDTO commentDTO = ArticleCommentRequestDTO.toCommentDTO(comment, articleId);
-            commentDTOList.add(commentDTO);
+            commentDTOList.add(ArticleCommentRequestDTO.toCommentDTO(comment)); // 수정된 메서드 호출 방식
         }
         return commentDTOList;
     }
+
 
     @Transactional
     public void updateComment(Long commentId, ArticleCommentRequestDTO commentDTO, String currentNickname) {
@@ -204,4 +220,15 @@ public class ArticleService {
 
         articleCommentRepository.delete(comment);
     }
+
+    @Transactional(readOnly = true)
+    public Page<ArticleCommentRequestDTO> findCommentsForScrolling(Long articleId, Pageable pageable) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 게시판을 찾을 수 없습니다."));
+
+        return articleCommentRepository.findAllByArticleOrderByIdDesc(article, pageable)
+                .map(ArticleCommentRequestDTO::toCommentDTO);
+    }
+
+
 }
