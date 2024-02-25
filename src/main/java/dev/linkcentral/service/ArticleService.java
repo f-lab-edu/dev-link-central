@@ -118,7 +118,12 @@ public class ArticleService {
 
     @Transactional
     public void deleteArticle(Long id) {
-        articleRepository.deleteById(id);
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+
+        articleStatisticRepository.deleteByArticle(article);
+        articleViewRepository.deleteByArticle(article);
+        articleRepository.delete(article);
     }
 
     @Transactional(readOnly = true)
@@ -201,7 +206,6 @@ public class ArticleService {
         return commentDTOList;
     }
 
-
     @Transactional
     public void updateComment(Long commentId, ArticleCommentRequestDTO commentDTO, String currentNickname) {
         ArticleComment comment = articleCommentRepository.findById(commentId)
@@ -235,6 +239,5 @@ public class ArticleService {
         return articleCommentRepository.findAllByArticleOrderByIdDesc(article, pageable)
                 .map(ArticleCommentRequestDTO::toCommentDTO);
     }
-
 
 }
