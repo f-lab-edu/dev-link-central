@@ -123,6 +123,7 @@ public class MemberService {
     /**
      * DTO에 사용자가 원하는 내용과 제목을 저장
      */
+    @Transactional
     public MemberMailRequestDTO createMailForPasswordReset(String userEmail, String userName) {
         MemberMailRequestDTO dto = new MemberMailRequestDTO();
         String generatedPassword = createTemporaryPassword();

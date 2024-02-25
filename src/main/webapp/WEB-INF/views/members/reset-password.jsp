@@ -48,7 +48,7 @@
                 let userName = $("#userName").val();
                 $.ajax({
                     type: "GET",
-                    url: "/api/v1/member/forgot-password",
+                    url: "/api/v1/public/member/forgot-password",
                     data: {
                         "userEmail": userEmail,
                         "userName": userName
@@ -63,7 +63,7 @@
                                 if (OK) {
                                     $.ajax({
                                         type: "POST",
-                                        url: "/api/v1/member/send-email/update-password",
+                                        url: "/api/v1/public/member/send-email/update-password",
                                         data: {
                                             "userEmail": userEmail,
                                             "userName": userName
