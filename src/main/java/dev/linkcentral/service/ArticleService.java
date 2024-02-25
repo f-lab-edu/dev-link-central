@@ -46,6 +46,12 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
+    public Article getArticleById(Long id) {
+        return articleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException());
+    }
+
+    @Transactional(readOnly = true)
     public List<ArticleRequestDTO> findAllArticles() {
         List<Article> articleEntityList = articleRepository.findAll();
         List<ArticleRequestDTO> articleDTOList = new ArrayList<>();

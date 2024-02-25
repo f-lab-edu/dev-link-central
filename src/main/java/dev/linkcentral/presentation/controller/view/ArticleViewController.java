@@ -1,8 +1,7 @@
 package dev.linkcentral.presentation.controller.view;
 
+import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.infrastructure.SecurityUtils;
-import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
@@ -59,12 +58,10 @@ public class ArticleViewController {
         return "/articles/detail";
     }
 
-    @GetMapping("/update/{id}")
+    @GetMapping("/update-form/{id}")
     public String updateForm(@PathVariable Long id, Model model) {
-        Member member = memberService.getCurrentMember();
-        ArticleRequestDTO articleDTO = articleService.findArticleById(id, member);
-
-        model.addAttribute("articleUpdate", articleDTO);
+        Article article = articleService.getArticleById(id);
+        model.addAttribute("articleUpdate", article);
         return "/articles/update";
     }
 

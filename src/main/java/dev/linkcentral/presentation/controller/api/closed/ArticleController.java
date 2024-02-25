@@ -1,5 +1,6 @@
-package dev.linkcentral.presentation.controller.closed;
+package dev.linkcentral.presentation.controller.api.closed;
 
+import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
@@ -42,6 +43,7 @@ public class ArticleController {
     @PutMapping
     @ResponseBody
     public ArticleEditResponseDTO update(@RequestBody ArticleUpdateRequestDTO articleDTO, Model model) {
+        Member member = memberService.getCurrentMember();
         ArticleRequestDTO article = articleService.updateArticle(articleDTO);
         model.addAttribute("article", article);
         return new ArticleEditResponseDTO(HttpStatus.OK.value());
