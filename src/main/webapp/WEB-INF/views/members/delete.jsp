@@ -90,6 +90,9 @@
 
             $.ajax({
                 url: "/api/v1/member?password=" + encodeURIComponent(password),
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
                 type: 'DELETE',
                 success: function(response) {
                     alert('회원 탈퇴가 완료되었습니다.');
