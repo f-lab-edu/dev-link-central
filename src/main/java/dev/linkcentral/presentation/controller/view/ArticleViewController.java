@@ -44,12 +44,10 @@ public class ArticleViewController {
     }
 
     @GetMapping("/{id}")
-    public String findById(@PageableDefault(page = 1) Pageable pageable,
-                           @PathVariable Long id, Model model) {
-        Member member = memberService.getCurrentMember();
+    public String findById(@PageableDefault(page = 1) Pageable pageable, @PathVariable Long id, Model model) {
+        Member member = memberService.getAuthenticatedMember();
         ArticleRequestDTO articleDTO = articleService.findArticleById(id, member);
 
-        // 댓글 목록 가져오기
         List<ArticleCommentRequestDTO> commentDTOList = articleService.findAllComments(id);
 
         model.addAttribute("commentList", commentDTOList);
