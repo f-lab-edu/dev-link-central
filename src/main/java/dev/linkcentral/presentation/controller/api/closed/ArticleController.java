@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
-import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
@@ -15,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @Slf4j
@@ -69,13 +66,30 @@ public class ArticleController {
         return ResponseEntity.ok(likesCount);
     }
 
-    @PostMapping("/comment")
+    @PostMapping("/{id}/comments")
     @ResponseBody
-    public ResponseEntity<?> commentSave(@RequestBody ArticleCommentRequestDTO commentDTO) {
+    public ResponseEntity<?> commentSave(@PathVariable Long id, @RequestBody ArticleCommentRequestDTO commentDTO) {
+        commentDTO.setArticleId(id);
+        if (commentDTO.getContents() == null || commentDTO.getArticleId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("댓글 내용 및 게시판 ID는 null이 아니어야 합니다.");
+        }
+
         Member member = memberService.getCurrentMember();
-        Long saveArticleId = articleService.saveComment(commentDTO, member.getNickname());
-        List<ArticleCommentRequestDTO> commentDTOList = articleService.findAllComments(commentDTO.getArticleId());
-        return new ResponseEntity<>(commentDTOList, HttpStatus.OK);
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("댓글을 달려면 로그인해야 합니다.");
+        }
+
+        try {
+            Long savedCommentId = articleService.saveComment(commentDTO, member.getNickname());
+            if (savedCommentId != null) {
+                ArticleCommentRequestDTO savedCommentDTO = articleService.findCommentById(savedCommentId);
+                return ResponseEntity.ok(savedCommentDTO);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("댓글을 저장하지 못했습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류가 발생했습니다: " + e.getMessage());
+        }
     }
 
     @PutMapping("/comment/{commentId}")

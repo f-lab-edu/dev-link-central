@@ -6,11 +6,14 @@ import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleRequestDTO;
+import dev.linkcentral.service.dto.response.CommentPageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,13 +47,12 @@ public class ArticleViewController {
     }
 
     @GetMapping("/{id}")
-    public String findById(@PageableDefault(page = 1) Pageable pageable, @PathVariable Long id, Model model) {
+    public String findById(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                           @PathVariable Long id, Model model) {
+
         Member member = memberService.getAuthenticatedMember();
         ArticleRequestDTO articleDTO = articleService.findArticleById(id, member);
 
-        List<ArticleCommentRequestDTO> commentDTOList = articleService.findAllComments(id);
-
-        model.addAttribute("commentList", commentDTOList);
         model.addAttribute("article", articleDTO);
         model.addAttribute("page", pageable.getPageNumber());
         return "/articles/detail";
@@ -95,4 +97,17 @@ public class ArticleViewController {
         return "/articles/paging";
     }
 
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<CommentPageResponseDTO> getCommentsForArticle(@PathVariable Long id,
+            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<ArticleCommentRequestDTO> commentsPage = articleService.findCommentsForScrolling(id, pageable);
+        CommentPageResponseDTO response = new CommentPageResponseDTO(
+                commentsPage.getContent(),
+                commentsPage.getNumber(),
+                commentsPage.getTotalPages()
+        );
+
+        return ResponseEntity.ok(response);
+    }
 }

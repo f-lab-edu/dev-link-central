@@ -20,8 +20,6 @@ import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpSession;
-import java.util.*;
 
 
 @Service
@@ -172,38 +170,32 @@ public class ArticleService {
 
     @Transactional
     public Long saveComment(ArticleCommentRequestDTO commentDTO, String writerNickname) {
-        Optional<Article> optionalArticle = articleRepository.findById(commentDTO.getArticleId());
-        if (optionalArticle.isPresent()) {
-            Article article = optionalArticle.get();
-            ArticleComment commentEntity = ArticleComment.toSaveEntity(commentDTO, article, writerNickname);
-            articleCommentRepository.save(commentEntity);
-            return commentEntity.getId();
-        } else {
-            throw new EntityNotFoundException("ID가 포함된 게시글을 찾을 수 없습니다.");
-        }
+        Member member = memberRepository.findByNicknameAndDeletedFalse(writerNickname)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        Article article = articleRepository.findById(commentDTO.getArticleId())
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+
+        ArticleComment commentEntity = ArticleComment.toSaveEntity(commentDTO, article, writerNickname);
+        commentEntity.updateMember(member); // 여기를 추가
+        articleCommentRepository.save(commentEntity);
+        return commentEntity.getId();
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleCommentRequestDTO> findCommentsByMember(Long memberId, Pageable pageable) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다."));
+    public Page<ArticleCommentRequestDTO> findCommentsForScrolling(Long articleId, Pageable pageable) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 게시판을 찾을 수 없습니다."));
 
-        return articleCommentRepository.findAllByMember(member, pageable)
+        return articleCommentRepository.findAllByArticleOrderByIdDesc(article, pageable)
                 .map(ArticleCommentRequestDTO::toCommentDTO);
     }
 
     @Transactional(readOnly = true)
-    public List<ArticleCommentRequestDTO> findAllComments(Long articleId) {
-        Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
-
-        List<ArticleComment> commentList = articleCommentRepository.findAllByArticleOrderByIdDesc(article);
-
-        List<ArticleCommentRequestDTO> commentDTOList = new ArrayList<>();
-        for (ArticleComment comment : commentList) {
-            commentDTOList.add(ArticleCommentRequestDTO.toCommentDTO(comment)); // 수정된 메서드 호출 방식
-        }
-        return commentDTOList;
+    public ArticleCommentRequestDTO findCommentById(Long id) {
+        return articleCommentRepository.findById(id)
+                .map(ArticleCommentRequestDTO::toCommentDTO)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 댓글을 찾을 수 없습니다."));
     }
 
     @Transactional
@@ -227,17 +219,7 @@ public class ArticleService {
         if (!comment.getWriterNickname().equals(currentNickname)) {
             throw new IllegalArgumentException("댓글 삭제 권한이 없습니다.");
         }
-
         articleCommentRepository.delete(comment);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<ArticleCommentRequestDTO> findCommentsForScrolling(Long articleId, Pageable pageable) {
-        Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 게시판을 찾을 수 없습니다."));
-
-        return articleCommentRepository.findAllByArticleOrderByIdDesc(article, pageable)
-                .map(ArticleCommentRequestDTO::toCommentDTO);
     }
 
 }
