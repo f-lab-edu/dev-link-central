@@ -152,6 +152,9 @@
             var newContent = $("#edit-content-" + commentId).val();
             $.ajax({
                 url: "/api/v1/article/comment/" + commentId,
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
                 type: "PUT",
                 contentType: "application/json",
                 data: JSON.stringify({ contents: newContent }),
@@ -160,9 +163,28 @@
                     location.reload();
                 },
                 error: function(xhr, status, error) {
-                    alert("댓글 수정 실패: " + error);
+                    alert("댓글 수정 실패: 다른 유저가 작성한 댓글입니다." + error);
                 }
             });
+        }
+
+        function deleteComment(commentId) {
+            if(confirm("댓글을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/api/v1/article/comment/" + commentId,
+                    type: "DELETE",
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                    },
+                    success: function() {
+                        alert("댓글이 삭제되었습니다.");
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert("댓글 삭제 실패: 다른 유저가 작성한 댓글입니다." + error);
+                    }
+                });
+            }
         }
     </script>
 
@@ -175,7 +197,7 @@
     <script>
         // 서버에 '좋아요' 상태를 변경해달라는 요청
         function toggleLike() {
-            const token = localStorage.getItem('jwt'); // 로그인 후 저장된 JWT 토큰을 가져옴
+            const token = localStorage.getItem('jwt'); // 로그인 후 저장된 JWT 토큰을 가져옵니다
             if (!token) {
                 console.log("인증 토큰이 없습니다.");
                 return;
@@ -218,29 +240,9 @@
             updateLikesCount();
         });
 
-        // 댓글 삭제
-        function deleteComment(commentId) {
-            if(confirm("댓글을 삭제하시겠습니까?")) {
-                $.ajax({
-                    url: "/api/v1/article/comment/" + commentId,
-                    type: "DELETE",
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                    },
-                    success: function() {
-                        alert("댓글이 삭제되었습니다.");
-                        location.reload();
-                    },
-                    error: function(xhr, status, error) {
-                        alert("댓글 삭제 실패: " + error);
-                    }
-                });
-            }
-        }
-
         // 댓글 작성 AJAX 함수
         function commentWrite() {
-            var contents = $('#contents').val(); // 사용자가 입력한 댓글 내용을 가져옴
+            var contents = $('#contents').val(); // 사용자가 입력한 댓글 내용을 가져옵니다.
             if (!contents) {
                 alert('댓글 내용을 입력해주세요.');
                 return;
@@ -261,6 +263,7 @@
                         "<td>" + comment.createdAt + "</td>" +
                         "</tr>";
                     $("#comment-list table tbody").prepend(newCommentHtml); // 댓글 목록의 맨 위에 새 댓글 추가
+                    location.reload(); // 페이지 새로고침
                 },
                 error: function(xhr, status, error) {
                     alert('댓글 작성 실패: ' + xhr.responseText);
@@ -269,29 +272,52 @@
         }
 
         // 댓글 목록 로드 AJAX 함수
+        var currentPage = 0; // 현재 페이지 번호
+        var isFetchingComments = false; // AJAX 요청 중복 방지
+        var hasMoreComments = true; // 더 불러올 댓글이 있는지
+
         function loadComments() {
+            if(isFetchingComments || !hasMoreComments) return; // 중복 요청 및 더 이상 불러올 댓글이 없을 때 요청 방지
+
+            isFetchingComments = true;
             $.ajax({
-                url: "/api/v1/view/article/" + articleId + "/comments",
+                url: "/api/v1/view/article/" + articleId + "/comments?page=" + currentPage,
                 type: "GET",
                 success: function(response) {
-                    var commentsHtml = response.comments.map(function(comment) {
-                        return "<tr>" +
-                            "<td>" + comment.id + "</td>" +
-                            "<td>" + comment.nickname + "</td>" +
-                            "<td>" + comment.contents + "</td>" +
-                            "<td>" + comment.createdAt + "</td>" +
-                            "</tr>";
-                    }).join('');
-                    $("#comment-list table tbody").html(commentsHtml); // 댓글 목록을 테이블에 삽입
+                    if(response.comments.length > 0){
+                        var commentsHtml = response.comments.map(function(comment) {
+                            return "<tr>" +
+                                "<td>" + comment.id + "</td>" +
+                                "<td>" + comment.nickname + "</td>" +
+                                "<td>" + comment.contents + "</td>" +
+                                "<td>" + comment.createdAt + "</td>" +
+                                "<td><button onclick='editComment(" + comment.id + ")'>수정</button>" +
+                                "<button onclick='deleteComment(" + comment.id + ")'>삭제</button></td>" +
+                                "</tr>";
+                        }).join('');
+                        $("#comment-list table tbody").append(commentsHtml);
+                        currentPage++; // 페이지 번호 증가
+                    } else {
+                        hasMoreComments = false; // 더 불러올 댓글이 없음
+                    }
+                    isFetchingComments = false;
                 },
                 error: function(xhr, status, error) {
                     alert('댓글 목록 로딩 실패: ' + xhr.responseText);
+                    isFetchingComments = false;
                 }
             });
         }
 
+        // 스크롤 이벤트 리스너를 수정하여 스크롤이 페이지 하단에 도달할 때마다 새로운 댓글을 로드
+        $(window).scroll(function() {
+            if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                loadComments(); // 댓글 로드 함수 호출
+            }
+        });
+
         $(document).ready(function() {
-            loadComments(); // 페이지가 로드될 때 댓글 목록을 로드
+            loadComments(); // 초기 댓글 로드
         });
     </script>
 
@@ -311,15 +337,18 @@
                 type: "GET",
                 success: function(response) {
                     if(response.comments.length > 0){
+                        // 댓글 데이터를 동적으로 삽입하는 부분 수정
                         var commentsHtml = response.comments.map(function(comment) {
-                            return "<tr>" +
+                            return "<tr id='comment-row-" + comment.id + "'>" +
                                 "<td>" + comment.id + "</td>" +
                                 "<td>" + comment.nickname + "</td>" +
-                                "<td>" + comment.contents + "</td>" +
+                                "<td id='comment-content-" + comment.id + "'>" + comment.contents + "</td>" +
                                 "<td>" + comment.createdAt + "</td>" +
+                                "<td><button onclick='editComment(" + comment.id + ")'>수정</button>" +
+                                "<button onclick='deleteComment(" + comment.id + ")'>삭제</button></td>" +
                                 "</tr>";
                         }).join('');
-                        $("#comment-list table tbody").append(commentsHtml);
+                        $("#comment-list table tbody").append(commentsHtml); // 기존 댓글에 새로운 댓글 추가
                         currentPage++; // 페이지 번호 증가
                     } else {
                         hasMoreComments = false; // 더 불러올 댓글이 없음
@@ -404,10 +433,11 @@
             <th>작성자</th>
             <th>내용</th>
             <th>작성시간</th>
+            <th>작업</th>
         </tr>
         </thead>
         <tbody>
-        <!-- 댓글 데이터는 여기서 동적으로 삽입 -->
+        <!-- 서버로부터 받은 댓글 데이터를 동적으로 삽입합니다. -->
         </tbody>
     </table>
 </div>
