@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation.controller.closed;
+package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.MemberService;
@@ -42,9 +42,12 @@ public class ProfileController {
     }
 
     @PostMapping("/update")
-    public String updateProfile(@ModelAttribute ProfileRequestDTO profileDTO,
-                                @RequestParam(value = "image", required = false) MultipartFile image,
-                                RedirectAttributes redirectAttributes) {
+    @ResponseBody // AJAX 요청에 대한 응답을 JSON으로 반환하도록 설정
+    public ResponseEntity<?> updateProfile(@ModelAttribute ProfileRequestDTO profileDTO,
+                                           @RequestParam(value = "image", required = false) MultipartFile image,
+                                           RedirectAttributes redirectAttributes) {
+
+        Member member = memberService.getCurrentMember();
         // 프로필 업데이트 요청 처리
         try {
             profileService.updateProfile(profileDTO, image);
@@ -53,6 +56,6 @@ public class ProfileController {
             log.error("프로필 업데이트 중 오류 발생", e);
             redirectAttributes.addFlashAttribute("message", "프로필 업데이트에 실패했습니다.");
         }
-        return "redirect:/api/v1/view/profile/view?memberId=" + profileDTO.getMemberId();
+        return ResponseEntity.ok(Collections.singletonMap("redirectUrl", "/api/v1/view/profile/view?memberId=" + profileDTO.getMemberId()));
     }
 }

@@ -43,12 +43,12 @@ public class Article extends AuditingFields {
         this.content = content;
     }
 
-    // DTO -> Entity 변환
-    public static Article toSaveEntity(ArticleRequestDTO articleDTO) {
+    public static Article toSaveEntity(ArticleRequestDTO articleDTO, Member member) {
         return Article.builder()
                 .title(articleDTO.getTitle())
                 .content(articleDTO.getContent())
                 .writer(articleDTO.getWriter())
+                .member(member)
                 .build();
     }
 

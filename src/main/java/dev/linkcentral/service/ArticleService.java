@@ -8,6 +8,7 @@ import dev.linkcentral.service.dto.request.ArticleRequestDTO;
 import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +40,15 @@ public class ArticleService {
 
     @Transactional
     public void saveArticle(ArticleRequestDTO articleDTO) {
-        Article articleEntity = Article.toSaveEntity(articleDTO);
+        Member member = memberRepository.findById(articleDTO.getWriterId())
+                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
+
+        Article articleEntity = Article.builder()
+                .title(articleDTO.getTitle())
+                .content(articleDTO.getContent())
+                .writer(member.getNickname())
+                .member(member)
+                .build();
         articleRepository.save(articleEntity);
     }
 
@@ -55,7 +64,8 @@ public class ArticleService {
         List<ArticleRequestDTO> articleDTOList = new ArrayList<>();
 
         for (Article articleEntity : articleEntityList) {
-            articleDTOList.add(ArticleRequestDTO.toArticleDTO(articleEntity));
+            ArticleRequestDTO dto = ArticleRequestDTO.toArticleDTO(articleEntity);
+            articleDTOList.add(dto);
         }
         return articleDTOList;
     }
@@ -67,7 +77,8 @@ public class ArticleService {
                     viewCountUpdate(member, article);
                     ArticleStatistic statistic = articleStatisticRepository.findByArticle(article)
                             .orElse(new ArticleStatistic());
-                    return ArticleRequestDTO.toArticleDTOWithViews(article, statistic.getViews());
+                    ArticleRequestDTO dto = ArticleRequestDTO.toArticleDTOWithViews(article, statistic.getViews());
+                    return dto;
                 }).orElse(null);
     }
 

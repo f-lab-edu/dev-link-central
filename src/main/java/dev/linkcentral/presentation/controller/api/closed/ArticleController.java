@@ -30,6 +30,7 @@ public class ArticleController {
         try {
             Member member = memberService.getCurrentMember();
             articleDTO.setWriter(member.getNickname());
+            articleDTO.setWriterId(member.getId());
             articleService.saveArticle(articleDTO);
             return ResponseEntity.ok("글이 성공적으로 작성되었습니다.");
         } catch (Exception e) {

@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +43,18 @@ public class MemberService {
     private final JavaMailSender mailSender;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // 현재 인증된 사용자의 Member 객체를 반환하는 메소드
+
+    @Transactional(readOnly = true)
+    public Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("ID가 있는 회원을 찾을 수 없습니다."));
+    }
+
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmailAndDeletedFalse(email)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
+    }
+
     @Transactional(readOnly = true)
     public Member getCurrentMember() {
         String email = SecurityUtils.getCurrentUserUsername();

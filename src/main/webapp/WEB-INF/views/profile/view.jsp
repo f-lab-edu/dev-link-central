@@ -122,10 +122,50 @@
                 }
             });
         });
-    </script>
-    <script>
+
         function goBack() {
             window.history.back();
+        }
+    </script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            fetchAndDisplayUserInfo();
+        });
+
+        function fetchAndDisplayUserInfo() {
+            $.ajax({
+                type: "GET",
+                url: "/api/v1/profile/auth/member-info",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function (response) {
+                    var memberId = response.memberId; // 로그인한 사용자의 memberId
+
+                    // memberId가 존재하지 않는 경우 "null" 문자열을 할당하지 않고, 로직을 계속 진행
+                    if (memberId === null || memberId === '') {
+                        console.log("회원 정보를 가져올 수 없습니다.");
+                        return;
+                    }
+
+                    // 로그인한 사용자 ID를 페이지에 표시
+                    $("#loggedInUserId").text("로그인한 사용자 ID: " + memberId);
+
+                    // 프로필 소유자의 ID
+                    var profileMemberId = "${profile.memberId}";
+
+                    // 프로필 수정 버튼 조건부 표시
+                    if (String(memberId) === String(profileMemberId)) {
+                        // 조건이 충족될 경우, 프로필 수정 버튼을 동적으로 생성하여 페이지에 삽입
+                        $("#editButtonContainer").html('<a href="/api/v1/view/profile/edit?memberId=' + profileMemberId + '" class="profile-button edit-button">프로필 수정</a>');
+                    }
+                },
+                error: function (xhr) {
+                    console.log("회원 정보를 가져올 수 없습니다: " + xhr.responseText);
+                }
+            });
         }
     </script>
 </head>
@@ -140,8 +180,13 @@
     <img class="profile-image" src="${not empty profile.imageUrl ? profile.imageUrl : '/images/default.png'}" alt="Profile Image">
     <p class="profile-bio">소개: ${profile.bio}</p>
 
-    <!-- 프로필 수정 버튼 -->
-    <a href="/api/v1/view/profile/edit?memberId=${profile.memberId}" class="profile-button edit-button">프로필 수정</a>
+    <!-- 로그인한 사용자 ID 출력 -->
+    <p id="loggedInUserId">로그인한 사용자 ID:</p>
+
+    <!-- 프로필 소유자의 ID 출력 -->
+    <p>프로필 사용자 ID: ${profile.memberId}</p>
+
+    <div id="editButtonContainer"></div>
 
     <!-- 친구 관계에 따라 버튼 표시 -->
     <%-- 서버 측에서 친구 관계 상태 설정 필요 --%>
