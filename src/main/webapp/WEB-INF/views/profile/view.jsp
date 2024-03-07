@@ -89,7 +89,7 @@
             function fetchFriendId() {
                 $.ajax({
                     type: 'GET',
-                    url: "/api/v1/friends/getFriendshipId",
+                    url: "/api/v1/friends/friendship-ids",
                     data: {senderId: loggedInUserId, receiverId: viewedMemberId},
                     success: function (response) {
                         friendId = response;

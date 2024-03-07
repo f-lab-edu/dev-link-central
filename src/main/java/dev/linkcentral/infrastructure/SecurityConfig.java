@@ -37,7 +37,8 @@ public class SecurityConfig {
                         "/",
                         "/favicon.ico",
                         "/api/v1/public/**",
-                        "/api/v1/view/**"
+                        "/api/v1/view/**",
+                        "/images/**"
                 )
                 .permitAll()
                 .antMatchers(

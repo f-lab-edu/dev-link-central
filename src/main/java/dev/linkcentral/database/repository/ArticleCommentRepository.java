@@ -14,6 +14,8 @@ import java.util.List;
 
 public interface ArticleCommentRepository extends JpaRepository<ArticleComment, Long> {
 
+    void deleteByArticle(Article article);
+
     List<ArticleComment> findAllByArticleOrderByIdDesc(Article article);
 
     // 특정 Article에 대한 모든 댓글을 페이지네이션과 함께 조회

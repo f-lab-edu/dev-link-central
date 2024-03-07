@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto.request;
+package dev.linkcentral.presentation.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberEditRequestDTO {
+public class MemberEditRequest {
 
     private Long id;
     private String name;

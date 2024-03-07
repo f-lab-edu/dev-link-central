@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="dev.linkcentral.service.dto.request.ArticleRequestDTO" %>
-<%@ page import="dev.linkcentral.service.dto.request.ArticleCommentRequestDTO" %>
+<%@ page import="dev.linkcentral.presentation.dto.request.ArticleRequest" %>
+<%@ page import="dev.linkcentral.presentation.dto.request.ArticleCommentRequest" %>
 <%@ page import="java.util.List" %>
 <%@ page import="dev.linkcentral.database.entity.Member" %>
 <%@ page import="org.springframework.data.domain.Page" %>
@@ -103,7 +103,7 @@
     </style>
 
     <script>
-        <% ArticleRequestDTO article = (ArticleRequestDTO) request.getAttribute("article"); %>
+        <% ArticleRequest article = (ArticleRequest) request.getAttribute("article"); %>
         var articleId = <%= article.getId() %>;
         console.log("Article ID:", articleId);
 

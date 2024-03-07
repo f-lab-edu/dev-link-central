@@ -1,6 +1,6 @@
-package dev.linkcentral.service.dto.response;
+package dev.linkcentral.presentation.dto.response;
 
-import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
+import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,9 +10,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentPageResponseDTO {
+public class CommentPageResponse {
 
-    private List<ArticleCommentRequestDTO> comments;
+    private List<ArticleCommentRequest> comments;
     private int currentPage;
     private int totalPages;
 }

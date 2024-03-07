@@ -4,21 +4,20 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.ProfileService;
 
-import dev.linkcentral.service.dto.request.ProfileRequestDTO;
+import dev.linkcentral.presentation.dto.request.ProfileRequest;
+import dev.linkcentral.presentation.dto.response.ProfileUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collections;
 
-@Controller
+@RestController
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/profile")
@@ -28,7 +27,6 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/auth/member-info")
-    @ResponseBody
     public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -42,20 +40,24 @@ public class ProfileController {
     }
 
     @PostMapping("/update")
-    @ResponseBody // AJAX 요청에 대한 응답을 JSON으로 반환하도록 설정
-    public ResponseEntity<?> updateProfile(@ModelAttribute ProfileRequestDTO profileDTO,
-                                           @RequestParam(value = "image", required = false) MultipartFile image,
-                                           RedirectAttributes redirectAttributes) {
-
-        Member member = memberService.getCurrentMember();
-        // 프로필 업데이트 요청 처리
+    public ResponseEntity<?> updateProfile(@ModelAttribute ProfileRequest profileDTO,
+                                           @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
+            Member member = memberService.getCurrentMember();
             profileService.updateProfile(profileDTO, image);
-            redirectAttributes.addFlashAttribute("message", "프로필이 성공적으로 업데이트되었습니다.");
+            return ResponseEntity.ok(
+                    ProfileUpdateResponse.builder()
+                            .message("프로필이 성공적으로 업데이트되었습니다.")
+                            .memberId(profileDTO.getMemberId())
+                            .build()
+            );
         } catch (Exception e) {
             log.error("프로필 업데이트 중 오류 발생", e);
-            redirectAttributes.addFlashAttribute("message", "프로필 업데이트에 실패했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ProfileUpdateResponse.builder()
+                            .message("프로필 업데이트에 실패했습니다.")
+                            .build()
+            );
         }
-        return ResponseEntity.ok(Collections.singletonMap("redirectUrl", "/api/v1/view/profile/view?memberId=" + profileDTO.getMemberId()));
     }
 }

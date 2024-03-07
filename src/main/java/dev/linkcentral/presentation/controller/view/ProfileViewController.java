@@ -3,12 +3,9 @@ package dev.linkcentral.presentation.controller.view;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.ProfileService;
-import dev.linkcentral.service.dto.request.ProfileRequestDTO;
+import dev.linkcentral.presentation.dto.request.ProfileRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +31,7 @@ public class ProfileViewController {
         }
 
         try {
-            ProfileRequestDTO profile = profileService.getProfile(memberId);
+            ProfileRequest profile = profileService.getProfile(memberId);
             model.addAttribute("profile", profile);
 
             Member member = memberService.getMemberById(memberId);
@@ -52,7 +49,7 @@ public class ProfileViewController {
     @GetMapping("/edit")
     public String profileEditForm(@RequestParam Long memberId, Model model) {
         // 프로필 수정 폼에 필요한 데이터를 가져옴
-        ProfileRequestDTO profile = profileService.getProfile(memberId);
+        ProfileRequest profile = profileService.getProfile(memberId);
         model.addAttribute("profile", profile);
         return "profile/edit";
     }

@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto.request;
+package dev.linkcentral.presentation.dto.request;
 
 import dev.linkcentral.database.entity.Member;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -19,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(of = {"name", "password", "email", "nickname", "role"})
-public class MemberSaveRequestDTO {
+public class MemberSaveRequest {
 
     @Length(max = 50, message = "이름은 50자 이내로 입력해 주세요.")
     @NotBlank(message = "이름을 입력해주세요.")

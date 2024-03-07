@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation.controller.closed;
+package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.service.FriendService;
 import lombok.RequiredArgsConstructor;
@@ -6,14 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/friends")
 @RequiredArgsConstructor
 public class FriendController {
 
     private final FriendService friendService;
 
-    @GetMapping("/getFriendshipId")
+    @GetMapping("/friendship-ids")
     public ResponseEntity<?> getFriendshipId(@RequestParam Long senderId, @RequestParam Long receiverId) {
         Long friendId = friendService.findFriendshipId(senderId, receiverId);
         if (friendId != null) {

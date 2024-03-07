@@ -8,8 +8,8 @@ import dev.linkcentral.database.repository.ArticleLikeRepository;
 import dev.linkcentral.database.repository.ArticleRepository;
 import dev.linkcentral.database.repository.ArticleStatisticRepository;
 import dev.linkcentral.database.repository.ArticleViewRepository;
-import dev.linkcentral.service.dto.request.ArticleRequestDTO;
-import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
+import dev.linkcentral.presentation.dto.request.ArticleRequest;
+import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,7 +62,7 @@ public class ArticleServiceTest {
     @Test
     void save_article() {
         // given
-        ArticleRequestDTO articleDTO = new ArticleRequestDTO(
+        ArticleRequest articleDTO = new ArticleRequest(
                 null,
                 "제목",
                 "작성자",
@@ -104,7 +104,7 @@ public class ArticleServiceTest {
         when(articleRepository.findAll()).thenReturn(articles);
 
         // when
-        List<ArticleRequestDTO> foundArticles = articleService.findAllArticles();
+        List<ArticleRequest> foundArticles = articleService.findAllArticles();
 
         // then
         assertEquals(2, foundArticles.size());
@@ -128,7 +128,7 @@ public class ArticleServiceTest {
         when(articleRepository.findById(articleId)).thenReturn(Optional.of(article));
 
         // when
-        ArticleRequestDTO foundArticle = articleService.findArticleById(articleId, member);
+        ArticleRequest foundArticle = articleService.findArticleById(articleId, member);
 
         // then
         assertNotNull(foundArticle);
@@ -165,7 +165,7 @@ public class ArticleServiceTest {
     @Test
     void update_article() {
         // given
-        ArticleUpdateRequestDTO updateDTO = new ArticleUpdateRequestDTO(
+        ArticleUpdateRequest updateDTO = new ArticleUpdateRequest(
                 1L,
                 "작성자",
                 "수정된 제목",
@@ -187,7 +187,7 @@ public class ArticleServiceTest {
         });
 
         // when
-        ArticleRequestDTO updatedArticle = articleService.updateArticle(updateDTO);
+        ArticleRequest updatedArticle = articleService.updateArticle(updateDTO);
 
         // then
         assertNotNull(updatedArticle);
@@ -228,7 +228,7 @@ public class ArticleServiceTest {
         when(articleRepository.findAll(any(PageRequest.class))).thenReturn(articlePage);
 
         // when
-        Page<ArticleRequestDTO> pageResult = articleService.paginateArticles(pageable);
+        Page<ArticleRequest> pageResult = articleService.paginateArticles(pageable);
 
         // then
         assertEquals(3, pageResult.getContent().size()); // 페이지 내의 게시글 수 확인

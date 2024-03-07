@@ -106,7 +106,7 @@
 <body>
 
 <% if ((Boolean) request.getAttribute("isAuthenticated")) { %>
-<button onclick="saveReq()">글작성</button>
+    <button onclick="saveReq()">글작성</button>
 <% } %>
 
 <button id="writeButton" onclick="saveReq()" style="display:none;">글작성</button>

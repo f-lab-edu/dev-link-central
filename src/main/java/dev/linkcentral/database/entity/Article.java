@@ -1,7 +1,7 @@
 package dev.linkcentral.database.entity;
 
-import dev.linkcentral.service.dto.request.ArticleRequestDTO;
-import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
+import dev.linkcentral.presentation.dto.request.ArticleRequest;
+import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,7 +43,7 @@ public class Article extends AuditingFields {
         this.content = content;
     }
 
-    public static Article toSaveEntity(ArticleRequestDTO articleDTO, Member member) {
+    public static Article toSaveEntity(ArticleRequest articleDTO, Member member) {
         return Article.builder()
                 .title(articleDTO.getTitle())
                 .content(articleDTO.getContent())
@@ -52,7 +52,7 @@ public class Article extends AuditingFields {
                 .build();
     }
 
-    public static Article toUpdateEntity(ArticleUpdateRequestDTO articleDTO) {
+    public static Article toUpdateEntity(ArticleUpdateRequest articleDTO) {
         return Article.builder()
                 .id(articleDTO.getId())
                 .title(articleDTO.getTitle())

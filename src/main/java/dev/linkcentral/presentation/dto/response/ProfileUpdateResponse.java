@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto.response;
+package dev.linkcentral.presentation.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberEditResponseDTO {
+public class ProfileUpdateResponse {
 
-    int status; // HTTP 상태 코드 중 200
+    private String message;
+    private Long memberId;
 }

@@ -3,12 +3,11 @@ package dev.linkcentral.service;
 import dev.linkcentral.common.exception.CustomOptimisticLockException;
 import dev.linkcentral.database.entity.*;
 import dev.linkcentral.database.repository.*;
-import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
-import dev.linkcentral.service.dto.request.ArticleRequestDTO;
-import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
+import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
+import dev.linkcentral.presentation.dto.request.ArticleRequest;
+import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +20,6 @@ import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 
 @Service
 @Slf4j
@@ -39,7 +37,7 @@ public class ArticleService {
     private final ArticleCommentRepository articleCommentRepository;
 
     @Transactional
-    public void saveArticle(ArticleRequestDTO articleDTO) {
+    public void saveArticle(ArticleRequest articleDTO) {
         Member member = memberRepository.findById(articleDTO.getWriterId())
                 .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
 
@@ -59,25 +57,25 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<ArticleRequestDTO> findAllArticles() {
+    public List<ArticleRequest> findAllArticles() {
         List<Article> articleEntityList = articleRepository.findAll();
-        List<ArticleRequestDTO> articleDTOList = new ArrayList<>();
+        List<ArticleRequest> articleDTOList = new ArrayList<>();
 
         for (Article articleEntity : articleEntityList) {
-            ArticleRequestDTO dto = ArticleRequestDTO.toArticleDTO(articleEntity);
+            ArticleRequest dto = ArticleRequest.toArticleDTO(articleEntity);
             articleDTOList.add(dto);
         }
         return articleDTOList;
     }
 
     @Transactional
-    public ArticleRequestDTO findArticleById(Long id, Member member) {
+    public ArticleRequest findArticleById(Long id, Member member) {
         return articleRepository.findById(id)
                 .map(article -> {
                     viewCountUpdate(member, article);
                     ArticleStatistic statistic = articleStatisticRepository.findByArticle(article)
                             .orElse(new ArticleStatistic());
-                    ArticleRequestDTO dto = ArticleRequestDTO.toArticleDTOWithViews(article, statistic.getViews());
+                    ArticleRequest dto = ArticleRequest.toArticleDTOWithViews(article, statistic.getViews());
                     return dto;
                 }).orElse(null);
     }
@@ -113,14 +111,14 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleRequestDTO updateArticle(ArticleUpdateRequestDTO articleDTO) {
+    public ArticleRequest updateArticle(ArticleUpdateRequest articleDTO) {
         Article articleEntity = Article.toUpdateEntity(articleDTO);
         Article updateArticle = articleRepository.save(articleEntity);
 
         Optional<Article> optionalArticleEntity = articleRepository.findById(updateArticle.getId());
         if (optionalArticleEntity.isPresent()) {
             Article article = optionalArticleEntity.get();
-            return ArticleRequestDTO.toArticleDTO(article);
+            return ArticleRequest.toArticleDTO(article);
         }
         return null;
     }
@@ -130,25 +128,23 @@ public class ArticleService {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
 
+        articleLikeRepository.deleteByArticle(article);
         articleStatisticRepository.deleteByArticle(article);
         articleViewRepository.deleteByArticle(article);
+        articleCommentRepository.deleteByArticle(article);
         articleRepository.delete(article);
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleRequestDTO> paginateArticles(Pageable pageable) {
+    public Page<ArticleRequest> paginateArticles(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
-        int pageLimit = 3; // 한 페이지에 보여줄 글 갯수
+        int pageLimit = 3;                       // 한 페이지에 보여줄 글 갯수
 
         // 한페이지당 3개씩 글을 보여주고 정렬 기준은 id 기준으로 내림차순 정렬
         Page<Article> articleEntity = articleRepository.findAll(PageRequest
                 .of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
-        return articleEntity.map(article -> new ArticleRequestDTO(
-                article.getId(),
-                article.getWriter(),
-                article.getTitle(),
-                article.getCreatedAt()));
+        return articleEntity.map(article -> ArticleRequest.toArticleDTO(article));
     }
 
     @Transactional
@@ -180,7 +176,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public Long saveComment(ArticleCommentRequestDTO commentDTO, String writerNickname) {
+    public Long saveComment(ArticleCommentRequest commentDTO, String writerNickname) {
         Member member = memberRepository.findByNicknameAndDeletedFalse(writerNickname)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -194,30 +190,29 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleCommentRequestDTO> findCommentsForScrolling(Long articleId, Pageable pageable) {
+    public Page<ArticleCommentRequest> findCommentsForScrolling(Long articleId, Pageable pageable) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new EntityNotFoundException("ID로 게시판을 찾을 수 없습니다."));
 
         return articleCommentRepository.findAllByArticleOrderByIdDesc(article, pageable)
-                .map(ArticleCommentRequestDTO::toCommentDTO);
+                .map(ArticleCommentRequest::toCommentDTO);
     }
 
     @Transactional(readOnly = true)
-    public ArticleCommentRequestDTO findCommentById(Long id) {
+    public ArticleCommentRequest findCommentById(Long id) {
         return articleCommentRepository.findById(id)
-                .map(ArticleCommentRequestDTO::toCommentDTO)
+                .map(ArticleCommentRequest::toCommentDTO)
                 .orElseThrow(() -> new EntityNotFoundException("ID로 댓글을 찾을 수 없습니다."));
     }
 
     @Transactional
-    public void updateComment(Long commentId, ArticleCommentRequestDTO commentDTO, String currentNickname) {
+    public void updateComment(Long commentId, ArticleCommentRequest commentDTO, String currentNickname) {
         ArticleComment comment = articleCommentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
 
         if (!comment.getWriterNickname().equals(currentNickname)) {
             throw new IllegalArgumentException("댓글 수정 권한이 없습니다.");
         }
-
         comment.updateContent(commentDTO.getContents());
         articleCommentRepository.save(comment);
     }

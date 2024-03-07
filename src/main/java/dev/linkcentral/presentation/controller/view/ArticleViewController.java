@@ -2,11 +2,12 @@ package dev.linkcentral.presentation.controller.view;
 
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
-import dev.linkcentral.service.dto.request.ArticleCommentRequestDTO;
-import dev.linkcentral.service.dto.request.ArticleRequestDTO;
-import dev.linkcentral.service.dto.response.CommentPageResponseDTO;
+import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
+import dev.linkcentral.presentation.dto.request.ArticleRequest;
+import dev.linkcentral.presentation.dto.response.CommentPageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +41,7 @@ public class ArticleViewController {
 
     @GetMapping("/")
     public String findAll(Model model) {
-        List<ArticleRequestDTO> articleList = articleService.findAllArticles();
+        List<ArticleRequest> articleList = articleService.findAllArticles();
         model.addAttribute("articleList", articleList);
         return "/articles/list";
     }
@@ -51,7 +51,7 @@ public class ArticleViewController {
                            @PathVariable Long id, Model model) {
 
         Member member = memberService.getAuthenticatedMember();
-        ArticleRequestDTO articleDTO = articleService.findArticleById(id, member);
+        ArticleRequest articleDTO = articleService.findArticleById(id, member);
 
         model.addAttribute("article", articleDTO);
         model.addAttribute("page", pageable.getPageNumber());
@@ -73,21 +73,16 @@ public class ArticleViewController {
 
     @GetMapping("/paging")
     public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
-        Page<ArticleRequestDTO> articlePage = articleService.paginateArticles(pageable);
-        List<ArticleRequestDTO> articleList = articlePage.getContent(); // Page에서 List로 변환
+        Page<ArticleRequest> articlePage = articleService.paginateArticles(pageable);
+        List<ArticleRequest> articleList = articlePage.getContent(); // Page에서 List로 변환
 
         int blockLimit = 3;
         int startPage = (((int) Math.ceil(((double) pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
         int endPage = Math.min((startPage + blockLimit - 1), articlePage.getTotalPages());
 
-        // 요청 헤더에서 JWT 토큰 추출
-        boolean isAuthenticated = false;
-        try {
-            memberService.getCurrentMember();
-            isAuthenticated = true;
-        } catch (UsernameNotFoundException e) {
-            isAuthenticated = false;
-        }
+        // 인증된 사용자인지 확인
+        boolean isAuthenticated = SecurityUtils.isAuthenticated();
+        log.info("--> isAuthenticated: {}", isAuthenticated);
 
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("articleList", articleList); // List로 전달
@@ -98,16 +93,15 @@ public class ArticleViewController {
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<CommentPageResponseDTO> getCommentsForArticle(@PathVariable Long id,
-            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<CommentPageResponse> getCommentsForArticle(@PathVariable Long id,
+                                                                     @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<ArticleCommentRequestDTO> commentsPage = articleService.findCommentsForScrolling(id, pageable);
-        CommentPageResponseDTO response = new CommentPageResponseDTO(
+        Page<ArticleCommentRequest> commentsPage = articleService.findCommentsForScrolling(id, pageable);
+        CommentPageResponse response = new CommentPageResponse(
                 commentsPage.getContent(),
                 commentsPage.getNumber(),
                 commentsPage.getTotalPages()
         );
-
         return ResponseEntity.ok(response);
     }
 }

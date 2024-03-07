@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto.request;
+package dev.linkcentral.presentation.dto.request;
 
 import dev.linkcentral.database.entity.Article;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleRequestDTO {
+public class ArticleRequest {
 
     private Long id;
     private String title;
@@ -24,8 +24,8 @@ public class ArticleRequestDTO {
     private int views;
 
     // Entity -> DTO 변환
-    public static ArticleRequestDTO toArticleDTOWithViews(Article article, int views) {
-        return ArticleRequestDTO.builder()
+    public static ArticleRequest toArticleDTOWithViews(Article article, int views) {
+        return ArticleRequest.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
@@ -37,8 +37,8 @@ public class ArticleRequestDTO {
     }
 
     // Entity -> DTO 변환
-    public static ArticleRequestDTO toArticleDTO(Article article) {
-        ArticleRequestDTO dto = ArticleRequestDTO.builder()
+    public static ArticleRequest toArticleDTO(Article article) {
+        ArticleRequest dto = ArticleRequest.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
@@ -54,7 +54,7 @@ public class ArticleRequestDTO {
         return dto;
     }
 
-    public ArticleRequestDTO(Long id, String title, String writer, LocalDateTime createdAt) {
+    public ArticleRequest(Long id, String title, String writer, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.writer = writer;

@@ -5,7 +5,7 @@ import dev.linkcentral.database.entity.Profile;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.ProfileRepository;
 import dev.linkcentral.infrastructure.s3.AwsS3Uploader;
-import dev.linkcentral.service.dto.request.ProfileRequestDTO;
+import dev.linkcentral.presentation.dto.request.ProfileRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,17 +22,17 @@ public class ProfileService {
     private final AwsS3Uploader awsS3Uploader;
 
     // 회원 ID로 프로필 정보를 조회하고 반환
-    public ProfileRequestDTO getProfile(Long memberId) {
+    public ProfileRequest getProfile(Long memberId) {
         return profileRepository.findByMemberId(memberId)
-                .map(profile -> new ProfileRequestDTO(
+                .map(profile -> new ProfileRequest(
                         profile.getMember().getId(),
                         profile.getBio(),
                         profile.getImageUrl()))
-                .orElse(new ProfileRequestDTO(memberId, "자신을 소개해 주세요!", ""));
+                .orElse(new ProfileRequest(memberId, "자신을 소개해 주세요!", ""));
     }
 
     @Transactional
-    public void updateProfile(ProfileRequestDTO profileDTO, MultipartFile imageFile) {
+    public void updateProfile(ProfileRequest profileDTO, MultipartFile imageFile) {
         Profile profile = findOrCreateProfile(profileDTO.getMemberId());
         updateProfileDetails(profile, profileDTO.getBio(), imageFile);
     }

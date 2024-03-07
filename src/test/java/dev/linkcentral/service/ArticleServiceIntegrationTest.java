@@ -8,8 +8,8 @@ import dev.linkcentral.database.repository.ArticleLikeRepository;
 import dev.linkcentral.database.repository.ArticleRepository;
 import dev.linkcentral.database.repository.ArticleStatisticRepository;
 import dev.linkcentral.database.repository.MemberRepository;
-import dev.linkcentral.service.dto.request.ArticleRequestDTO;
-import dev.linkcentral.service.dto.request.ArticleUpdateRequestDTO;
+import dev.linkcentral.presentation.dto.request.ArticleRequest;
+import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class ArticleServiceIntegrationTest {
     @Test
     void save_article() {
         // given
-        ArticleRequestDTO articleDTO = ArticleRequestDTO.builder()
+        ArticleRequest articleDTO = ArticleRequest.builder()
                 .id(1L)
                 .title("제목")
                 .content("내용")
@@ -107,7 +107,7 @@ public class ArticleServiceIntegrationTest {
         articleRepository.save(secondArticle);
 
         // when
-        List<ArticleRequestDTO> foundArticles = articleService.findAllArticles();
+        List<ArticleRequest> foundArticles = articleService.findAllArticles();
 
         // then
         assertEquals(2, foundArticles.size());
@@ -127,7 +127,7 @@ public class ArticleServiceIntegrationTest {
 
         // when
         // 저장한 Article의 ID를 사용하여 조회
-        ArticleRequestDTO foundArticle = articleService.findArticleById(article.getId(), member);
+        ArticleRequest foundArticle = articleService.findArticleById(article.getId(), member);
 
         // then
         assertNotNull(foundArticle);
@@ -166,7 +166,7 @@ public class ArticleServiceIntegrationTest {
                 .build();
         originalArticle = articleRepository.save(originalArticle);
 
-        ArticleUpdateRequestDTO updateDTO = new ArticleUpdateRequestDTO(
+        ArticleUpdateRequest updateDTO = new ArticleUpdateRequest(
                 originalArticle.getId(),
                 "작성자",
                 "수정된 제목",
@@ -232,7 +232,7 @@ public class ArticleServiceIntegrationTest {
         int page = 1; // 1페이지
         int size = 3; // 페이지 당 3개의 게시글
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "id"));
-        Page<ArticleRequestDTO> pageResult = articleService.paginateArticles(pageable);
+        Page<ArticleRequest> pageResult = articleService.paginateArticles(pageable);
 
         // then
         assertEquals(3, pageResult.getContent().size()); // 페이지 내의 게시글 수 확인

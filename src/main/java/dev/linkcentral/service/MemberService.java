@@ -9,9 +9,9 @@ import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
-import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
-import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
-import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
+import dev.linkcentral.presentation.dto.request.MemberEditRequest;
+import dev.linkcentral.presentation.dto.request.MemberMailRequest;
+import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -89,7 +89,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Member registerMember(MemberSaveRequestDTO memberDTO) {
+    public Member registerMember(MemberSaveRequest memberDTO) {
         String nickname = memberDTO.getNickname();
         validateForDuplicates(memberDTO, nickname);
 
@@ -103,7 +103,7 @@ public class MemberService {
         }
     }
 
-    private Member createMemberFromDTO(MemberSaveRequestDTO memberDTO, List<String> roles) {
+    private Member createMemberFromDTO(MemberSaveRequest memberDTO, List<String> roles) {
         return Member.builder()
                 .name(memberDTO.getName())
                 .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
@@ -113,7 +113,7 @@ public class MemberService {
                 .build();
     }
 
-    private void validateForDuplicates(MemberSaveRequestDTO memberDTO, String nickname) {
+    private void validateForDuplicates(MemberSaveRequest memberDTO, String nickname) {
         if (memberRepository.existsByNicknameAndDeletedFalse(nickname)) {
             throw new DuplicateNicknameException("닉네임이 이미 사용 중입니다.");
         }
@@ -147,8 +147,8 @@ public class MemberService {
      * DTO에 사용자가 원하는 내용과 제목을 저장
      */
     @Transactional
-    public MemberMailRequestDTO createMailForPasswordReset(String userEmail, String userName) {
-        MemberMailRequestDTO dto = new MemberMailRequestDTO();
+    public MemberMailRequest createMailForPasswordReset(String userEmail, String userName) {
+        MemberMailRequest dto = new MemberMailRequest();
         String generatedPassword = createTemporaryPassword();
 
         dto.setAddress(userEmail);
@@ -193,7 +193,7 @@ public class MemberService {
     /**
      * 메일 보내기
      */
-    public void sendMail(MemberMailRequestDTO mailDto) {
+    public void sendMail(MemberMailRequest mailDto) {
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(mailDto.getAddress());    // 받는사람 주소
@@ -204,7 +204,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void editMember(MemberEditRequestDTO memberEditDTO) {
+    public void editMember(MemberEditRequest memberEditDTO) {
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
 
