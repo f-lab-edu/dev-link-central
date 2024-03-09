@@ -43,7 +43,6 @@ public class MemberService {
     private final JavaMailSender mailSender;
     private final JwtTokenProvider jwtTokenProvider;
 
-
     @Transactional(readOnly = true)
     public Member getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
