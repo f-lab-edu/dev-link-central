@@ -6,8 +6,8 @@ import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
-import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
-import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
+import dev.linkcentral.presentation.dto.request.MemberEditRequest;
+import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +47,8 @@ class MemberServiceIntegrationTest {
         return member;
     }
 
-    private MemberSaveRequestDTO createTestMemberSaveRequestDTO() {
-        MemberSaveRequestDTO memberDTO = new MemberSaveRequestDTO();
+    private MemberSaveRequest createTestMemberSaveRequestDTO() {
+        MemberSaveRequest memberDTO = new MemberSaveRequest();
         memberDTO.setName("minseok");
         memberDTO.setPassword("1234");
         memberDTO.setEmail("test@naver.com");
@@ -60,7 +60,7 @@ class MemberServiceIntegrationTest {
     @Test
     void save_member_and_verify_database() {
         // given
-        MemberSaveRequestDTO memberDTO = createTestMemberSaveRequestDTO();
+        MemberSaveRequest memberDTO = createTestMemberSaveRequestDTO();
 
         // when
         Member savedMember = memberService.registerMember(memberDTO);
@@ -81,7 +81,7 @@ class MemberServiceIntegrationTest {
         Member existingMember = createTestMember();
         memberRepository.save(existingMember);
 
-        MemberSaveRequestDTO newMemberDTO = new MemberSaveRequestDTO();
+        MemberSaveRequest newMemberDTO = new MemberSaveRequest();
         newMemberDTO.setName("heedo");
         newMemberDTO.setEmail("test@naver.com");
         newMemberDTO.setNickname("banana");
@@ -100,7 +100,7 @@ class MemberServiceIntegrationTest {
         Member existingMember = createTestMember();
         memberRepository.save(existingMember);
 
-        MemberSaveRequestDTO newMemberDTO = new MemberSaveRequestDTO();
+        MemberSaveRequest newMemberDTO = new MemberSaveRequest();
         newMemberDTO.setName("heedo");
         newMemberDTO.setEmail("test@naver.com");
         newMemberDTO.setNickname("apple");
@@ -189,7 +189,7 @@ class MemberServiceIntegrationTest {
         memberRepository.save(originalMember);
 
         // when
-        MemberEditRequestDTO editDTO = new MemberEditRequestDTO(
+        MemberEditRequest editDTO = new MemberEditRequest(
                 originalMember.getId(),
                 "heedo",
                 "7777",

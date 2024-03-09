@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto.request;
+package dev.linkcentral.presentation.dto.request;
 
 import dev.linkcentral.database.entity.ArticleComment;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @ToString
-public class ArticleCommentRequestDTO {
+public class ArticleCommentRequest {
 
     private Long id;
     private Long articleId;
@@ -16,12 +16,15 @@ public class ArticleCommentRequestDTO {
     private String nickname;
     private LocalDateTime createdAt;
 
-    public static ArticleCommentRequestDTO toCommentDTO(ArticleComment comment) {
-        ArticleCommentRequestDTO commentDTO = new ArticleCommentRequestDTO();
+    public static ArticleCommentRequest toCommentDTO(ArticleComment comment) {
+        ArticleCommentRequest commentDTO = new ArticleCommentRequest();
         commentDTO.setId(comment.getId());
         commentDTO.setArticleId(comment.getArticle().getId()); // Article 엔티티에서 ID 가져오기
         commentDTO.setContents(comment.getContent());
-        commentDTO.setNickname(comment.getMember().getNickname()); // Member 엔티티에서 닉네임 가져오기
+
+        if (comment.getMember() != null) {
+            commentDTO.setNickname(comment.getMember().getNickname());
+        }
         commentDTO.setCreatedAt(comment.getCreatedAt());
         return commentDTO;
     }

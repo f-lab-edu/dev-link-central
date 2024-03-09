@@ -3,7 +3,7 @@ package dev.linkcentral.presentation.controller.view;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.ProfileService;
-import dev.linkcentral.service.dto.request.ProfileRequestDTO;
+import dev.linkcentral.presentation.dto.request.ProfileRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -31,13 +31,12 @@ public class ProfileViewController {
         }
 
         try {
-            ProfileRequestDTO profile = profileService.getProfile(memberId);
+            ProfileRequest profile = profileService.getProfile(memberId);
             model.addAttribute("profile", profile);
 
-            Member loggedInMember = memberService.getCurrentMember();
-            if (loggedInMember != null) {
-                model.addAttribute("loggedInUserId", loggedInMember.getId());
-                model.addAttribute("loggedInUserName", loggedInMember.getName());
+            Member member = memberService.getMemberById(memberId);
+            if (member != null) {
+                model.addAttribute("loggedInUserName", member.getName());
                 model.addAttribute("viewedMemberId", memberId);
             }
             return "profile/view";
@@ -50,7 +49,7 @@ public class ProfileViewController {
     @GetMapping("/edit")
     public String profileEditForm(@RequestParam Long memberId, Model model) {
         // 프로필 수정 폼에 필요한 데이터를 가져옴
-        ProfileRequestDTO profile = profileService.getProfile(memberId);
+        ProfileRequest profile = profileService.getProfile(memberId);
         model.addAttribute("profile", profile);
         return "profile/edit";
     }

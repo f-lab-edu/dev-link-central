@@ -4,12 +4,11 @@ import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.database.repository.ArticleCommentRepository;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
-import dev.linkcentral.service.dto.request.MemberEditRequestDTO;
-import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
+import dev.linkcentral.presentation.dto.request.MemberEditRequest;
+import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,13 +18,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,8 +50,8 @@ public class MemberServiceTest {
         return member;
     }
 
-    private MemberSaveRequestDTO createTestMemberSaveDTO() {
-        MemberSaveRequestDTO memberDTO = new MemberSaveRequestDTO();
+    private MemberSaveRequest createTestMemberSaveDTO() {
+        MemberSaveRequest memberDTO = new MemberSaveRequest();
         memberDTO.setName("minseok");
         memberDTO.setPassword("1234");
         memberDTO.setEmail("test@naver.com");
@@ -67,7 +63,7 @@ public class MemberServiceTest {
     @Test
     void save_member_and_verify_database() {
         // given
-        MemberSaveRequestDTO memberDTO = createTestMemberSaveDTO();
+        MemberSaveRequest memberDTO = createTestMemberSaveDTO();
         Member mockMember = createTestMember();
         when(memberRepository.save(any(Member.class))).thenReturn(mockMember);
 
@@ -85,7 +81,7 @@ public class MemberServiceTest {
     @Test
     void register_with_duplicate_email_exception() {
         // given
-        MemberSaveRequestDTO newMemberDTO = createTestMemberSaveDTO();
+        MemberSaveRequest newMemberDTO = createTestMemberSaveDTO();
         when(memberRepository.countByEmailIgnoringDeleted(newMemberDTO.getEmail())).thenReturn(1L);
 
         // when & then
@@ -98,7 +94,7 @@ public class MemberServiceTest {
     @Test
     void register_with_duplicate_nickname_exception() {
         // given
-        MemberSaveRequestDTO newMemberDTO = createTestMemberSaveDTO();
+        MemberSaveRequest newMemberDTO = createTestMemberSaveDTO();
         when(memberRepository.existsByNicknameAndDeletedFalse(newMemberDTO.getNickname())).thenReturn(true);
 
         // when & then
@@ -182,7 +178,7 @@ public class MemberServiceTest {
     void modify_member_information_and_verify() {
         // given
         Member originalMember = createTestMember();
-        MemberEditRequestDTO memberEditDTO = new MemberEditRequestDTO(
+        MemberEditRequest memberEditDTO = new MemberEditRequest(
                 originalMember.getId(),
                 "heedo",
                 "7777",

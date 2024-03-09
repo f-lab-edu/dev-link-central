@@ -8,18 +8,19 @@
     - [X] 로그아웃 (시큐리티 추가)
     - [ ] 인증 / 권한 (소셜 로그인)
 - [ ] 게시판
-    - [ ] 글 등록(/article/save)
-    - [ ] 글 목록(/article)
-    - [ ] 글 조회(/article/{id})
-    - [ ] 글 수정(/article/update/{id})
-    - [ ] 글 삭제(/article/delete/{id})
+    - [X] 글 등록(/article/save)
+    - [X] 글 목록(/article)
+    - [X] 글 조회(/article/{id})
+    - [X] 글 수정(/article/update/{id})
+    - [X] 글 삭제(/article/delete/{id})
     - [ ] 검색 기능
-    - [ ] 좋아요 수
-    - [ ] 조회수
-    - [ ] 댓글 / 삭제 / 수정 / 대댓글
-    - [ ] 페이징처리(/article/paging)
+    - [X] 좋아요 수
+    - [X] 조회수
+    - [X] 댓글 / 삭제 / 수정 / 
+    - [ ] 대댓글
+    - [X] 페이징처리(/article/paging)
 - [ ] 프로필
-    - [ ] 프로필 수정
+    - [X] 프로필 수정
     - [ ] 프로필 화면에서 나의 글들 조회
 - [ ] 친구 기능
     - [ ] 해당 유저에게 ‘친구 추가’ 가능

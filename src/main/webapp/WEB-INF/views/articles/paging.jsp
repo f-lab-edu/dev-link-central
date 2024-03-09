@@ -78,11 +78,35 @@
             }
         }
     </script>
+
+
+    <script>
+        $(document).ready(function() {
+            // 링크 클릭 이벤트를 잡아 AJAX 요청으로 변환
+            $('a.article-link').click(function(e) {
+                e.preventDefault(); // 기본 링크 동작 방지
+                var href = $(this).attr('href');
+                var token = localStorage.getItem('jwt'); // 로컬 스토리지에서 JWT 토큰 가져오기
+
+                $.ajax({
+                    url: href,
+                    headers: {'Authorization': 'Bearer ' + token}, // JWT 토큰을 HTTP 헤더에 포함
+                    success: function(data) {
+                        console.log("성공")
+                        window.location.href = href;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 
 <% if ((Boolean) request.getAttribute("isAuthenticated")) { %>
-<button onclick="saveReq()">글작성</button>
+    <button onclick="saveReq()">글작성</button>
 <% } %>
 
 <button id="writeButton" onclick="saveReq()" style="display:none;">글작성</button>
@@ -99,7 +123,7 @@
             <tr>
                 <td>${article.id}</td>
                 <td><a href="/api/v1/view/profile/view?memberId=${article.writerId}">${article.title}</a></td>
-                <td><a href="/api/v1/view/article/${article.id}?page=${articlePage.number + 1}">${article.writer}</a></td>
+                <td><a class="article-link" href="/api/v1/view/article/${article.id}?page=${articlePage.number + 1}">${article.writer}</a></td>
                 <td>${article.createdAt}</td>
             </tr>
         </c:forEach>

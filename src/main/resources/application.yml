@@ -23,11 +23,13 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
   mail:
     host: smtp.gmail.com
     port: 587
     username: alstjr706@gmail.com
-    password: wifsqrwqlmnvgztd
+    password: ${MAIL}
     properties:
       mail:
         smtp:
@@ -40,10 +42,10 @@ jwt:
 
 logging:
   level:
+    root: INFO
     org:
       hibernate:
         type:
-          # 쿼리에 물음표로 출력되는 바인드 파라미터 출력
           descriptor.sql: trace
     com:
       amazonaws:

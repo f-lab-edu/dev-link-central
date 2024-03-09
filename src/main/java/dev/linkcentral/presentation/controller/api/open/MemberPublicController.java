@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation.controller.open;
+package dev.linkcentral.presentation.controller.api.open;
 
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
@@ -7,10 +7,10 @@ import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.BaseUrlUtil;
 import dev.linkcentral.presentation.response.LoginSuccessResponse;
 import dev.linkcentral.service.MemberService;
-import dev.linkcentral.service.dto.request.MemberLoginRequestDTO;
-import dev.linkcentral.service.dto.request.MemberMailRequestDTO;
-import dev.linkcentral.service.dto.request.MemberSaveRequestDTO;
-import dev.linkcentral.service.dto.response.MemberPasswordResponseDTO;
+import dev.linkcentral.presentation.dto.request.MemberLoginRequest;
+import dev.linkcentral.presentation.dto.request.MemberMailRequest;
+import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
+import dev.linkcentral.presentation.dto.response.MemberPasswordResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,7 +34,7 @@ public class MemberPublicController {
 
     @PostMapping("/register")
     @ResponseBody
-    public ResponseEntity<?> register(@Valid @RequestBody MemberSaveRequestDTO memberDTO,
+    public ResponseEntity<?> register(@Valid @RequestBody MemberSaveRequest memberDTO,
                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
@@ -54,7 +54,7 @@ public class MemberPublicController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginSuccessResponse> login(@RequestBody MemberLoginRequestDTO memberLoginDTO,
+    public ResponseEntity<LoginSuccessResponse> login(@RequestBody MemberLoginRequest memberLoginDTO,
                                                       HttpServletRequest request) {
         try {
             JwtTokenDTO jwtToken = memberService.authenticateAndGenerateJwtToken(
@@ -80,10 +80,10 @@ public class MemberPublicController {
 
     @GetMapping("/forgot-password")
     @ResponseBody
-    public MemberPasswordResponseDTO isPasswordValid(String userEmail, String userName) {
+    public MemberPasswordResponse isPasswordValid(String userEmail, String userName) {
         // 이메일과 이름이 일치하는 사용자가 있는지 확인.
         boolean pwFindCheck = memberService.validateUserEmail(userEmail, userName);
-        return new MemberPasswordResponseDTO(pwFindCheck);
+        return new MemberPasswordResponse(pwFindCheck);
     }
 
     /**
@@ -91,15 +91,15 @@ public class MemberPublicController {
      */
     @PostMapping("/send-email/update-password")
     public void sendEmail(String userEmail, String userName) {
-        MemberMailRequestDTO dto = memberService.createMailForPasswordReset(userEmail, userName);
+        MemberMailRequest dto = memberService.createMailForPasswordReset(userEmail, userName);
         memberService.sendMail(dto);
     }
 
     @PostMapping("/check-current-password")
     @ResponseBody
-    public MemberPasswordResponseDTO checkPassword(@RequestParam String password) {
+    public MemberPasswordResponse checkPassword(@RequestParam String password) {
         Member member = memberService.getCurrentMember();
         boolean result = memberService.validatePassword(member.getNickname(), password);
-        return new MemberPasswordResponseDTO(result);
+        return new MemberPasswordResponse(result);
     }
 }
