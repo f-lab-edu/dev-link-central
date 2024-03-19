@@ -12,7 +12,9 @@ import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import dev.linkcentral.presentation.dto.request.MemberEditRequest;
 import dev.linkcentral.presentation.dto.request.MemberMailRequest;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
+import dev.linkcentral.presentation.dto.response.MemberInfoResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MemberService {
 
@@ -42,6 +45,15 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
     private final JwtTokenProvider jwtTokenProvider;
+
+    // 친구 목록 가져오기 위한 코드
+    public MemberInfoResponse getCurrentUserInfo() {
+        Member member = getCurrentMember();
+        return new MemberInfoResponse(
+                member.getId(),
+                member.getEmail(),
+                member.getNickname());
+    }
 
     @Transactional(readOnly = true)
     public Member getMemberById(Long memberId) {

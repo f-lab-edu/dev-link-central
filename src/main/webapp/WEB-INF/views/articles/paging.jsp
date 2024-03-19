@@ -122,8 +122,8 @@
         <c:forEach items="${articleList}" var="article">
             <tr>
                 <td>${article.id}</td>
-                <td><a href="/api/v1/view/profile/view?memberId=${article.writerId}">${article.title}</a></td>
-                <td><a class="article-link" href="/api/v1/view/article/${article.id}?page=${articlePage.number + 1}">${article.writer}</a></td>
+                <td><a href="/api/v1/view/profile/view?memberId=${article.writerId}">${article.writer}</a></td>
+                <td><a class="article-link" href="/api/v1/view/article/${article.id}?page=${articlePage.number + 1}">${article.title}</a></td>
                 <td>${article.createdAt}</td>
             </tr>
         </c:forEach>

@@ -18,6 +18,20 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    /**
+     * 친구 목록 API
+     */
+    @GetMapping("/info")
+    public ResponseEntity<?> getUserInfo() {
+        log.info("컨트롤러 들어왔는가???????");
+        Member member = memberService.getCurrentMember();
+        try {
+            return ResponseEntity.ok(memberService.getCurrentUserInfo());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
     @PutMapping
     public MemberEditResponse memberUpdate(@ModelAttribute MemberEditRequest memberEditDTO) {
         memberService.editMember(memberEditDTO);
