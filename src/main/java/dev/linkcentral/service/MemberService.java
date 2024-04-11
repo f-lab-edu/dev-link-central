@@ -46,7 +46,6 @@ public class MemberService {
     private final JavaMailSender mailSender;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // 친구 목록 가져오기 위한 코드
     public MemberInfoResponse getCurrentUserInfo() {
         Member member = getCurrentMember();
         return new MemberInfoResponse(
@@ -61,11 +60,6 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("ID가 있는 회원을 찾을 수 없습니다."));
     }
 
-    public Member findByEmail(String email) {
-        return memberRepository.findByEmailAndDeletedFalse(email)
-                .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
-    }
-
     @Transactional(readOnly = true)
     public Member getCurrentMember() {
         String email = SecurityUtils.getCurrentUserUsername();
@@ -77,7 +71,7 @@ public class MemberService {
     public Member getAuthenticatedMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            return null; // 사용자가 인증되지 않은 경우 null 반환
+            return null;
         }
 
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();
@@ -106,7 +100,7 @@ public class MemberService {
 
         try {
             List<String> roles = new ArrayList<>();
-            roles.add("USER");  // USER 권한 부여
+            roles.add("USER");
             Member memberEntity = createMemberFromDTO(memberDTO, roles);
             return memberRepository.save(memberEntity);
         } catch (Exception e) {
@@ -120,7 +114,7 @@ public class MemberService {
                 .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
                 .email(memberDTO.getEmail())
                 .nickname(memberDTO.getNickname())
-                .roles(roles) // 권한 설정 추가
+                .roles(roles)
                 .build();
     }
 
@@ -154,9 +148,6 @@ public class MemberService {
         return true;
     }
 
-    /**
-     * DTO에 사용자가 원하는 내용과 제목을 저장
-     */
     @Transactional
     public MemberMailRequest createMailForPasswordReset(String userEmail, String userName) {
         MemberMailRequest dto = new MemberMailRequest();
@@ -171,9 +162,6 @@ public class MemberService {
         return dto;
     }
 
-    /**
-     * 이메일로 발송된 임시비밀번호로 해당 유저의 패스워드 변경
-     */
     @Transactional
     public void resetPassword(String generatedPassword, String userEmail) {
         String passwordHash = passwordEncoder.encode(generatedPassword);
@@ -185,9 +173,6 @@ public class MemberService {
         }
     }
 
-    /**
-     * 10자리의 랜덤난수를 생성하는 메소드
-     */
     public String createTemporaryPassword() {
         char[] charSet = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
                 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
@@ -201,9 +186,6 @@ public class MemberService {
         return str.toString();
     }
 
-    /**
-     * 메일 보내기
-     */
     public void sendMail(MemberMailRequest mailDto) {
         SimpleMailMessage message = new SimpleMailMessage();
 

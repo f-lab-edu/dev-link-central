@@ -21,7 +21,6 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    // 회원 ID로 프로필 정보를 조회하고 반환
     public ProfileRequest getProfile(Long memberId) {
         return profileRepository.findByMemberId(memberId)
                 .map(profile -> new ProfileRequest(
@@ -37,7 +36,6 @@ public class ProfileService {
         updateProfileDetails(profile, profileDTO.getBio(), imageFile);
     }
 
-    // 회원 ID로 프로필을 찾거나 새로 생성
     private Profile findOrCreateProfile(Long memberId) {
         return profileRepository.findByMemberId(memberId)
                 .orElseGet(() -> { Member member = memberRepository.findById(memberId)
@@ -47,9 +45,8 @@ public class ProfileService {
     }
 
     private void updateProfileDetails(Profile profile, String bio, MultipartFile imageFile) {
-        profile.updateBio(bio); // 프로필의 Bio 업데이트
+        profile.updateBio(bio);
 
-        // 이미지가 제공된 경우, 이미지 업로드 및 URL 업데이트
         if (!imageFile.isEmpty()) {
             String imageUrl = awsS3Uploader.uploadFile(imageFile, "profile-images/" + profile.getMember().getId());
             profile.updateImageUrl(imageUrl);
