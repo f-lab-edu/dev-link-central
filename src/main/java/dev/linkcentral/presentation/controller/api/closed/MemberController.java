@@ -1,9 +1,11 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.service.MemberService;
+import dev.linkcentral.mapper.MemberMapper;
+import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.request.MemberEditRequest;
 import dev.linkcentral.presentation.dto.response.MemberEditResponse;
+import dev.linkcentral.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,13 +19,10 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberMapper memberMapper;
 
-    /**
-     * 친구 목록 API
-     */
     @GetMapping("/info")
     public ResponseEntity<?> getUserInfo() {
-        log.info("컨트롤러 들어왔는가???????");
         Member member = memberService.getCurrentMember();
         try {
             return ResponseEntity.ok(memberService.getCurrentUserInfo());
@@ -33,9 +32,10 @@ public class MemberController {
     }
 
     @PutMapping
-    public MemberEditResponse memberUpdate(@ModelAttribute MemberEditRequest memberEditDTO) {
+    public ResponseEntity<MemberEditResponse> memberUpdate(@RequestBody MemberEditRequest request) {
+        MemberEditDTO memberEditDTO = memberMapper.toMemberEditDTO(request);
         memberService.editMember(memberEditDTO);
-        return new MemberEditResponse(HttpStatus.OK.value());
+        return ResponseEntity.ok(new MemberEditResponse(200, "Update successful"));
     }
 
     @DeleteMapping

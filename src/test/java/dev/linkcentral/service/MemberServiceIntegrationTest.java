@@ -6,6 +6,7 @@ import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
+import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.request.MemberEditRequest;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -189,11 +190,12 @@ class MemberServiceIntegrationTest {
         memberRepository.save(originalMember);
 
         // when
-        MemberEditRequest editDTO = new MemberEditRequest(
-                originalMember.getId(),
-                "heedo",
-                "7777",
-                "mango");
+        MemberEditDTO editDTO = MemberEditDTO.builder()
+                .id(originalMember.getId())
+                .name("heedo")
+                .password("7777")
+                .nickname("mango")
+                .build();
         memberService.editMember(editDTO);
 
         // then

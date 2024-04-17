@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MemberEditResponse {
 
-    int status; // HTTP 상태 코드 중 200
+    private int statusCode;
+    private String message;
 }

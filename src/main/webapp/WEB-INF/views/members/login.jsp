@@ -69,8 +69,6 @@
                 success: function (htmlContent) {
                     // 서버로부터 받은 HTML 콘텐츠를 현재 페이지의 DOM에 삽입
                     document.body.innerHTML = htmlContent; // 현재 페이지 바디에 폼 삽입
-
-                    // 시작점
                     $(document).ready(function () {
                         init();
 
@@ -120,36 +118,28 @@
 
                             console.log("업데이트 데이터:", data);
 
-                            // 데이터 객체를 폼 데이터로 변환
-                            let formData = new FormData();
-
-                            // 빈 값 또는 null 값이 아닌 경우에만 FormData에 추가
-                            Object.keys(data).forEach(key => {
-                                if (data[key] !== null && data[key] !== "") {
-                                    formData.append(key, data[key]);
-                                }
-                            });
-
                             $.ajax({
                                 type: "PUT",
                                 url: "/api/v1/member",
-                                data: formData,
+                                data: JSON.stringify(data),
+                                contentType: "application/json",
                                 headers: {
                                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                                },
-                                processData: false,
-                                contentType: false
+                                }
                             })
                                 .done(function (resp) {
                                     alert("회원 수정이 완료되었습니다.");
                                     window.location.href = "/";
                                 })
                                 .fail(function (error) {
-                                    let errorMessage = "현재 비밀번호가 일치하지 않습니다.";
+                                    console.log("업데이트 실패:", error.responseJSON);
+                                    let errorMessage = error.responseJSON.message || "업데이트 중 오류가 발생했습니다.";
 
+                                    // 현재 비밀번호 입력 필드 바로 다음에 오류 메시지가 표시되도록 처리
                                     if ($("#currentPassword + .error-message").length === 0) {
                                         $("#currentPassword").after("<div class='error-message'>" + errorMessage + "</div>");
                                     }
+                                    alert(errorMessage);
                                 });
                         }
                     });

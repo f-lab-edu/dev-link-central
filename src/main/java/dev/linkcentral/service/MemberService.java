@@ -9,7 +9,8 @@ import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
-import dev.linkcentral.presentation.dto.request.MemberEditRequest;
+import dev.linkcentral.mapper.MemberMapper;
+import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.request.MemberMailRequest;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import dev.linkcentral.presentation.dto.response.MemberInfoResponse;
@@ -45,6 +46,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MemberMapper memberMapper;
 
     public MemberInfoResponse getCurrentUserInfo() {
         Member member = getCurrentMember();
@@ -197,14 +199,25 @@ public class MemberService {
     }
 
     @Transactional
-    public void editMember(MemberEditRequest memberEditDTO) {
+    public void editMember(MemberEditDTO memberEditDTO) {
+        validateMemberEditDTO(memberEditDTO);
+
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
 
-        String password = memberEditDTO.getPassword();
-        memberEntity.updatePasswordHash(passwordEncoder.encode(password));
-        memberEntity.updateName(memberEditDTO.getName());
-        memberEntity.updateNickname(memberEditDTO.getNickname());
+        memberMapper.updateMemberFromEditDTO(memberEntity, memberEditDTO);
+    }
+
+    private void validateMemberEditDTO(MemberEditDTO memberEditDTO) {
+        if (memberEditDTO.getId() == null) {
+            throw new IllegalArgumentException("회원 ID가 제공되지 않았습니다.");
+        }
+        if (memberEditDTO.getName() == null || memberEditDTO.getName().isEmpty()) {
+            throw new IllegalArgumentException("회원 이름이 유효하지 않습니다.");
+        }
+        if (memberEditDTO.getNickname() == null || memberEditDTO.getNickname().isEmpty()) {
+            throw new IllegalArgumentException("회원 닉네임이 유효하지 않습니다.");
+        }
     }
 
     @Transactional(readOnly = true)

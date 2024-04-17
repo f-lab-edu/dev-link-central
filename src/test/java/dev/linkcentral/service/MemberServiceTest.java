@@ -7,6 +7,7 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
+import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.request.MemberEditRequest;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -178,11 +179,12 @@ public class MemberServiceTest {
     void modify_member_information_and_verify() {
         // given
         Member originalMember = createTestMember();
-        MemberEditRequest memberEditDTO = new MemberEditRequest(
-                originalMember.getId(),
-                "heedo",
-                "7777",
-                "mango");
+        MemberEditDTO memberEditDTO = MemberEditDTO.builder()
+                .id(originalMember.getId())
+                .name("heedo")
+                .password("7777")
+                .nickname("mango")
+                .build();
 
         when(memberRepository.findById(originalMember.getId())).thenReturn(Optional.of(originalMember));
         when(passwordEncoder.encode("7777")).thenReturn("encodedNewPassword");
