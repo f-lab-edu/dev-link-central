@@ -513,8 +513,6 @@
             unfriendSelected(selectedFriendshipIds);
         });
 
-
-
         // 사용자 정보를 가져오는 함수
         $(document).ready(function() {
             var memberId;
@@ -526,12 +524,12 @@
                     type: 'GET',
                     headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                     success: function(response) {
-                        console.log("사용자 ID:", response.userId);
-                        memberId = response.userId; // 전역 변수를 업데이트
+                        console.log("사용자 정보 받기 성공:", response);
+                        memberId = response.userId;
 
                         // 사용자 ID를 사용하여 필요한 함수들을 호출
                         initEventListeners();
-                        fetchAndDisplayFriends(); // 통합된 함수 호출
+                        fetchAndDisplayFriends();
                     },
                     error: function(xhr, status, error) {
                         console.error("사용자 정보 요청에 실패했습니다.", xhr.responseText);

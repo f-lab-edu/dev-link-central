@@ -9,11 +9,11 @@ import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
-import dev.linkcentral.mapper.MemberMapper;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
+import dev.linkcentral.presentation.dto.MemberInfoDTO;
 import dev.linkcentral.presentation.dto.request.MemberMailRequest;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
-import dev.linkcentral.presentation.dto.response.MemberInfoResponse;
+import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -48,12 +48,9 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberMapper memberMapper;
 
-    public MemberInfoResponse getCurrentUserInfo() {
+    public MemberInfoDTO getCurrentUserInfo() {
         Member member = getCurrentMember();
-        return new MemberInfoResponse(
-                member.getId(),
-                member.getEmail(),
-                member.getNickname());
+        return memberMapper.toMemberInfoDTO(member);
     }
 
     @Transactional(readOnly = true)

@@ -1,14 +1,15 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.mapper.MemberMapper;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
+import dev.linkcentral.presentation.dto.MemberInfoDTO;
 import dev.linkcentral.presentation.dto.request.MemberEditRequest;
 import dev.linkcentral.presentation.dto.response.MemberEditResponse;
+import dev.linkcentral.presentation.dto.response.MemberInfoResponse;
 import dev.linkcentral.service.MemberService;
+import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,13 +23,14 @@ public class MemberController {
     private final MemberMapper memberMapper;
 
     @GetMapping("/info")
-    public ResponseEntity<?> getUserInfo() {
-        Member member = memberService.getCurrentMember();
-        try {
-            return ResponseEntity.ok(memberService.getCurrentUserInfo());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<MemberInfoResponse> getUserInfo() {
+        MemberInfoDTO memberInfoDTO = memberService.getCurrentUserInfo();
+        MemberInfoResponse response = MemberInfoResponse.builder()
+                .userId(memberInfoDTO.getUserId())
+                .email(memberInfoDTO.getEmail())
+                .nickname(memberInfoDTO.getNickname())
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping
