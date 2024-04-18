@@ -4,6 +4,8 @@ import dev.linkcentral.common.exception.CustomOptimisticLockException;
 import dev.linkcentral.database.entity.*;
 import dev.linkcentral.database.repository.*;
 import dev.linkcentral.presentation.dto.ArticleCreateDTO;
+import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
+import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
 import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
@@ -110,16 +112,13 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleRequest updateArticle(ArticleUpdateRequest articleDTO) {
-        Article articleEntity = Article.toUpdateEntity(articleDTO);
-        Article updateArticle = articleRepository.save(articleEntity);
+    public ArticleUpdatedDTO updateArticle(ArticleUpdateDTO articleDTO) {
+        Article articleEntity = articleMapper.toUpdateEntity(articleDTO);
+        Article updatedArticle = articleRepository.save(articleEntity);
 
-        Optional<Article> optionalArticleEntity = articleRepository.findById(updateArticle.getId());
-        if (optionalArticleEntity.isPresent()) {
-            Article article = optionalArticleEntity.get();
-            return ArticleRequest.toArticleDTO(article);
-        }
-        return null;
+        return articleRepository.findById(updatedArticle.getId())
+                .map(article -> articleMapper.updateArticleAndReturnDTO(article))
+                .orElseThrow(() -> new EntityNotFoundException("업데이트 된 기사를 찾을 수 없습니다"));
     }
 
     @Transactional

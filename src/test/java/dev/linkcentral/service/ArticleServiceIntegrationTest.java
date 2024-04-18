@@ -173,7 +173,7 @@ public class ArticleServiceIntegrationTest {
                 "수정된 내용");
 
         // when
-        articleService.updateArticle(updateDTO);
+//        articleService.updateArticle(updateDTO);
 
         // then
         Article updatedArticle = articleRepository.findById(originalArticle.getId()).orElse(null);

@@ -3,7 +3,10 @@ package dev.linkcentral.service.mapper;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.ArticleCreateDTO;
+import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
+import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
 import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
+import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import dev.linkcentral.presentation.dto.response.ArticleCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -48,4 +51,37 @@ public class ArticleMapper {
         );
     }
 
+    public ArticleUpdateDTO toArticleUpdateDTO(ArticleUpdateRequest request) {
+        return new ArticleUpdateDTO(
+                request.getId(),
+                request.getWriter(),
+                request.getTitle(),
+                request.getContent()
+        );
+    }
+
+    public Article toUpdateEntity(ArticleUpdateDTO articleDTO) {
+        return Article.builder()
+                .id(articleDTO.getId())
+                .title(articleDTO.getTitle())
+                .content(articleDTO.getContent())
+                .writer(articleDTO.getWriter())
+                .build();
+    }
+
+    public ArticleUpdatedDTO updateArticleAndReturnDTO(Article article) {
+        ArticleUpdatedDTO updatedDTO = ArticleUpdatedDTO.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .content(article.getContent())
+                .writer(article.getWriter())
+                .createdAt(article.getCreatedAt())
+                .modifiedAt(article.getModifiedAt())
+                .build();
+
+        if (article.getMember() != null) {
+            updatedDTO.setWriterId(article.getMember().getId());
+        }
+        return updatedDTO;
+    }
 }

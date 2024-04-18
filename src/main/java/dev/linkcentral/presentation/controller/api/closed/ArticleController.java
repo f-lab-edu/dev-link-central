@@ -2,11 +2,13 @@ package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.ArticleCreateDTO;
+import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
+import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
 import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import dev.linkcentral.presentation.dto.response.ArticleCreateResponse;
-import dev.linkcentral.presentation.dto.response.ArticleEditResponse;
+import dev.linkcentral.presentation.dto.response.ArticleUpdateResponse;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.mapper.ArticleMapper;
@@ -14,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,11 +38,13 @@ public class ArticleController {
     }
 
     @PutMapping
-    public ArticleEditResponse update(@RequestBody ArticleUpdateRequest articleDTO, Model model) {
+    public ResponseEntity<ArticleUpdateResponse> update(@RequestBody ArticleUpdateRequest updateRequest) {
         Member member = memberService.getCurrentMember();
-        ArticleRequest article = articleService.updateArticle(articleDTO);
-        model.addAttribute("article", article);
-        return new ArticleEditResponse(HttpStatus.OK.value());
+        ArticleUpdateDTO articleDTO = articleMapper.toArticleUpdateDTO(updateRequest);
+
+        ArticleUpdatedDTO updatedArticleDTO = articleService.updateArticle(articleDTO);
+        ArticleUpdateResponse response = new ArticleUpdateResponse(HttpStatus.OK.value(), updatedArticleDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
