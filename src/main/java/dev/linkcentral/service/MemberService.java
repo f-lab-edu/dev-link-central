@@ -233,13 +233,9 @@ public class MemberService {
         Member member = memberRepository.findByNicknameAndDeletedFalse(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("닉네임이 존재하지 않습니다."));
 
-        if (member != null) {
-            String passwordHash = member.getPasswordHash();
-
-            if (passwordEncoder.matches(password, passwordHash)) {
-                memberRepository.softDeleteById(member.getId());
-                return true;
-            }
+        if (passwordEncoder.matches(password, member.getPasswordHash())) {
+            memberRepository.softDeleteById(member.getId());
+            return true;
         }
         return false;
     }

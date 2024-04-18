@@ -3,7 +3,9 @@ package dev.linkcentral.presentation.controller.api.closed;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.MemberInfoDTO;
+import dev.linkcentral.presentation.dto.request.MemberDeleteRequest;
 import dev.linkcentral.presentation.dto.request.MemberEditRequest;
+import dev.linkcentral.presentation.dto.response.MemberDeleteResponse;
 import dev.linkcentral.presentation.dto.response.MemberEditResponse;
 import dev.linkcentral.presentation.dto.response.MemberInfoResponse;
 import dev.linkcentral.service.MemberService;
@@ -41,13 +43,15 @@ public class MemberController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> softDeleteMember(@RequestParam String password) {
+    public ResponseEntity<MemberDeleteResponse> softDeleteMember(@RequestBody MemberDeleteRequest request) {
         Member member = memberService.getCurrentMember();
-        boolean result = memberService.removeMember(member.getNickname(), password);
+        boolean result = memberService.removeMember(member.getNickname(), request.getPassword());
 
         if (result) {
-            return ResponseEntity.ok().body("회원 탈퇴가 완료되었습니다.");
+            return ResponseEntity.ok(new MemberDeleteResponse(true, "회원 탈퇴가 완료되었습니다."));
         }
-        return ResponseEntity.badRequest().body("회원 탈퇴 처리 중 오류가 발생했습니다.");
+        return ResponseEntity.badRequest()
+                .body(new MemberDeleteResponse(false, "회원 탈퇴 처리 중 오류가 발생했습니다."));
+
     }
 }
