@@ -74,9 +74,9 @@ public class MemberPublicController {
 
     @PostMapping("/check-current-password")
     @ResponseBody
-    public MemberPasswordResponse checkPassword(@RequestParam String password) {
+    public ResponseEntity<MemberPasswordResponse> checkPassword(@RequestParam String password) {
         Member member = memberService.getCurrentMember();
-        boolean result = memberService.validatePassword(member.getNickname(), password);
-        return new MemberPasswordResponse(result);
+        boolean isPasswordValid = memberService.validatePassword(member.getNickname(),password);
+        return ResponseEntity.ok(new MemberPasswordResponse(isPasswordValid));
     }
 }

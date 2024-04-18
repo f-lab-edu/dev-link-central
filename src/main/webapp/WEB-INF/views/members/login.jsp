@@ -86,7 +86,7 @@
                             $.ajax({
                                 url: "/api/v1/public/member/check-current-password",
                                 type: "POST",
-                                data: { password: currentPassword }, // Data is sent as form parameters
+                                data: { password: currentPassword },
                                 headers: {
                                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                                 },
