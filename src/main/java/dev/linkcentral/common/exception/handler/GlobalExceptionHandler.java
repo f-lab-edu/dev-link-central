@@ -3,10 +3,12 @@ package dev.linkcentral.common.exception.handler;
 import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
+import dev.linkcentral.presentation.dto.response.AuthenticationErrorResponse;
 import dev.linkcentral.presentation.dto.response.RegistrationErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,9 +17,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("사용자를 찾을 수 없습니다.");
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RegistrationErrorResponse> handleException(Exception ex) {
+        log.error("내부 서버 오류 발생: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new RegistrationErrorResponse("내부 서버 오류입니다.", ex.getLocalizedMessage()));
     }
 
     @ExceptionHandler({DuplicateNicknameException.class, DuplicateEmailException.class})
@@ -34,10 +38,13 @@ public class GlobalExceptionHandler {
                 .body(new RegistrationErrorResponse("회원 가입 중 오류가 발생했습니다.", ex.getLocalizedMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<RegistrationErrorResponse> handleException(Exception ex) {
-        log.error("내부 서버 오류 발생: {}", ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new RegistrationErrorResponse("내부 서버 오류입니다.", ex.getLocalizedMessage()));
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<AuthenticationErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationErrorResponse("잘못된 인증 정보입니다."));
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<AuthenticationErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new AuthenticationErrorResponse("사용자를 찾을 수 없습니다."));
     }
 }

@@ -1,11 +1,13 @@
 package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.MemberInfoDTO;
 import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
 import dev.linkcentral.presentation.dto.request.MemberEditRequest;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
+import dev.linkcentral.presentation.response.LoginSuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -61,6 +63,15 @@ public class MemberMapper {
                 .email(memberDTO.getEmail())
                 .nickname(memberDTO.getNickname())
                 .roles(roles)
+                .build();
+    }
+
+    public LoginSuccessResponse toLoginSuccessResponse(JwtTokenDTO jwtToken, String redirectUrl) {
+        return LoginSuccessResponse.builder()
+                .grantType(jwtToken.getGrantType())
+                .accessToken(jwtToken.getAccessToken())
+                .refreshToken(jwtToken.getRefreshToken())
+                .redirectUrl(redirectUrl)
                 .build();
     }
 

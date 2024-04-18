@@ -17,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -50,28 +48,15 @@ public class MemberPublicController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginSuccessResponse> login(@RequestBody MemberLoginRequest memberLoginDTO,
+    public ResponseEntity<LoginSuccessResponse> login(@Valid @RequestBody MemberLoginRequest memberLoginRequest,
                                                       HttpServletRequest request) {
-        try {
-            JwtTokenDTO jwtToken = memberService.authenticateAndGenerateJwtToken(
-                    memberLoginDTO.getEmail(),
-                    memberLoginDTO.getPassword());
+        JwtTokenDTO jwtToken = memberService.authenticateAndGenerateJwtToken(
+                memberLoginRequest.getEmail(), memberLoginRequest.getPassword());
 
-            final String redirectUrl = BaseUrlUtil.getBaseUrl(request) + "/api/v1/view/member/login";
+        final String redirectUrl = BaseUrlUtil.getBaseUrl(request) + "/api/v1/view/member/login";
+        LoginSuccessResponse response = memberMapper.toLoginSuccessResponse(jwtToken, redirectUrl);
 
-            return ResponseEntity.ok(LoginSuccessResponse.builder()
-                    .grantType(jwtToken.getGrantType())
-                    .accessToken(jwtToken.getAccessToken())
-                    .refreshToken(jwtToken.getRefreshToken())
-                    .redirectUrl(redirectUrl)
-                    .build()); // 정상적인 경우 JwtTokenDTO 반환
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/forgot-password")
