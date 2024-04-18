@@ -7,6 +7,7 @@ import dev.linkcentral.presentation.dto.MemberInfoDTO;
 import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
 import dev.linkcentral.presentation.dto.request.MemberEditRequest;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
+import dev.linkcentral.presentation.dto.response.MemberInfoResponse;
 import dev.linkcentral.presentation.response.LoginSuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -72,6 +73,14 @@ public class MemberMapper {
                 .accessToken(jwtToken.getAccessToken())
                 .refreshToken(jwtToken.getRefreshToken())
                 .redirectUrl(redirectUrl)
+                .build();
+    }
+
+    public MemberInfoResponse toMemberInfoResponse(MemberInfoDTO dto) {
+        return MemberInfoResponse.builder()
+                .userId(dto.getUserId())
+                .email(dto.getEmail())
+                .nickname(dto.getNickname())
                 .build();
     }
 

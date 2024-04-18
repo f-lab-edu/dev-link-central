@@ -27,11 +27,7 @@ public class MemberController {
     @GetMapping("/info")
     public ResponseEntity<MemberInfoResponse> getUserInfo() {
         MemberInfoDTO memberInfoDTO = memberService.getCurrentUserInfo();
-        MemberInfoResponse response = MemberInfoResponse.builder()
-                .userId(memberInfoDTO.getUserId())
-                .email(memberInfoDTO.getEmail())
-                .nickname(memberInfoDTO.getNickname())
-                .build();
+        MemberInfoResponse response = memberMapper.toMemberInfoResponse(memberInfoDTO);
         return ResponseEntity.ok(response);
     }
 
