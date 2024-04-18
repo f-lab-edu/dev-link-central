@@ -11,8 +11,8 @@ import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.MemberInfoDTO;
+import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
 import dev.linkcentral.presentation.dto.request.MemberMailRequest;
-import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,31 +93,21 @@ public class MemberService {
     }
 
     @Transactional
-    public Member registerMember(MemberSaveRequest memberDTO) {
+    public Member registerMember(MemberRegistrationDTO memberDTO) {
         String nickname = memberDTO.getNickname();
         validateForDuplicates(memberDTO, nickname);
 
         try {
             List<String> roles = new ArrayList<>();
             roles.add("USER");
-            Member memberEntity = createMemberFromDTO(memberDTO, roles);
+            Member memberEntity = memberMapper.createMemberFromDTO(memberDTO, roles);
             return memberRepository.save(memberEntity);
         } catch (Exception e) {
             throw new MemberRegistrationException("회원 등록 중 오류가 발생했습니다.", e);
         }
     }
 
-    private Member createMemberFromDTO(MemberSaveRequest memberDTO, List<String> roles) {
-        return Member.builder()
-                .name(memberDTO.getName())
-                .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
-                .email(memberDTO.getEmail())
-                .nickname(memberDTO.getNickname())
-                .roles(roles)
-                .build();
-    }
-
-    private void validateForDuplicates(MemberSaveRequest memberDTO, String nickname) {
+    private void validateForDuplicates(MemberRegistrationDTO memberDTO, String nickname) {
         if (memberRepository.existsByNicknameAndDeletedFalse(nickname)) {
             throw new DuplicateNicknameException("닉네임이 이미 사용 중입니다.");
         }

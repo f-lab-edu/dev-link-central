@@ -7,8 +7,9 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
-import dev.linkcentral.presentation.dto.request.MemberEditRequest;
+import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
+import dev.linkcentral.service.mapper.MemberMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ class MemberServiceIntegrationTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private MemberMapper memberMapper;
+
     private Member createTestMember() {
         Member member = Member.builder()
                 .name("minseok")
@@ -57,17 +61,37 @@ class MemberServiceIntegrationTest {
         return memberDTO;
     }
 
+    private MemberSaveRequest createMemberSaveRequestWithDuplicateEmail() {
+        MemberSaveRequest request = new MemberSaveRequest();
+        request.setName("New User");
+        request.setEmail("test@naver.com");
+        request.setNickname("newuser");
+        request.setPassword("newpassword123");
+        return request;
+    }
+
+    private MemberSaveRequest createMemberSaveRequestWithDuplicateNickname() {
+        MemberSaveRequest request = new MemberSaveRequest();
+        request.setName("Another User");
+        request.setEmail("unique@example.com");
+        request.setNickname("apple");
+        request.setPassword("anotherpassword123");
+        return request;
+    }
+
     @DisplayName("회원 가입시 데이터베이스 저장 검증")
     @Test
     void save_member_and_verify_database() {
         // given
-        MemberSaveRequest memberDTO = createTestMemberSaveRequestDTO();
+        MemberSaveRequest memberSaveRequest = createTestMemberSaveRequestDTO();
+        MemberRegistrationDTO memberDTO = memberMapper.toMemberRegistrationDTO(memberSaveRequest);
 
         // when
         Member savedMember = memberService.registerMember(memberDTO);
         Member registeredMember = memberRepository.findById(savedMember.getId()).orElse(null);
 
         // then
+        assertNotNull(registeredMember);
         assertEquals(savedMember.getId(), registeredMember.getId());
         assertEquals(savedMember.getName(), registeredMember.getName());
         assertEquals(savedMember.getEmail(), registeredMember.getEmail());
@@ -82,16 +106,11 @@ class MemberServiceIntegrationTest {
         Member existingMember = createTestMember();
         memberRepository.save(existingMember);
 
-        MemberSaveRequest newMemberDTO = new MemberSaveRequest();
-        newMemberDTO.setName("heedo");
-        newMemberDTO.setEmail("test@naver.com");
-        newMemberDTO.setNickname("banana");
-        newMemberDTO.setPassword("1234");
+        MemberSaveRequest newMemberRequest = createMemberSaveRequestWithDuplicateEmail();
 
         // when & then
-        assertThrows(DuplicateEmailException.class, () -> {
-            memberService.registerMember(newMemberDTO);
-        });
+        MemberRegistrationDTO newMemberDTO = memberMapper.toMemberRegistrationDTO(newMemberRequest);
+        assertThrows(DuplicateEmailException.class, () -> {memberService.registerMember(newMemberDTO);});
     }
 
     @DisplayName("회원 가입 시, 닉네임 중복시 예외 발생 검증")
@@ -101,16 +120,11 @@ class MemberServiceIntegrationTest {
         Member existingMember = createTestMember();
         memberRepository.save(existingMember);
 
-        MemberSaveRequest newMemberDTO = new MemberSaveRequest();
-        newMemberDTO.setName("heedo");
-        newMemberDTO.setEmail("test@naver.com");
-        newMemberDTO.setNickname("apple");
-        newMemberDTO.setPassword("1234");
+        MemberSaveRequest newMemberRequest = createMemberSaveRequestWithDuplicateNickname();
 
         // when & then
-        assertThrows(DuplicateNicknameException.class, () -> {
-            memberService.registerMember(newMemberDTO);
-        });
+        MemberRegistrationDTO newMemberDTO = memberMapper.toMemberRegistrationDTO(newMemberRequest);
+        assertThrows(DuplicateNicknameException.class, () -> {memberService.registerMember(newMemberDTO);});
     }
 
     @DisplayName("로그인 성공 및 JWT 토큰 생성 검증")

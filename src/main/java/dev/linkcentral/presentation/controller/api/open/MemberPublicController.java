@@ -1,16 +1,18 @@
 package dev.linkcentral.presentation.controller.api.open;
 
-import dev.linkcentral.common.exception.DuplicateNicknameException;
-import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.BaseUrlUtil;
-import dev.linkcentral.presentation.response.LoginSuccessResponse;
-import dev.linkcentral.service.MemberService;
+import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
 import dev.linkcentral.presentation.dto.request.MemberLoginRequest;
 import dev.linkcentral.presentation.dto.request.MemberMailRequest;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import dev.linkcentral.presentation.dto.response.MemberPasswordResponse;
+import dev.linkcentral.presentation.dto.response.MemberSaveResponse;
+import dev.linkcentral.presentation.dto.response.RegistrationErrorResponse;
+import dev.linkcentral.presentation.response.LoginSuccessResponse;
+import dev.linkcentral.service.MemberService;
+import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,26 +33,20 @@ import javax.validation.Valid;
 public class MemberPublicController {
 
     private final MemberService memberService;
+    private final MemberMapper memberMapper;
 
     @PostMapping("/register")
     @ResponseBody
-    public ResponseEntity<?> register(@Valid @RequestBody MemberSaveRequest memberDTO,
-                                      BindingResult bindingResult) {
+    public ResponseEntity<?> register(@Valid @RequestBody MemberSaveRequest memberSaveRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
-            return ResponseEntity.badRequest().body(errorMessage);
+            return ResponseEntity.badRequest().body(new RegistrationErrorResponse(errorMessage));
         }
 
-        try {
-            Member member = memberService.registerMember(memberDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (DuplicateNicknameException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("닉네임이 이미 사용 중입니다.");
-        } catch (MemberRegistrationException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 가입 중 오류가 발생했습니다.");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        MemberRegistrationDTO memberDTO = memberMapper.toMemberRegistrationDTO(memberSaveRequest);
+        Member member = memberService.registerMember(memberDTO);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new MemberSaveResponse(member.getId(), "회원 등록 성공"));
     }
 
     @PostMapping("/login")

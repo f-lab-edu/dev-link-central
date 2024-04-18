@@ -3,10 +3,15 @@ package dev.linkcentral.service.mapper;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.MemberInfoDTO;
+import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
 import dev.linkcentral.presentation.dto.request.MemberEditRequest;
+import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -36,6 +41,26 @@ public class MemberMapper {
                 .userId(member.getId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
+                .build();
+    }
+
+    public MemberRegistrationDTO toMemberRegistrationDTO(MemberSaveRequest request) {
+        return MemberRegistrationDTO.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .nickname(request.getNickname())
+                .roles(Collections.singletonList("USER"))
+                .build();
+    }
+
+    public Member createMemberFromDTO(MemberRegistrationDTO memberDTO, List<String> roles) {
+        return Member.builder()
+                .name(memberDTO.getName())
+                .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
+                .email(memberDTO.getEmail())
+                .nickname(memberDTO.getNickname())
+                .roles(roles)
                 .build();
     }
 
