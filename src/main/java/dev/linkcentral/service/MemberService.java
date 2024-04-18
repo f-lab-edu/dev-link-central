@@ -11,11 +11,12 @@ import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.MemberInfoDTO;
+import dev.linkcentral.presentation.dto.MemberMailDTO;
 import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
-import dev.linkcentral.presentation.dto.request.MemberMailRequest;
 import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -131,24 +132,25 @@ public class MemberService {
     public boolean validateUserEmail(String userEmail, String userName) {
         Optional<Member> member = memberRepository.findByEmailAndNameAndDeletedFalse(userEmail, userName);
 
-        if (!member.isPresent()) {
+        if (member.isEmpty()) {
             throw new MemberEmailNotFoundException("유저의 이메일을 찾을 수 없습니다.");
         }
         return true;
     }
 
     @Transactional
-    public MemberMailRequest createMailForPasswordReset(String userEmail, String userName) {
-        MemberMailRequest dto = new MemberMailRequest();
+    public MemberMailDTO createMailForPasswordReset(String userEmail, String userName) {
         String generatedPassword = createTemporaryPassword();
 
-        dto.setAddress(userEmail);
-        dto.setTitle(userName + "님의 HOTTHINK 임시비밀번호 안내 이메일 입니다.");
-        dto.setMessage("안녕하세요. HOTTHINK 임시비밀번호 안내 관련 이메일 입니다."
-                + "[" + userName + "]" + "님의 임시 비밀번호는 " + generatedPassword + " 입니다.");
+        MemberMailDTO memberMailDTO = MemberMailDTO.builder()
+                .address(userEmail)
+                .title(userName + "님의 HOTTHINK 임시비밀번호 안내 이메일 입니다.")
+                .message("안녕하세요. HOTTHINK 임시비밀번호 안내 관련 이메일 입니다." +
+                        "[" + userName + "]" + "님의 임시 비밀번호는 " + generatedPassword + " 입니다.")
+                .build();
 
         resetPassword(generatedPassword, userEmail);
-        return dto;
+        return memberMailDTO;
     }
 
     @Transactional
@@ -175,14 +177,20 @@ public class MemberService {
         return str.toString();
     }
 
-    public void sendMail(MemberMailRequest mailDto) {
+    public void sendMail(MemberMailDTO memberMailDTO) {
         SimpleMailMessage message = new SimpleMailMessage();
+        try {
+            message.setTo(memberMailDTO.getAddress());    // 받는사람 주소
+            message.setFrom(FROM_ADDRESS);                // 보내는 사람 주소
+            message.setSubject(memberMailDTO.getTitle()); // 메일 제목
+            message.setText(memberMailDTO.getMessage());  // 메일 내용
 
-        message.setTo(mailDto.getAddress());    // 받는사람 주소
-        message.setFrom(FROM_ADDRESS);          // 보내는 사람 주소
-        message.setSubject(mailDto.getTitle()); // 메일 제속
-        message.setText(mailDto.getMessage());  // 메일 내용
-        mailSender.send(message);
+            mailSender.send(message);
+            log.info("이메일이 성공적으로 전송되었습니다: {}", memberMailDTO.getAddress());
+        } catch (MailException ex) {
+            log.error("이메일을 보내지 못했습니다: {}: {}", memberMailDTO.getAddress(), ex.getMessage());
+            throw new RuntimeException("이메일 전송 실패", ex);
+        }
     }
 
     @Transactional

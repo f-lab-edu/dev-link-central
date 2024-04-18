@@ -3,9 +3,9 @@ package dev.linkcentral.presentation.controller.api.open;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.BaseUrlUtil;
+import dev.linkcentral.presentation.dto.MemberMailDTO;
 import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
 import dev.linkcentral.presentation.dto.request.MemberLoginRequest;
-import dev.linkcentral.presentation.dto.request.MemberMailRequest;
 import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
 import dev.linkcentral.presentation.dto.response.MemberPasswordResponse;
 import dev.linkcentral.presentation.dto.response.MemberSaveResponse;
@@ -61,19 +61,15 @@ public class MemberPublicController {
 
     @GetMapping("/forgot-password")
     @ResponseBody
-    public MemberPasswordResponse isPasswordValid(String userEmail, String userName) {
-        // 이메일과 이름이 일치하는 사용자가 있는지 확인.
+    public ResponseEntity<MemberPasswordResponse> isPasswordValid(String userEmail, String userName) {
         boolean pwFindCheck = memberService.validateUserEmail(userEmail, userName);
-        return new MemberPasswordResponse(pwFindCheck);
+        return ResponseEntity.ok(new MemberPasswordResponse(pwFindCheck));
     }
 
-    /**
-     * 등록된 이메일로 임시비밀번호를 발송하고, 발송된 임시비밀번호로 사용자의 pw를 변경하는 API
-     */
     @PostMapping("/send-email/update-password")
     public void sendEmail(String userEmail, String userName) {
-        MemberMailRequest dto = memberService.createMailForPasswordReset(userEmail, userName);
-        memberService.sendMail(dto);
+        MemberMailDTO memberMailDTO = memberService.createMailForPasswordReset(userEmail, userName);
+        memberService.sendMail(memberMailDTO);
     }
 
     @PostMapping("/check-current-password")

@@ -49,33 +49,36 @@
                 $.ajax({
                     type: "GET",
                     url: "/api/v1/public/member/forgot-password",
-                    data: {
-                        "userEmail": userEmail,
-                        "userName": userName
-                    },
-                    success: function (res) {
-                        if (res['result']) {
+                    data: { "userEmail": userEmail, "userName": userName },
+                    success: function (response) {
+                        if (response) {
                             Swal.fire({
                                 title: '발송 완료!',
-                                text: '입력하신 이메일로 임시비밀번호가 발송되었습니다.',
+                                text: '입력하신 이메일로 임시 비밀번호가 발송되었습니다.',
                                 icon: 'success'
                             }).then((OK) => {
                                 if (OK) {
+                                    // 비동기 메일 발송 요청
                                     $.ajax({
                                         type: "POST",
                                         url: "/api/v1/public/member/send-email/update-password",
-                                        data: {
-                                            "userEmail": userEmail,
-                                            "userName": userName
+                                        data: { "userEmail": userEmail, "userName": userName },
+                                        success: function () {
+                                            console.log('임시 비밀번호 발송 성공');
+                                        },
+                                        error: function (xhr) {
+                                            console.error('임시 비밀번호 발송 실패', xhr);
                                         }
                                     });
                                     window.location.href = "/api/v1/view/member/"; // 로그인 화면으로 이동
                                 }
                             });
-                            $('#checkMsg').html('<p style="color:darkblue"></p>');
                         } else {
                             $('#checkMsg').html('<p style="color:red">일치하는 정보가 없습니다.</p>');
                         }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#checkMsg').html('<p style="color:red">오류가 발생했습니다. 다시 시도해주세요.</p>');
                     }
                 });
             });
