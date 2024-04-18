@@ -1,12 +1,15 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.presentation.dto.ArticleCreateDTO;
+import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
+import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
+import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
+import dev.linkcentral.presentation.dto.response.ArticleCreateResponse;
+import dev.linkcentral.presentation.dto.response.ArticleEditResponse;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
-import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
-import dev.linkcentral.presentation.dto.request.ArticleRequest;
-import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
-import dev.linkcentral.presentation.dto.response.ArticleEditResponse;
+import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,18 +25,15 @@ public class ArticleController {
 
     private final ArticleService articleService;
     private final MemberService memberService;
+    private final ArticleMapper articleMapper;
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody ArticleRequest articleDTO) {
-        try {
-            Member member = memberService.getCurrentMember();
-            articleDTO.setWriter(member.getNickname());
-            articleDTO.setWriterId(member.getId());
-            articleService.saveArticle(articleDTO);
-            return ResponseEntity.ok("글이 성공적으로 작성되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("글 작성에 실패했습니다.");
-        }
+    public ResponseEntity<ArticleCreateResponse> save(@RequestBody ArticleCreateRequest articleCreateRequest) {
+        Member currentMember = memberService.getCurrentMember();
+        ArticleCreateDTO articleCreateDTO = articleMapper.toArticleCreateDTO(articleCreateRequest, currentMember);
+        ArticleCreateDTO savedArticleDTO = articleService.saveArticle(articleCreateDTO);
+        ArticleCreateResponse response = articleMapper.toArticleCreateResponse(savedArticleDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping

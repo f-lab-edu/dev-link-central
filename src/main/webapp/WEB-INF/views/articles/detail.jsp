@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="dev.linkcentral.presentation.dto.request.ArticleRequest" %>
+<%@ page import="dev.linkcentral.presentation.dto.request.ArticleCreateRequest" %>
 <%@ page import="dev.linkcentral.presentation.dto.request.ArticleCommentRequest" %>
 <%@ page import="java.util.List" %>
 <%@ page import="dev.linkcentral.database.entity.Member" %>
@@ -109,7 +109,7 @@
     </style>
 
     <script>
-        <% ArticleRequest article = (ArticleRequest) request.getAttribute("article"); %>
+        <% ArticleCreateRequest article = (ArticleCreateRequest) request.getAttribute("article"); %>
         var articleId = <%= article.getId() %>;
         console.log("Article ID:", articleId);
 

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleRequest {
+public class ArticleCreateRequest {
 
     private Long id;
     private String title;
@@ -24,8 +24,8 @@ public class ArticleRequest {
     private int views;
 
     // Entity -> DTO 변환
-    public static ArticleRequest toArticleDTOWithViews(Article article, int views) {
-        return ArticleRequest.builder()
+    public static ArticleCreateRequest toArticleDTOWithViews(Article article, int views) {
+        return ArticleCreateRequest.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
@@ -37,8 +37,8 @@ public class ArticleRequest {
     }
 
     // Entity -> DTO 변환
-    public static ArticleRequest toArticleDTO(Article article) {
-        ArticleRequest dto = ArticleRequest.builder()
+    public static ArticleCreateRequest toArticleDTO(Article article) {
+        ArticleCreateRequest dto = ArticleCreateRequest.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
@@ -54,7 +54,7 @@ public class ArticleRequest {
         return dto;
     }
 
-    public ArticleRequest(Long id, String title, String writer, LocalDateTime createdAt) {
+    public ArticleCreateRequest(Long id, String title, String writer, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.writer = writer;

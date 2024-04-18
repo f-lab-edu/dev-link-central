@@ -3,9 +3,11 @@ package dev.linkcentral.service;
 import dev.linkcentral.common.exception.CustomOptimisticLockException;
 import dev.linkcentral.database.entity.*;
 import dev.linkcentral.database.repository.*;
+import dev.linkcentral.presentation.dto.ArticleCreateDTO;
 import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
-import dev.linkcentral.presentation.dto.request.ArticleRequest;
+import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
+import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,19 +37,16 @@ public class ArticleService {
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleViewRepository articleViewRepository;
     private final ArticleCommentRepository articleCommentRepository;
+    private final ArticleMapper articleMapper;
 
     @Transactional
-    public void saveArticle(ArticleRequest articleDTO) {
+    public ArticleCreateDTO saveArticle(ArticleCreateDTO articleDTO) {
         Member member = memberRepository.findById(articleDTO.getWriterId())
                 .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
 
-        Article articleEntity = Article.builder()
-                .title(articleDTO.getTitle())
-                .content(articleDTO.getContent())
-                .writer(member.getNickname())
-                .member(member)
-                .build();
-        articleRepository.save(articleEntity);
+        Article article = articleMapper.toArticleEntity(articleDTO, member);
+        Article savedArticle = articleRepository.save(article);
+        return articleMapper.toArticleCreateDTO(savedArticle);
     }
 
     @Transactional(readOnly = true)
