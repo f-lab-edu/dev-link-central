@@ -6,11 +6,11 @@ import dev.linkcentral.presentation.dto.ArticleCreateDTO;
 import dev.linkcentral.presentation.dto.ArticleLikeDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
-import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
-import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
-import dev.linkcentral.presentation.dto.response.ArticleCreateResponse;
-import dev.linkcentral.presentation.dto.response.ArticleDeleteResponse;
-import dev.linkcentral.presentation.dto.response.ArticleLikeResponse;
+import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
+import dev.linkcentral.presentation.dto.request.article.ArticleUpdateRequest;
+import dev.linkcentral.presentation.dto.response.article.ArticleCreateResponse;
+import dev.linkcentral.presentation.dto.response.article.ArticleDeleteResponse;
+import dev.linkcentral.presentation.dto.response.article.ArticleLikeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

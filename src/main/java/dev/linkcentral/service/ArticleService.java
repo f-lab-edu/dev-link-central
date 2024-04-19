@@ -7,8 +7,8 @@ import dev.linkcentral.presentation.dto.ArticleCreateDTO;
 import dev.linkcentral.presentation.dto.ArticleLikeDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
-import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
-import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
+import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
+import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,25 +58,25 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<ArticleRequest> findAllArticles() {
+    public List<ArticleCreateRequest> findAllArticles() {
         List<Article> articleEntityList = articleRepository.findAll();
-        List<ArticleRequest> articleDTOList = new ArrayList<>();
+        List<ArticleCreateRequest> articleDTOList = new ArrayList<>();
 
         for (Article articleEntity : articleEntityList) {
-            ArticleRequest dto = ArticleRequest.toArticleDTO(articleEntity);
+            ArticleCreateRequest dto = ArticleCreateRequest.toArticleDTO(articleEntity);
             articleDTOList.add(dto);
         }
         return articleDTOList;
     }
 
     @Transactional
-    public ArticleRequest findArticleById(Long id, Member member) {
+    public ArticleCreateRequest findArticleById(Long id, Member member) {
         return articleRepository.findById(id)
                 .map(article -> {
                     viewCountUpdate(member, article);
                     ArticleStatistic statistic = articleStatisticRepository.findByArticle(article)
                             .orElse(new ArticleStatistic());
-                    ArticleRequest dto = ArticleRequest.toArticleDTOWithViews(article, statistic.getViews());
+                    ArticleCreateRequest dto = ArticleCreateRequest.toArticleDTOWithViews(article, statistic.getViews());
                     return dto;
                 }).orElse(null);
     }
@@ -134,7 +134,7 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleRequest> paginateArticles(Pageable pageable) {
+    public Page<ArticleCreateRequest> paginateArticles(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
         int pageLimit = 3;                       // 한 페이지에 보여줄 글 갯수
 
@@ -142,7 +142,7 @@ public class ArticleService {
         Page<Article> articleEntity = articleRepository.findAll(PageRequest
                 .of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
-        return articleEntity.map(article -> ArticleRequest.toArticleDTO(article));
+        return articleEntity.map(article -> ArticleCreateRequest.toArticleDTO(article));
     }
 
     @Transactional

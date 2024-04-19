@@ -5,9 +5,9 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
-import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
-import dev.linkcentral.presentation.dto.request.ArticleRequest;
-import dev.linkcentral.presentation.dto.response.CommentPageResponse;
+import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
+import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
+import dev.linkcentral.presentation.dto.response.article.CommentPageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,7 +41,7 @@ public class ArticleViewController {
 
     @GetMapping("/")
     public String findAll(Model model) {
-        List<ArticleRequest> articleList = articleService.findAllArticles();
+        List<ArticleCreateRequest> articleList = articleService.findAllArticles();
         model.addAttribute("articleList", articleList);
         return "/articles/list";
     }
@@ -51,7 +51,7 @@ public class ArticleViewController {
                            @PathVariable Long id, Model model) {
 
         Member member = memberService.getAuthenticatedMember();
-        ArticleRequest articleDTO = articleService.findArticleById(id, member);
+        ArticleCreateRequest articleDTO = articleService.findArticleById(id, member);
 
         model.addAttribute("article", articleDTO);
         model.addAttribute("page", pageable.getPageNumber());
@@ -73,8 +73,8 @@ public class ArticleViewController {
 
     @GetMapping("/paging")
     public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
-        Page<ArticleRequest> articlePage = articleService.paginateArticles(pageable);
-        List<ArticleRequest> articleList = articlePage.getContent(); // Page에서 List로 변환
+        Page<ArticleCreateRequest> articlePage = articleService.paginateArticles(pageable);
+        List<ArticleCreateRequest> articleList = articlePage.getContent(); // Page에서 List로 변환
 
         int blockLimit = 3;
         int startPage = (((int) Math.ceil(((double) pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;

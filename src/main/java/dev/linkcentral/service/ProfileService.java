@@ -5,7 +5,7 @@ import dev.linkcentral.database.entity.Profile;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.ProfileRepository;
 import dev.linkcentral.infrastructure.s3.AwsS3Uploader;
-import dev.linkcentral.presentation.dto.request.ProfileRequest;
+import dev.linkcentral.presentation.dto.request.profile.ProfileRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

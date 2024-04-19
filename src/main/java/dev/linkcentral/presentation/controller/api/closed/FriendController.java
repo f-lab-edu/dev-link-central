@@ -1,8 +1,8 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
-import dev.linkcentral.presentation.dto.request.FriendRequest;
-import dev.linkcentral.presentation.dto.response.FriendListResponse;
-import dev.linkcentral.presentation.dto.response.FriendshipDetailResponse;
+import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
+import dev.linkcentral.presentation.dto.response.friend.FriendListResponse;
+import dev.linkcentral.presentation.dto.response.friend.FriendshipDetailResponse;
 import dev.linkcentral.service.FriendService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

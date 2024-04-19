@@ -4,8 +4,8 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.ProfileService;
 
-import dev.linkcentral.presentation.dto.request.ProfileRequest;
-import dev.linkcentral.presentation.dto.response.ProfileUpdateResponse;
+import dev.linkcentral.presentation.dto.request.profile.ProfileRequest;
+import dev.linkcentral.presentation.dto.response.profile.ProfileUpdateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

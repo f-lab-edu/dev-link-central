@@ -1,6 +1,6 @@
 package dev.linkcentral.database.entity;
 
-import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
+import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
 import lombok.Getter;
 
 import javax.persistence.*;

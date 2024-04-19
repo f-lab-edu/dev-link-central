@@ -3,7 +3,7 @@ package dev.linkcentral.presentation.controller.view;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.ProfileService;
-import dev.linkcentral.presentation.dto.request.ProfileRequest;
+import dev.linkcentral.presentation.dto.request.profile.ProfileRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

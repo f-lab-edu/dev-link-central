@@ -8,7 +8,7 @@ import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
-import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
+import dev.linkcentral.presentation.dto.request.member.MemberSaveRequest;
 import dev.linkcentral.service.mapper.MemberMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
