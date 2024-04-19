@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentPageResponse {
+public class ArticleCommentPageResponse {
 
     private List<ArticleCommentRequest> comments;
     private int currentPage;

@@ -56,4 +56,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new RegistrationErrorResponse("해당 항목을 찾을 수 없어 삭제를 실패했습니다.", ex.getLocalizedMessage()));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<RegistrationErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.warn("요청 검증 실패: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(new RegistrationErrorResponse(ex.getMessage()));
+    }
+
 }

@@ -257,22 +257,23 @@
                 return;
             }
             $.ajax({
-                url: "/api/v1/article/" + articleId + "/comments", // 서버의 댓글 저장 API 경로
+                url: "/api/v1/article/" + articleId + "/comments",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({ contents: contents }),
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") }, // 필요한 경우 JWT 토큰 추가
-                success: function(comment) {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
+                success: function(response) {
                     $('#contents').val(''); // 입력 필드 초기화
                     // 새로운 댓글만 페이지에 추가
+                    var formattedDate = new Date(response.createdAt).toLocaleString();
                     var newCommentHtml = "<tr>" +
-                        "<td>" + comment.id + "</td>" +
-                        "<td>" + comment.nickname + "</td>" +
-                        "<td>" + comment.contents + "</td>" +
-                        "<td>" + comment.createdAt + "</td>" +
+                        "<td>" + response.id + "</td>" +
+                        "<td>" + response.writerNickname + "</td>" +
+                        "<td>" + response.contents + "</td>" +
+                        "<td>" + formattedDate + "</td>" +
                         "</tr>";
-                    $("#comment-list table tbody").prepend(newCommentHtml); // 댓글 목록의 맨 위에 새 댓글 추가
-                    location.reload(); // 페이지 새로고침
+                    $("#comment-list table tbody").prepend(newCommentHtml);
+                    window.location.reload();
                 },
                 error: function(xhr, status, error) {
                     alert('댓글 작성 실패: ' + xhr.responseText);

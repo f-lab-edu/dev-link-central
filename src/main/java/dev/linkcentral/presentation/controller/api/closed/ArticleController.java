@@ -8,6 +8,7 @@ import dev.linkcentral.presentation.dto.request.article.ArticleUpdateRequest;
 import dev.linkcentral.presentation.dto.response.article.*;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
+import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class ArticleController {
     private final ArticleService articleService;
     private final MemberService memberService;
     private final ArticleMapper articleMapper;
+    private final ArticleCommentMapper articleCommentMapper;
 
     @PostMapping
     public ResponseEntity<ArticleCreateResponse> save(@RequestBody ArticleCreateRequest articleCreateRequest) {
@@ -67,28 +69,17 @@ public class ArticleController {
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity<?> commentSave(@PathVariable Long id, @RequestBody ArticleCommentRequest commentDTO) {
-        commentDTO.setArticleId(id);
-        if (commentDTO.getContents() == null || commentDTO.getArticleId() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("댓글 내용 및 게시판 ID는 null이 아니어야 합니다.");
+    public ResponseEntity<ArticleCommentResponse> commentSave(@PathVariable Long id,
+                                                              @RequestBody ArticleCommentRequest commentRequest) {
+        if (commentRequest.getContents() == null) {
+            throw new IllegalArgumentException("댓글 내용은 null이 아니어야 합니다.");
         }
-
+        commentRequest.setArticleId(id);
         Member member = memberService.getCurrentMember();
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("댓글을 달려면 로그인해야 합니다.");
-        }
-
-        try {
-            Long savedCommentId = articleService.saveComment(commentDTO, member.getNickname());
-            if (savedCommentId != null) {
-                ArticleCommentRequest savedCommentDTO = articleService.findCommentById(savedCommentId);
-                return ResponseEntity.ok(savedCommentDTO);
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("댓글을 저장하지 못했습니다.");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류가 발생했습니다: " + e.getMessage());
-        }
+        ArticleCommentDTO commentDTO = articleCommentMapper.toArticleCommentDTO(commentRequest, member.getNickname());
+        ArticleCommentDTO saveCommentDTO = articleService.saveComment(commentDTO, member.getNickname());
+        ArticleCommentResponse response = articleCommentMapper.createCommentResponse(saveCommentDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/comment/{commentId}")

@@ -6,6 +6,8 @@ import dev.linkcentral.database.repository.*;
 import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
+import dev.linkcentral.presentation.dto.response.article.ArticleCommentResponse;
+import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ public class ArticleService {
     private final ArticleViewRepository articleViewRepository;
     private final ArticleCommentRepository articleCommentRepository;
     private final ArticleMapper articleMapper;
+    private final ArticleCommentMapper articleCommentMapper;
 
     @Transactional
     public ArticleCreateDTO saveArticle(ArticleCreateDTO articleDTO) {
@@ -182,17 +185,16 @@ public class ArticleService {
     }
 
     @Transactional
-    public Long saveComment(ArticleCommentRequest commentDTO, String writerNickname) {
+    public ArticleCommentDTO saveComment(ArticleCommentDTO commentDTO, String writerNickname) {
         Member member = memberRepository.findByNicknameAndDeletedFalse(writerNickname)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
 
         Article article = articleRepository.findById(commentDTO.getArticleId())
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
 
-        ArticleComment commentEntity = ArticleComment.toSaveEntity(commentDTO, article, writerNickname);
-        commentEntity.updateMember(member);
-        articleCommentRepository.save(commentEntity);
-        return commentEntity.getId();
+        ArticleComment commentEntity = articleCommentMapper.toArticleCommentEntity(commentDTO, writerNickname, article, member);
+        ArticleComment savedComment = articleCommentRepository.save(commentEntity);
+        return articleCommentMapper.toArticleCommentDTO(savedComment);
     }
 
     @Transactional(readOnly = true)
