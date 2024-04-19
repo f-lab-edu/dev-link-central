@@ -83,11 +83,13 @@ public class ArticleController {
     }
 
     @PutMapping("/comment/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long commentId,
-                                           @RequestBody ArticleCommentRequest commentDTO) {
+    public ResponseEntity<ArticleCommentUpdateResponse> updateComment(@PathVariable Long commentId,
+                                                                      @RequestBody ArticleCommentRequest commentRequest) {
         Member member = memberService.getCurrentMember();
-        articleService.updateComment(commentId, commentDTO, member.getNickname());
-        return ResponseEntity.ok().build();
+        ArticleCommentUpdateDTO commentUpdateDTO = articleCommentMapper.toArticleCommentUpdateDto(commentRequest, commentId);
+        ArticleCommentUpdateDTO updatedCommentDTO = articleService.updateComment(commentUpdateDTO, member.getNickname());
+        ArticleCommentUpdateResponse response = articleCommentMapper.toArticleCommentUpdateResponse(updatedCommentDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/comment/{commentId}")

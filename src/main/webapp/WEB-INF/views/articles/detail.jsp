@@ -155,7 +155,12 @@
 
         // AJAX를 통해 수정된 댓글 내용을 서버에 전송
         function submitCommentEdit(commentId) {
-            var newContent = $("#edit-content-" + commentId).val();
+            var newContent = $("#edit-content-" + commentId).val().trim();
+            if (!newContent) {
+                alert("댓글 내용을 입력해주세요.");
+                return;
+            }
+
             $.ajax({
                 url: "/api/v1/article/comment/" + commentId,
                 headers: {
@@ -166,7 +171,9 @@
                 data: JSON.stringify({ contents: newContent }),
                 success: function() {
                     // 성공 시 댓글 목록을 다시 로드
-                    location.reload();
+                    $("#comment-content-" + commentId).text(newContent);
+                    $("#edit-modal").modal('hide');  // Assuming you might use a modal to edit comments
+                    window.location.reload();
                 },
                 error: function(xhr, status, error) {
                     alert("댓글 수정 실패: 다른 유저가 작성한 댓글입니다." + error);

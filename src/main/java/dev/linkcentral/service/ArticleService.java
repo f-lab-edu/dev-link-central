@@ -6,7 +6,6 @@ import dev.linkcentral.database.repository.*;
 import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
-import dev.linkcentral.presentation.dto.response.article.ArticleCommentResponse;
 import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
@@ -214,15 +213,16 @@ public class ArticleService {
     }
 
     @Transactional
-    public void updateComment(Long commentId, ArticleCommentRequest commentDTO, String currentNickname) {
-        ArticleComment comment = articleCommentRepository.findById(commentId)
+    public ArticleCommentUpdateDTO updateComment(ArticleCommentUpdateDTO commentDTO, String currentNickname) {
+        ArticleComment commentEntity = articleCommentRepository.findById(commentDTO.getId())
                 .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
 
-        if (!comment.getWriterNickname().equals(currentNickname)) {
+        if (!commentEntity.getWriterNickname().equals(currentNickname)) {
             throw new IllegalArgumentException("댓글 수정 권한이 없습니다.");
         }
-        comment.updateContent(commentDTO.getContents());
-        articleCommentRepository.save(comment);
+        commentEntity.updateContent(commentDTO.getContents());
+        ArticleComment updatedComment = articleCommentRepository.save(commentEntity);
+        return articleCommentMapper.toArticleCommentUpdateDto(updatedComment);
     }
 
     @Transactional
