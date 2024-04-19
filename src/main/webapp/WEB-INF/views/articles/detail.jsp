@@ -232,8 +232,11 @@
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
-                success: function(likesCount) {
-                    $('#likesCount').text(likesCount);
+                // success: function(likesCount) {
+                success: function(response) {
+                    // $('#likesCount').text(likesCount);
+                    $('#likesCount').text(response.likesCount);
+
                 },
                 error: function(xhr, status, error) {
                     console.error("Error updating likes count:", status, error);

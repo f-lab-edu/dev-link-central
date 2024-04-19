@@ -3,10 +3,7 @@ package dev.linkcentral.service;
 import dev.linkcentral.common.exception.CustomOptimisticLockException;
 import dev.linkcentral.database.entity.*;
 import dev.linkcentral.database.repository.*;
-import dev.linkcentral.presentation.dto.ArticleCreateDTO;
-import dev.linkcentral.presentation.dto.ArticleLikeDTO;
-import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
-import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
+import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
 import dev.linkcentral.service.mapper.ArticleMapper;
@@ -176,10 +173,12 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public int countArticleLikes(Long articleId) {
+    public ArticleLikesCountDTO countArticleLikes(Long articleId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        return (int) articleLikeRepository.countByArticle(article);
+
+        int likesCount = (int) articleLikeRepository.countByArticle(article);
+        return new ArticleLikesCountDTO(likesCount);
     }
 
     @Transactional

@@ -1,17 +1,11 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.presentation.dto.ArticleCreateDTO;
-import dev.linkcentral.presentation.dto.ArticleLikeDTO;
-import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
-import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
+import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.request.article.ArticleUpdateRequest;
-import dev.linkcentral.presentation.dto.response.article.ArticleCreateResponse;
-import dev.linkcentral.presentation.dto.response.article.ArticleDeleteResponse;
-import dev.linkcentral.presentation.dto.response.article.ArticleLikeResponse;
-import dev.linkcentral.presentation.dto.response.article.ArticleUpdateResponse;
+import dev.linkcentral.presentation.dto.response.article.*;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.mapper.ArticleMapper;
@@ -65,10 +59,11 @@ public class ArticleController {
     }
 
     @GetMapping("/{id}/likes-count")
-    public ResponseEntity<Integer> getLikesCount(@PathVariable Long id) {
+    public ResponseEntity<ArticleLikesCountResponse> getLikesCount(@PathVariable Long id) {
         Member member = memberService.getCurrentMember();
-        int likesCount = articleService.countArticleLikes(id);
-        return ResponseEntity.ok(likesCount);
+        ArticleLikesCountDTO likesCountDTO = articleService.countArticleLikes(id);
+        ArticleLikesCountResponse response = new ArticleLikesCountResponse(likesCountDTO.getLikesCount());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{id}/comments")
