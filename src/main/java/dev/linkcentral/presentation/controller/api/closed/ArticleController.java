@@ -8,6 +8,7 @@ import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import dev.linkcentral.presentation.dto.response.ArticleCreateResponse;
+import dev.linkcentral.presentation.dto.response.ArticleDeleteResponse;
 import dev.linkcentral.presentation.dto.response.ArticleUpdateResponse;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
@@ -41,16 +42,16 @@ public class ArticleController {
     public ResponseEntity<ArticleUpdateResponse> update(@RequestBody ArticleUpdateRequest updateRequest) {
         Member member = memberService.getCurrentMember();
         ArticleUpdateDTO articleDTO = articleMapper.toArticleUpdateDTO(updateRequest);
-
         ArticleUpdatedDTO updatedArticleDTO = articleService.updateArticle(articleDTO);
         ArticleUpdateResponse response = new ArticleUpdateResponse(HttpStatus.OK.value(), updatedArticleDTO);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
+    public ResponseEntity<ArticleDeleteResponse> delete(@PathVariable Long id) {
         articleService.deleteArticle(id);
-        return ResponseEntity.ok().body("성공적으로 삭제되었습니다.");
+        ArticleDeleteResponse response = articleMapper.toArticleDeleteResponse(true, "성공적으로 삭제되었습니다.");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{id}/like")

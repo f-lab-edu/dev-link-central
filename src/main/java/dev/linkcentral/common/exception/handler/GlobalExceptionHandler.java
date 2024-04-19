@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.persistence.EntityNotFoundException;
+
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -46,5 +48,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<AuthenticationErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new AuthenticationErrorResponse("사용자를 찾을 수 없습니다."));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<RegistrationErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error("삭제 중 오류 발생: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new RegistrationErrorResponse("해당 항목을 찾을 수 없어 삭제를 실패했습니다.", ex.getLocalizedMessage()));
     }
 }

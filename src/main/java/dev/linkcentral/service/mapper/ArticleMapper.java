@@ -8,6 +8,7 @@ import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
 import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import dev.linkcentral.presentation.dto.response.ArticleCreateResponse;
+import dev.linkcentral.presentation.dto.response.ArticleDeleteResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -83,5 +84,12 @@ public class ArticleMapper {
             updatedDTO.setWriterId(article.getMember().getId());
         }
         return updatedDTO;
+    }
+
+    public ArticleDeleteResponse toArticleDeleteResponse(boolean isSuccess, String message) {
+        return ArticleDeleteResponse.builder()
+                .success(isSuccess)
+                .message(message)
+                .build();
     }
 }
