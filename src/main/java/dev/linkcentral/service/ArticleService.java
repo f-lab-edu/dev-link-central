@@ -4,11 +4,11 @@ import dev.linkcentral.common.exception.CustomOptimisticLockException;
 import dev.linkcentral.database.entity.*;
 import dev.linkcentral.database.repository.*;
 import dev.linkcentral.presentation.dto.ArticleCreateDTO;
+import dev.linkcentral.presentation.dto.ArticleLikeDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
 import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
-import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -146,7 +146,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public void toggleArticleLike(Long articleId, Member member) {
+    public ArticleLikeDTO toggleArticleLike(Long articleId, Member member) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
@@ -154,15 +154,25 @@ public class ArticleService {
         ArticleStatistic articleStatistic = articleStatisticRepository.findByArticle(article)
                 .orElseGet(() -> new ArticleStatistic(article));
 
+        boolean isLiked = isLiked(member, article, like, articleStatistic);
+        articleStatisticRepository.save(articleStatistic);
+        return new ArticleLikeDTO(isLiked, articleStatistic.getLikes());
+    }
+
+    private boolean isLiked(Member member, Article article,
+                            Optional<ArticleLike> like, ArticleStatistic articleStatistic) {
+        boolean isLiked;
         if (like.isPresent()) {
             articleLikeRepository.delete(like.get());
             articleStatistic.decrementLikes();
+            isLiked = false;
         } else {
             ArticleLike newLike = new ArticleLike(member, article);
             articleLikeRepository.save(newLike);
             articleStatistic.incrementLikes();
+            isLiked = true;
         }
-        articleStatisticRepository.save(articleStatistic);
+        return isLiked;
     }
 
     @Transactional(readOnly = true)

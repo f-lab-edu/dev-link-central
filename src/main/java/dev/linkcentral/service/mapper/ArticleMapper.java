@@ -3,12 +3,14 @@ package dev.linkcentral.service.mapper;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.ArticleCreateDTO;
+import dev.linkcentral.presentation.dto.ArticleLikeDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
 import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import dev.linkcentral.presentation.dto.response.ArticleCreateResponse;
 import dev.linkcentral.presentation.dto.response.ArticleDeleteResponse;
+import dev.linkcentral.presentation.dto.response.ArticleLikeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -91,5 +93,12 @@ public class ArticleMapper {
                 .success(isSuccess)
                 .message(message)
                 .build();
+    }
+
+    public ArticleLikeResponse toArticleLikeResponse(ArticleLikeDTO dto) {
+        return new ArticleLikeResponse(
+                dto.isLiked(),
+                dto.getTotalLikes()
+        );
     }
 }

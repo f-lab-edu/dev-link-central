@@ -2,6 +2,7 @@ package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.ArticleCreateDTO;
+import dev.linkcentral.presentation.dto.ArticleLikeDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
 import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
 import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
@@ -9,6 +10,7 @@ import dev.linkcentral.presentation.dto.request.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.request.ArticleUpdateRequest;
 import dev.linkcentral.presentation.dto.response.ArticleCreateResponse;
 import dev.linkcentral.presentation.dto.response.ArticleDeleteResponse;
+import dev.linkcentral.presentation.dto.response.ArticleLikeResponse;
 import dev.linkcentral.presentation.dto.response.ArticleUpdateResponse;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
@@ -55,10 +57,11 @@ public class ArticleController {
     }
 
     @PostMapping("/{id}/like")
-    public ResponseEntity<?> toggleLike(@PathVariable Long id) {
+    public ResponseEntity<ArticleLikeResponse> toggleLike(@PathVariable Long id) {
         Member member = memberService.getCurrentMember();
-        articleService.toggleArticleLike(id, member);
-        return ResponseEntity.ok().build();
+        ArticleLikeDTO likeDTO = articleService.toggleArticleLike(id, member);
+        ArticleLikeResponse response = articleMapper.toArticleLikeResponse(likeDTO);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}/likes-count")
