@@ -93,9 +93,10 @@ public class ArticleController {
     }
 
     @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
         Member member = memberService.getCurrentMember();
         articleService.deleteComment(commentId, member.getNickname());
         return ResponseEntity.ok().build();
     }
+
 }

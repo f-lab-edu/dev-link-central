@@ -51,9 +51,10 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Article getArticleById(Long id) {
-        return articleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException());
+    public ArticleDetailsDTO getArticleById(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+        return articleMapper.toArticleDetailsDTO(article);
     }
 
     @Transactional(readOnly = true)
@@ -203,13 +204,6 @@ public class ArticleService {
 
         return articleCommentRepository.findAllByArticleOrderByIdDesc(article, pageable)
                 .map(ArticleCommentRequest::toCommentDTO);
-    }
-
-    @Transactional(readOnly = true)
-    public ArticleCommentRequest findCommentById(Long id) {
-        return articleCommentRepository.findById(id)
-                .map(ArticleCommentRequest::toCommentDTO)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 댓글을 찾을 수 없습니다."));
     }
 
     @Transactional

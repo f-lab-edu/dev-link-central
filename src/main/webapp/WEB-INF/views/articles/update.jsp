@@ -19,11 +19,11 @@
       $.ajax({
         url: "/api/v1/public/article/" + articleId,
         type: "GET",
-        success: function(article) {
+        success: function(response) {
           // 성공적으로 데이터를 받아온 후 input 필드에 값을 채웁니다.
-          $("#writer").val(article.writer);
-          $("#title").val(article.title);
-          $("#content").val(article.content);
+          $("#writer").val(response.articleDetails.writer);
+          $("#title").val(response.articleDetails.title);
+          $("#content").val(response.articleDetails.content);
         },
         error: function(error) {
           console.error("게시글 로드 중 오류가 발생했습니다.", error);

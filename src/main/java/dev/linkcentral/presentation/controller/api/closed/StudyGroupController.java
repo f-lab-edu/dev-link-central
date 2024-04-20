@@ -1,8 +1,8 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
-import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
+import dev.linkcentral.presentation.dto.ArticleDetailsDTO;
 import dev.linkcentral.presentation.dto.request.studygroup.StudyGroupInfoRequest;
 import dev.linkcentral.presentation.dto.request.studygroup.StudyGroupRequest;
 import dev.linkcentral.presentation.dto.request.studygroup.StudyGroupWithMembersRequest;
@@ -103,8 +103,8 @@ public class StudyGroupController {
     public ResponseEntity<StudyGroupDetailsResponse> getStudyGroupDetails(@PathVariable Long articleId) {
         Member currentMember = memberService.getCurrentMember();
 
-        Article article = articleService.getArticleById(articleId);
-        StudyGroup studyGroup = studyGroupService.findStudyGroupByLeaderId(article.getMember().getId());
+        ArticleDetailsDTO articleDetailsDTO = articleService.getArticleById(articleId);
+        StudyGroup studyGroup = studyGroupService.findStudyGroupByLeaderId(articleDetailsDTO.getMember().getId());
 
         boolean isLeader = studyGroup.getStudyLeaderId().equals(currentMember.getId());
 

@@ -2,14 +2,12 @@ package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.presentation.dto.ArticleCreateDTO;
-import dev.linkcentral.presentation.dto.ArticleLikeDTO;
-import dev.linkcentral.presentation.dto.ArticleUpdateDTO;
-import dev.linkcentral.presentation.dto.ArticleUpdatedDTO;
+import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.request.article.ArticleUpdateRequest;
 import dev.linkcentral.presentation.dto.response.article.ArticleCreateResponse;
 import dev.linkcentral.presentation.dto.response.article.ArticleDeleteResponse;
+import dev.linkcentral.presentation.dto.response.article.ArticleDetailsResponse;
 import dev.linkcentral.presentation.dto.response.article.ArticleLikeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -101,4 +99,25 @@ public class ArticleMapper {
                 dto.getTotalLikes()
         );
     }
+
+    public ArticleDetailsDTO toArticleDetailsDTO(Article article) {
+        return new ArticleDetailsDTO(
+                article.getId(),
+                article.getMember(),
+                article.getTitle(),
+                article.getContent(),
+                article.getWriter(),
+                article.getCreatedAt(),
+                article.getModifiedAt()
+        );
+    }
+
+    public ArticleDetailsResponse toArticleDetailsResponse(ArticleDetailsDTO articleDetailsDTO) {
+        return new ArticleDetailsResponse(
+                true,
+                "게시글 조회 성공",
+                articleDetailsDTO
+        );
+    }
+
 }

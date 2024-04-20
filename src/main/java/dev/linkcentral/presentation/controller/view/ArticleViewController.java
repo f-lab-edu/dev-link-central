@@ -1,13 +1,13 @@
 package dev.linkcentral.presentation.controller.view;
 
-import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.infrastructure.SecurityUtils;
-import dev.linkcentral.service.ArticleService;
-import dev.linkcentral.service.MemberService;
+import dev.linkcentral.presentation.dto.ArticleDetailsDTO;
 import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
-import dev.linkcentral.presentation.dto.response.article.CommentPageResponse;
+import dev.linkcentral.presentation.dto.response.article.ArticleCommentPageResponse;
+import dev.linkcentral.service.ArticleService;
+import dev.linkcentral.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -60,8 +60,8 @@ public class ArticleViewController {
 
     @GetMapping("/update-form/{id}")
     public String updateForm(@PathVariable Long id, Model model) {
-        Article article = articleService.getArticleById(id);
-        model.addAttribute("articleUpdate", article);
+        ArticleDetailsDTO articleDetailsDTO = articleService.getArticleById(id);
+        model.addAttribute("articleUpdate", articleDetailsDTO);
         return "/articles/update";
     }
 
@@ -93,11 +93,11 @@ public class ArticleViewController {
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<CommentPageResponse> getCommentsForArticle(@PathVariable Long id,
-                                                                     @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<ArticleCommentPageResponse> getCommentsForArticle(@PathVariable Long id,
+                                                                            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Page<ArticleCommentRequest> commentsPage = articleService.findCommentsForScrolling(id, pageable);
-        CommentPageResponse response = new CommentPageResponse(
+        ArticleCommentPageResponse response = new ArticleCommentPageResponse(
                 commentsPage.getContent(),
                 commentsPage.getNumber(),
                 commentsPage.getTotalPages()
