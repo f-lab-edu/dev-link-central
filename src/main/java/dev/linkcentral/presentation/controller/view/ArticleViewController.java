@@ -3,6 +3,7 @@ package dev.linkcentral.presentation.controller.view;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.presentation.dto.ArticleDetailsDTO;
+import dev.linkcentral.presentation.dto.ArticleViewDTO;
 import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
 import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.response.article.ArticleCommentPageResponse;
@@ -41,17 +42,18 @@ public class ArticleViewController {
 
     @GetMapping("/")
     public String findAll(Model model) {
-        List<ArticleCreateRequest> articleList = articleService.findAllArticles();
-        model.addAttribute("articleList", articleList);
+        List<ArticleViewDTO> articleDTOList = articleService.findAllArticles();
+        model.addAttribute("articleList", articleDTOList);
         return "/articles/list";
     }
 
     @GetMapping("/{id}")
-    public String findById(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+    public String findById(@PageableDefault(size = 5, sort = "id",
+                           direction = Sort.Direction.DESC) Pageable pageable,
                            @PathVariable Long id, Model model) {
 
-        Member member = memberService.getAuthenticatedMember();
-        ArticleCreateRequest articleDTO = articleService.findArticleById(id, member);
+        Member currentMember = memberService.getAuthenticatedMember();
+        ArticleCreateRequest articleDTO = articleService.findArticleById(id, currentMember);
 
         model.addAttribute("article", articleDTO);
         model.addAttribute("page", pageable.getPageNumber());

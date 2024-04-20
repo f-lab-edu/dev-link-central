@@ -58,13 +58,13 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public List<ArticleCreateRequest> findAllArticles() {
+    public List<ArticleViewDTO> findAllArticles() {
         List<Article> articleEntityList = articleRepository.findAll();
-        List<ArticleCreateRequest> articleDTOList = new ArrayList<>();
+        List<ArticleViewDTO> articleDTOList = new ArrayList<>();
 
         for (Article articleEntity : articleEntityList) {
-            ArticleCreateRequest dto = ArticleCreateRequest.toArticleDTO(articleEntity);
-            articleDTOList.add(dto);
+            ArticleViewDTO articleDTO = articleMapper.toArticleDTO(articleEntity);
+            articleDTOList.add(articleDTO);
         }
         return articleDTOList;
     }
