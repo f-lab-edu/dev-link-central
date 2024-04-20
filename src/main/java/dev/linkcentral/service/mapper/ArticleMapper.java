@@ -1,6 +1,7 @@
 package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.Article;
+import dev.linkcentral.database.entity.ArticleComment;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
@@ -120,9 +121,8 @@ public class ArticleMapper {
         );
     }
 
-
     public ArticleViewDTO toArticleDTO(Article article) {
-        ArticleViewDTO dto = ArticleViewDTO.builder()
+        ArticleViewDTO articleViewDTO = ArticleViewDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
@@ -133,8 +133,33 @@ public class ArticleMapper {
 
         // Member 객체가 존재하는 경우에만 writerId 설정
         if (article.getMember() != null) {
-            dto.setWriterId(article.getMember().getId());
+            articleViewDTO.setWriterId(article.getMember().getId());
         }
-        return dto;
+        return articleViewDTO;
+    }
+
+    public ArticleViewDTO toDetailedArticleDTO(Article article, int views) {
+        return ArticleViewDTO.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .content(article.getContent())
+                .writer(article.getWriter())
+                .createdAt(article.getCreatedAt())
+                .modifiedAt(article.getModifiedAt())
+                .views(views)
+                .build();
+    }
+
+    public ArticleCommentViewDTO toCommentDTO(ArticleComment comment) {
+        ArticleCommentViewDTO commentDTO = new ArticleCommentViewDTO();
+        commentDTO.setId(comment.getId());
+        commentDTO.setArticleId(comment.getArticle().getId());
+        commentDTO.setContents(comment.getContent());
+
+        if (comment.getMember() != null) {
+            commentDTO.setNickname(comment.getMember().getNickname());
+        }
+        commentDTO.setCreatedAt(comment.getCreatedAt());
+        return commentDTO;
     }
 }

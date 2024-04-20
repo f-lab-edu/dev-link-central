@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation.dto.request.article;
+package dev.linkcentral.presentation.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCommentRequest {
+public class ArticleCommentViewDTO {
 
     private Long id;
     private Long articleId;

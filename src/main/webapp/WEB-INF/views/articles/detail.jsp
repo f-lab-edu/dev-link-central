@@ -4,6 +4,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="dev.linkcentral.database.entity.Member" %>
 <%@ page import="org.springframework.data.domain.Page" %>
+<%@ page import="dev.linkcentral.presentation.dto.ArticleViewDTO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -109,7 +110,7 @@
     </style>
 
     <script>
-        <% ArticleCreateRequest article = (ArticleCreateRequest) request.getAttribute("article"); %>
+        <% ArticleViewDTO article = (ArticleViewDTO) request.getAttribute("article"); %>
         var articleId = <%= article.getId() %>;
         console.log("Article ID:", articleId);
 
