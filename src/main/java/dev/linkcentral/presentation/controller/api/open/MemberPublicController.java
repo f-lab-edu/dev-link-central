@@ -7,6 +7,7 @@ import dev.linkcentral.presentation.dto.MemberMailDTO;
 import dev.linkcentral.presentation.dto.MemberRegistrationDTO;
 import dev.linkcentral.presentation.dto.request.member.MemberLoginRequest;
 import dev.linkcentral.presentation.dto.request.member.MemberSaveRequest;
+import dev.linkcentral.presentation.dto.response.member.MailPasswordResetResponse;
 import dev.linkcentral.presentation.dto.response.member.MemberPasswordResponse;
 import dev.linkcentral.presentation.dto.response.member.MemberSaveResponse;
 import dev.linkcentral.presentation.dto.response.member.RegistrationErrorResponse;
@@ -55,7 +56,6 @@ public class MemberPublicController {
 
         final String redirectUrl = BaseUrlUtil.getBaseUrl(request) + "/api/v1/view/member/login";
         LoginSuccessResponse response = memberMapper.toLoginSuccessResponse(jwtToken, redirectUrl);
-
         return ResponseEntity.ok(response);
     }
 
@@ -67,9 +67,10 @@ public class MemberPublicController {
     }
 
     @PostMapping("/send-email/update-password")
-    public void sendEmail(String userEmail, String userName) {
+    public ResponseEntity<MailPasswordResetResponse> sendEmail(String userEmail, String userName) {
         MemberMailDTO memberMailDTO = memberService.createMailForPasswordReset(userEmail, userName);
         memberService.sendMail(memberMailDTO);
+        return ResponseEntity.ok(new MailPasswordResetResponse(true, "임시 비밀번호가 이메일로 발송되었습니다."));
     }
 
     @PostMapping("/check-current-password")
@@ -79,4 +80,5 @@ public class MemberPublicController {
         boolean isPasswordValid = memberService.validatePassword(member.getNickname(),password);
         return ResponseEntity.ok(new MemberPasswordResponse(isPasswordValid));
     }
+
 }
