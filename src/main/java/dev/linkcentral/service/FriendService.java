@@ -8,6 +8,7 @@ import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
 import dev.linkcentral.presentation.dto.response.friend.FriendListResponse;
 import dev.linkcentral.presentation.dto.response.friend.FriendshipDetailResponse;
+import dev.linkcentral.service.mapper.FriendMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,27 +26,29 @@ public class FriendService {
 
     private final MemberRepository memberRepository;
     private final FriendRepository friendRepository;
+    private final FriendMapper friendMapper;
 
     @Transactional
     public Long sendFriendRequest(Long senderId, Long receiverId) {
-        Member sender = memberRepository.findById(senderId)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다: " + senderId));
+        Member sender = findMemberById(senderId);
+        Member receiver = findMemberById(receiverId);
+        validateFriendRequest(sender, receiver);
 
-        Member receiver = memberRepository.findById(receiverId)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다: " + receiverId));
+        Friend friendEntity = friendMapper.createFriendRequest(sender, receiver);
+        friendRepository.save(friendEntity);
+        return friendEntity.getId();
+    }
 
-        if (friendRepository.existsBySenderAndReceiverOrReceiverAndSender(sender, receiver, sender, receiver)) {
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
+    }
+
+    private void validateFriendRequest(Member sender, Member receiver) {
+        boolean friendRequestExists = friendRepository.existsBySenderAndReceiverOrReceiverAndSender(sender, receiver, sender, receiver);
+        if (friendRequestExists) {
             throw new IllegalStateException("친구 요청을 이미 보냈거나 받았습니다.");
         }
-
-        Friend friendRequest = Friend.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .status(FriendStatus.REQUESTED)
-                .build();
-
-        friendRepository.save(friendRequest);
-        return friendRequest.getId();
     }
 
     @Transactional(readOnly = true)

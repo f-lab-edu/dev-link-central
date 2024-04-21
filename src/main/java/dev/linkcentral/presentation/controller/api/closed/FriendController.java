@@ -1,9 +1,12 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
+import dev.linkcentral.presentation.dto.FriendRequestDTO;
 import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
 import dev.linkcentral.presentation.dto.response.friend.FriendListResponse;
+import dev.linkcentral.presentation.dto.response.friend.FriendRequestResponse;
 import dev.linkcentral.presentation.dto.response.friend.FriendshipDetailResponse;
 import dev.linkcentral.service.FriendService;
+import dev.linkcentral.service.mapper.FriendMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,18 +23,14 @@ import java.util.List;
 public class FriendController {
 
     private final FriendService friendService;
+    private final FriendMapper friendMapper;
 
-    /**
-     * 친구 요청 보내기
-     */
     @PostMapping("/request")
-    public ResponseEntity<?> sendFriendRequest(@RequestBody FriendRequest friendRequest) {
-        log.info("friendRequest.getSenderId: {}", friendRequest.getSenderId());     // 보낸사람 id
-        log.info("friendRequest.getReceiverId: {}", friendRequest.getReceiverId()); // 수신자 id
-        Long requestId = friendService.sendFriendRequest(
-                friendRequest.getSenderId(),
-                friendRequest.getReceiverId());
-        return ResponseEntity.ok(requestId);
+    public ResponseEntity<FriendRequestResponse> sendFriendRequest(@RequestBody FriendRequest friendRequest) {
+        FriendRequestDTO friendRequestDTO = friendMapper.toFriendRequestDTO(friendRequest);
+        Long friendRequestId = friendService.sendFriendRequest(friendRequestDTO.getSenderId(), friendRequestDTO.getReceiverId());
+        FriendRequestResponse response = friendMapper.createFriendRequestResponse(friendRequestId);
+        return ResponseEntity.ok(response);
     }
 
     /**

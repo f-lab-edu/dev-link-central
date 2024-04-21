@@ -226,13 +226,14 @@
                 success: function (response) {
                     alert('친구 요청이 성공적으로 전송되었습니다.');
 
-                    var friendId = response;
-                    console.log("@@ --> friendId: " + friendId);
+                    var friendRequestId = response.friendRequestId;
+                    console.log("@@ --> friendRequestId: " + friendRequestId);
 
-                    updateUnfriendButton(friendId);
+                    updateUnfriendButton(friendRequestId);
                 },
                 error: function (xhr, status, error) {
-                    alert('친구 요청을 보내지 못했습니다. 오류: ' + error);
+                    var errorMessage = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : error;
+                    alert('친구 요청을 보내지 못했습니다. 오류: ' + errorMessage);
                 }
             });
         }
