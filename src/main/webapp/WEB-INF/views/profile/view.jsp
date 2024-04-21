@@ -382,8 +382,8 @@
                 success: function (response) {
                     console.log("Response:", response);
 
-                    if (response.length > 0) {
-                        var requestsHtml = response.map(function(request) {
+                    if (response.success && response.friendRequests.length > 0) {
+                        var requestsHtml = response.friendRequests.map(function(request) {
                             console.log('Entire request object:', request);
 
                             // request.id를 사용하여 data-request-id를 설정

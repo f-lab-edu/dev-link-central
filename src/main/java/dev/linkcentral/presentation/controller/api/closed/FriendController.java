@@ -3,6 +3,7 @@ package dev.linkcentral.presentation.controller.api.closed;
 import dev.linkcentral.presentation.dto.FriendRequestDTO;
 import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
 import dev.linkcentral.presentation.dto.response.friend.FriendListResponse;
+import dev.linkcentral.presentation.dto.response.friend.FriendReceivedResponse;
 import dev.linkcentral.presentation.dto.response.friend.FriendRequestResponse;
 import dev.linkcentral.presentation.dto.response.friend.FriendshipDetailResponse;
 import dev.linkcentral.service.FriendService;
@@ -33,13 +34,11 @@ public class FriendController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 받은 친구 요청 목록 가져오기
-     */
     @GetMapping("/received-requests/{receiverId}")
-    public ResponseEntity<?> getReceivedFriendRequests(@PathVariable Long receiverId) {
-        List<FriendRequest> friendRequests = friendService.getReceivedFriendRequests(receiverId);
-        return ResponseEntity.ok(friendRequests);
+    public ResponseEntity<FriendReceivedResponse> getReceivedFriendRequests(@PathVariable Long receiverId) {
+        List<FriendRequestDTO> friendRequests = friendService.getReceivedFriendRequests(receiverId);
+        FriendReceivedResponse response = friendMapper.buildFriendReceivedResponse(friendRequests);
+        return ResponseEntity.ok(response);
     }
 
     /**

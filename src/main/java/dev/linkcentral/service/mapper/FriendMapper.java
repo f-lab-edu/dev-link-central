@@ -5,8 +5,12 @@ import dev.linkcentral.database.entity.FriendStatus;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.FriendRequestDTO;
 import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
+import dev.linkcentral.presentation.dto.response.friend.FriendReceivedResponse;
 import dev.linkcentral.presentation.dto.response.friend.FriendRequestResponse;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class FriendMapper {
@@ -33,4 +37,22 @@ public class FriendMapper {
                 .build();
     }
 
+    public List<FriendRequestDTO> toFriendRequestDTOList(List<Friend> friends) {
+        return friends.stream()
+                .map(friend -> new FriendRequestDTO(
+                        friend.getId(),
+                        friend.getSender().getId(),
+                        friend.getReceiver().getId(),
+                        friend.getSender().getNickname()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public FriendReceivedResponse buildFriendReceivedResponse(List<FriendRequestDTO> friendRequests) {
+        if (friendRequests == null || friendRequests.isEmpty()) {
+            return new FriendReceivedResponse(false, "친구 요청 목록이 비어있습니다.", null);
+        } else {
+            return new FriendReceivedResponse(true, "친구 요청 목록을 성공적으로 불러왔습니다.", friendRequests);
+        }
+    }
 }

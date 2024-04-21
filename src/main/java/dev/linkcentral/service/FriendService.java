@@ -5,7 +5,7 @@ import dev.linkcentral.database.entity.FriendStatus;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.FriendRepository;
 import dev.linkcentral.database.repository.MemberRepository;
-import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
+import dev.linkcentral.presentation.dto.FriendRequestDTO;
 import dev.linkcentral.presentation.dto.response.friend.FriendListResponse;
 import dev.linkcentral.presentation.dto.response.friend.FriendshipDetailResponse;
 import dev.linkcentral.service.mapper.FriendMapper;
@@ -52,18 +52,12 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
-    public List<FriendRequest> getReceivedFriendRequests(Long receiverId) {
+    public List<FriendRequestDTO> getReceivedFriendRequests(Long receiverId) {
         Member receiver = memberRepository.findById(receiverId)
                 .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다: " + receiverId));
 
-        return friendRepository.findAllByReceiverAndStatus(receiver, FriendStatus.REQUESTED).stream()
-                .map(friend -> new FriendRequest(
-                        friend.getId(),
-                        friend.getSender().getId(),
-                        friend.getReceiver().getId(),
-                        friend.getSender().getNickname()
-                ))
-                .collect(Collectors.toList());
+        List<Friend> friends = friendRepository.findAllByReceiverAndStatus(receiver, FriendStatus.REQUESTED);
+        return friendMapper.toFriendRequestDTOList(friends);
     }
 
     @Transactional
