@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -44,13 +45,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationErrorResponse("잘못된 인증 정보입니다."));
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<RegistrationErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
-        log.error("삭제 중 오류 발생: {}", ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new RegistrationErrorResponse("해당 항목을 찾을 수 없어 삭제를 실패했습니다.", ex.getLocalizedMessage()));
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<RegistrationErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("요청 검증 실패: {}", ex.getMessage());
@@ -77,6 +71,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ProfileUpdateResponse.builder().message("프로필 업데이트에 실패했습니다.").build()
         );
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public String handleEntityNotFoundException(EntityNotFoundException e, Model model) {
+        model.addAttribute("error", "해당 memberId에 대한 프로필을 찾을 수 없습니다.");
+        return "error";
     }
 
 }

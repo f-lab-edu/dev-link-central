@@ -2,7 +2,7 @@ package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.ProfileUpdateDTO;
-import dev.linkcentral.presentation.dto.request.profile.ProfileRequest;
+import dev.linkcentral.presentation.dto.request.profile.ProfileDetailsRequest;
 import dev.linkcentral.presentation.dto.response.profile.ProfileInfoResponse;
 import dev.linkcentral.presentation.dto.response.profile.ProfileUpdateResponse;
 import dev.linkcentral.service.MemberService;
@@ -32,11 +32,11 @@ public class ProfileController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<ProfileUpdateResponse> updateProfile(@ModelAttribute ProfileRequest profileRequest,
+    public ResponseEntity<ProfileUpdateResponse> updateProfile(@ModelAttribute ProfileDetailsRequest profileDetailsRequest,
                                                                @RequestParam(value = "image", required = false) MultipartFile image) {
         Member member = memberService.getCurrentMember();
-        ProfileUpdateDTO profileUpdateDTO = profileMapper.toProfileUpdateDTO(profileRequest);
+        ProfileUpdateDTO profileUpdateDTO = profileMapper.toProfileUpdateDTO(profileDetailsRequest);
         profileService.updateProfile(profileUpdateDTO, image);
-        return profileMapper.profileUpdatedResponse(profileRequest.getMemberId());
+        return profileMapper.profileUpdatedResponse(profileDetailsRequest.getMemberId());
     }
 }

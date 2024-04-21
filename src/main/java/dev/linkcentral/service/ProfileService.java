@@ -5,8 +5,8 @@ import dev.linkcentral.database.entity.Profile;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.ProfileRepository;
 import dev.linkcentral.infrastructure.s3.AwsS3Uploader;
+import dev.linkcentral.presentation.dto.ProfileDetailsDTO;
 import dev.linkcentral.presentation.dto.ProfileUpdateDTO;
-import dev.linkcentral.presentation.dto.request.profile.ProfileRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +22,13 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    public ProfileRequest getProfile(Long memberId) {
+    public ProfileDetailsDTO getProfile(Long memberId) {
         return profileRepository.findByMemberId(memberId)
-                .map(profile -> new ProfileRequest(
+                .map(profile -> new ProfileDetailsDTO(
                         profile.getMember().getId(),
                         profile.getBio(),
                         profile.getImageUrl()))
-                .orElse(new ProfileRequest(memberId, "자신을 소개해 주세요!", ""));
+                .orElse(new ProfileDetailsDTO(memberId, "자신을 소개해 주세요!", ""));
     }
 
     @Transactional
