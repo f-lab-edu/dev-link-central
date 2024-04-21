@@ -1,10 +1,9 @@
 package dev.linkcentral.common.exception.handler;
 
-import dev.linkcentral.common.exception.DuplicateEmailException;
-import dev.linkcentral.common.exception.DuplicateNicknameException;
-import dev.linkcentral.common.exception.MemberRegistrationException;
+import dev.linkcentral.common.exception.*;
 import dev.linkcentral.presentation.dto.response.member.AuthenticationErrorResponse;
 import dev.linkcentral.presentation.dto.response.member.RegistrationErrorResponse;
+import dev.linkcentral.presentation.dto.response.profile.ProfileUpdateResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,11 +44,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthenticationErrorResponse("잘못된 인증 정보입니다."));
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<AuthenticationErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new AuthenticationErrorResponse("사용자를 찾을 수 없습니다."));
-    }
-
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<RegistrationErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
         log.error("삭제 중 오류 발생: {}", ex.getMessage(), ex);
@@ -61,6 +55,28 @@ public class GlobalExceptionHandler {
     public ResponseEntity<RegistrationErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("요청 검증 실패: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(new RegistrationErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ProfileUpdateResponse> handleProfileUsernameNotFoundException(UsernameNotFoundException ex) {
+        ProfileUpdateResponse response = ProfileUpdateResponse.builder()
+                .message("인증되지 않은 사용자입니다.")
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(ProfileNotFoundException.class)
+    public ResponseEntity<Object> handleProfileNotFoundException(ProfileNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ProfileUpdateResponse.builder().message(ex.getMessage()).build()
+        );
+    }
+
+    @ExceptionHandler(ProfileUpdateException.class)
+    public ResponseEntity<Object> handleProfileUpdateException(ProfileUpdateException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ProfileUpdateResponse.builder().message("프로필 업데이트에 실패했습니다.").build()
+        );
     }
 
 }

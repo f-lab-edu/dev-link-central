@@ -5,6 +5,7 @@ import dev.linkcentral.database.entity.Profile;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.ProfileRepository;
 import dev.linkcentral.infrastructure.s3.AwsS3Uploader;
+import dev.linkcentral.presentation.dto.ProfileUpdateDTO;
 import dev.linkcentral.presentation.dto.request.profile.ProfileRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public void updateProfile(ProfileRequest profileDTO, MultipartFile imageFile) {
+    public void updateProfile(ProfileUpdateDTO profileDTO, MultipartFile imageFile) {
         Profile profile = findOrCreateProfile(profileDTO.getMemberId());
         updateProfileDetails(profile, profileDTO.getBio(), imageFile);
     }
@@ -48,7 +49,9 @@ public class ProfileService {
         profile.updateBio(bio);
 
         if (!imageFile.isEmpty()) {
-            String imageUrl = awsS3Uploader.uploadFile(imageFile, "profile-images/" + profile.getMember().getId());
+            String imageUrl = awsS3Uploader.uploadFile(
+                    imageFile, "profile-images/" + profile.getMember().getId()
+            );
             profile.updateImageUrl(imageUrl);
         }
         profileRepository.save(profile);
