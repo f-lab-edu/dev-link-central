@@ -2,10 +2,7 @@ package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.presentation.dto.FriendRequestDTO;
 import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
-import dev.linkcentral.presentation.dto.response.friend.FriendListResponse;
-import dev.linkcentral.presentation.dto.response.friend.FriendReceivedResponse;
-import dev.linkcentral.presentation.dto.response.friend.FriendRequestResponse;
-import dev.linkcentral.presentation.dto.response.friend.FriendshipDetailResponse;
+import dev.linkcentral.presentation.dto.response.friend.*;
 import dev.linkcentral.service.FriendService;
 import dev.linkcentral.service.mapper.FriendMapper;
 import lombok.RequiredArgsConstructor;
@@ -41,34 +38,18 @@ public class FriendController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 친구 요청 수락
-     */
     @PostMapping("/accept/{requestId}")
-    public ResponseEntity<?> acceptFriendRequest(@PathVariable Long requestId) {
-        try {
-            friendService.acceptFriendRequest(requestId);
-            return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException e) {
-            log.error("EntityNotFoundException: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<Void> acceptFriendRequest(@PathVariable Long requestId) {
+        friendService.acceptFriendRequest(requestId);
+        return ResponseEntity.ok().build();
     }
 
-    /**
-     * 친구 ID 가져오기
-     */
     @GetMapping("/friendship-ids")
-    public ResponseEntity<?> getFriendshipId(@RequestParam Long senderId, @RequestParam Long receiverId) {
-        log.info("--> senderId: {}", senderId);
-        log.info("--> receiverId: {}", receiverId);
-
+    public ResponseEntity<FriendshipResponse> getFriendshipId(@RequestParam Long senderId, @RequestParam Long receiverId) {
         Long friendId = friendService.findFriendshipId(senderId, receiverId);
-        if (friendId != null) {
-            return ResponseEntity.ok(friendId);
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(new FriendshipResponse(friendId));
     }
+
 
     /**
      * 친구 거절

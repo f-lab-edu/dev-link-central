@@ -79,15 +79,22 @@ public class FriendService {
 
     @Transactional
     public Long findFriendshipId(Long senderId, Long receiverId) {
-        Member sender = memberRepository.findById(senderId)
-                .orElseThrow(() -> new EntityNotFoundException("요청자 ID를 찾을 수 없습니다."));
-
-        Member receiver = memberRepository.findById(receiverId)
-                .orElseThrow(() -> new EntityNotFoundException("대상의 ID를 찾을 수 없습니다."));
+        Member sender = findMemberById(senderId, "요청자 ID를 찾을 수 없습니다.");
+        Member receiver = findMemberById(receiverId, "대상의 ID를 찾을 수 없습니다.");
 
         return friendRepository.findBySenderAndReceiver(sender, receiver)
                 .map(Friend::getId)
-                .orElse(null);
+                .orElseThrow(() -> new EntityNotFoundException("친구 관계 ID를 찾을 수 없습니다."));
+    }
+
+
+
+
+
+
+    private Member findMemberById(Long memberId, String errorMessage) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException(errorMessage));
     }
 
     @Transactional
