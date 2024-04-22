@@ -5,9 +5,12 @@ import dev.linkcentral.database.entity.ArticleComment;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.ArticleCommentDTO;
 import dev.linkcentral.presentation.dto.ArticleCommentUpdateDTO;
+import dev.linkcentral.presentation.dto.ArticleCommentViewDTO;
 import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
+import dev.linkcentral.presentation.dto.response.article.ArticleCommentPageResponse;
 import dev.linkcentral.presentation.dto.response.article.ArticleCommentResponse;
 import dev.linkcentral.presentation.dto.response.article.ArticleCommentUpdateResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -81,4 +84,13 @@ public class ArticleCommentMapper {
                 comment.getCreatedAt()
         );
     }
+
+    public ArticleCommentPageResponse toArticleCommentPageResponse(Page<ArticleCommentViewDTO> commentsPage) {
+        return new ArticleCommentPageResponse(
+                commentsPage.getContent(),
+                commentsPage.getNumber(),
+                commentsPage.getTotalPages()
+        );
+    }
+
 }

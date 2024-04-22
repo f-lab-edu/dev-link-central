@@ -2,13 +2,13 @@ package dev.linkcentral.presentation.controller.view;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.infrastructure.SecurityUtils;
+import dev.linkcentral.presentation.dto.ArticleCommentViewDTO;
 import dev.linkcentral.presentation.dto.ArticleDetailsDTO;
 import dev.linkcentral.presentation.dto.ArticleViewDTO;
-import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
-import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
 import dev.linkcentral.presentation.dto.response.article.ArticleCommentPageResponse;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
+import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,6 +32,7 @@ public class ArticleViewController {
 
     private final ArticleService articleService;
     private final MemberService memberService;
+    private final ArticleCommentMapper articleCommentMapper;
 
     @GetMapping("/save-form")
     public String saveForm(Model model) {
@@ -53,7 +54,7 @@ public class ArticleViewController {
                            @PathVariable Long id, Model model) {
 
         Member currentMember = memberService.getAuthenticatedMember();
-        ArticleCreateRequest articleDTO = articleService.findArticleById(id, currentMember);
+        ArticleViewDTO articleDTO = articleService.findArticleById(id, currentMember);
 
         model.addAttribute("article", articleDTO);
         model.addAttribute("page", pageable.getPageNumber());
@@ -75,16 +76,13 @@ public class ArticleViewController {
 
     @GetMapping("/paging")
     public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
-        Page<ArticleCreateRequest> articlePage = articleService.paginateArticles(pageable);
-        List<ArticleCreateRequest> articleList = articlePage.getContent(); // Page에서 List로 변환
+        Page<ArticleViewDTO> articlePage = articleService.paginateArticles(pageable);
+        List<ArticleViewDTO> articleList = articlePage.getContent(); // Page에서 List로 변환
 
         int blockLimit = 3;
         int startPage = (((int) Math.ceil(((double) pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
         int endPage = Math.min((startPage + blockLimit - 1), articlePage.getTotalPages());
-
-        // 인증된 사용자인지 확인
         boolean isAuthenticated = SecurityUtils.isAuthenticated();
-        log.info("--> isAuthenticated: {}", isAuthenticated);
 
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("articleList", articleList); // List로 전달
@@ -96,14 +94,11 @@ public class ArticleViewController {
 
     @GetMapping("/{id}/comments")
     public ResponseEntity<ArticleCommentPageResponse> getCommentsForArticle(@PathVariable Long id,
-                                                                            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+             @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<ArticleCommentRequest> commentsPage = articleService.findCommentsForScrolling(id, pageable);
-        ArticleCommentPageResponse response = new ArticleCommentPageResponse(
-                commentsPage.getContent(),
-                commentsPage.getNumber(),
-                commentsPage.getTotalPages()
-        );
+        Page<ArticleCommentViewDTO> commentsPage = articleService.findCommentsForScrolling(id, pageable);
+        ArticleCommentPageResponse response = articleCommentMapper.toArticleCommentPageResponse(commentsPage);
         return ResponseEntity.ok(response);
     }
+
 }

@@ -4,8 +4,6 @@ import dev.linkcentral.common.exception.CustomOptimisticLockException;
 import dev.linkcentral.database.entity.*;
 import dev.linkcentral.database.repository.*;
 import dev.linkcentral.presentation.dto.*;
-import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
-import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
 import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
@@ -70,15 +68,15 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleCreateRequest findArticleById(Long id, Member member) {
-        return articleRepository.findById(id)
-                .map(article -> {
-                    viewCountUpdate(member, article);
-                    ArticleStatistic statistic = articleStatisticRepository.findByArticle(article)
-                            .orElse(new ArticleStatistic());
-                    ArticleCreateRequest dto = ArticleCreateRequest.toArticleDTOWithViews(article, statistic.getViews());
-                    return dto;
-                }).orElse(null);
+    public ArticleViewDTO findArticleById(Long id, Member member) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+
+        viewCountUpdate(member, article);
+        ArticleStatistic statistic = articleStatisticRepository.findByArticle(article)
+                .orElse(new ArticleStatistic());
+
+        return articleMapper.toDetailedArticleDTO(article, statistic.getViews());
     }
 
     @Transactional
@@ -117,7 +115,7 @@ public class ArticleService {
         Article updatedArticle = articleRepository.save(articleEntity);
 
         return articleRepository.findById(updatedArticle.getId())
-                .map(article -> articleMapper.updateArticleAndReturnDTO(article))
+                .map(articleMapper::updateArticleAndReturnDTO)
                 .orElseThrow(() -> new EntityNotFoundException("업데이트 된 기사를 찾을 수 없습니다"));
     }
 
@@ -134,7 +132,7 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleCreateRequest> paginateArticles(Pageable pageable) {
+    public Page<ArticleViewDTO> paginateArticles(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
         int pageLimit = 3;                       // 한 페이지에 보여줄 글 갯수
 
@@ -142,7 +140,7 @@ public class ArticleService {
         Page<Article> articleEntity = articleRepository.findAll(PageRequest
                 .of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
 
-        return articleEntity.map(article -> ArticleCreateRequest.toArticleDTO(article));
+        return articleEntity.map(articleMapper::toArticleDTO);
     }
 
     @Transactional
@@ -198,12 +196,12 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleCommentRequest> findCommentsForScrolling(Long articleId, Pageable pageable) {
+    public Page<ArticleCommentViewDTO> findCommentsForScrolling(Long articleId, Pageable pageable) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new EntityNotFoundException("ID로 게시판을 찾을 수 없습니다."));
 
         return articleCommentRepository.findAllByArticleOrderByIdDesc(article, pageable)
-                .map(ArticleCommentRequest::toCommentDTO);
+                .map(articleMapper::toCommentDTO);
     }
 
     @Transactional
