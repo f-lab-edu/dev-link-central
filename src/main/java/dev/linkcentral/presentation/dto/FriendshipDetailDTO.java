@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation.dto.response.friend;
+package dev.linkcentral.presentation.dto;
 
 import dev.linkcentral.database.entity.FriendStatus;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendshipDetailResponse {
+public class FriendshipDetailDTO {
 
     private Long friendshipId;
     private Long senderId;

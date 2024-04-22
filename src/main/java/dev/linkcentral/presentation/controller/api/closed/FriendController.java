@@ -1,17 +1,19 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.presentation.dto.FriendRequestDTO;
+import dev.linkcentral.presentation.dto.FriendshipDetailDTO;
 import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
-import dev.linkcentral.presentation.dto.response.friend.*;
+import dev.linkcentral.presentation.dto.response.friend.FriendReceivedResponse;
+import dev.linkcentral.presentation.dto.response.friend.FriendRequestResponse;
+import dev.linkcentral.presentation.dto.response.friend.FriendshipDetailResponse;
+import dev.linkcentral.presentation.dto.response.friend.FriendshipResponse;
 import dev.linkcentral.service.FriendService;
 import dev.linkcentral.service.mapper.FriendMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
@@ -50,55 +52,29 @@ public class FriendController {
         return ResponseEntity.ok(new FriendshipResponse(friendId));
     }
 
-
-    /**
-     * 친구 거절
-     */
     @DeleteMapping("/reject/{requestId}")
-    public ResponseEntity<?> rejectFriendRequest(@PathVariable Long requestId) {
-        try {
-            friendService.rejectFriendRequest(requestId);
-            return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException e) {
-            log.error("EntityNotFoundException: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<Void> rejectFriendRequest(@PathVariable Long requestId) {
+        friendService.rejectFriendRequest(requestId);
+        return ResponseEntity.ok().build();
     }
 
-    /**
-     * 친구 끊기
-     */
     @DeleteMapping("/{friendId}")
-    public ResponseEntity<?> unfriend(@PathVariable Long friendId) {
+    public ResponseEntity<Void> unfriend(@PathVariable Long friendId) {
         friendService.deleteFriendship(friendId);
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * 친구 목록 가져오기
-     */
-    @GetMapping("/{memberId}/friends")
-    public ResponseEntity<?> getFriends(@PathVariable Long memberId) {
-        List<FriendListResponse> friends = friendService.getFriends(memberId);
-        return ResponseEntity.ok(friends);
-    }
-
-    /**
-     * 선택한 친구들과의 친구 관계를 끊는 API
-     */
     @PostMapping("/unfriend")
-    public ResponseEntity<?> unfriendSelected(@RequestBody List<Long> friendIds) {
+    public ResponseEntity<Void> unfriendSelected(@RequestBody List<Long> friendIds) {
         friendService.unfriendSelected(friendIds);
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * 친구 관계의 ID를 가져오는 API
-     */
     @GetMapping("/{memberId}/friendships")
-    public ResponseEntity<?> getFriendships(@PathVariable Long memberId) {
-        List<FriendshipDetailResponse> friendships = friendService.getFriendships(memberId);
-        return ResponseEntity.ok(friendships);
+    public ResponseEntity<List<FriendshipDetailResponse>> getFriendships(@PathVariable Long memberId) {
+        List<FriendshipDetailDTO> friendships = friendService.getFriendships(memberId);
+        List<FriendshipDetailResponse> responses = friendMapper.toFriendshipDetailResponseList(friendships);
+        return ResponseEntity.ok(responses);
     }
 
 }

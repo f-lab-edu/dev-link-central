@@ -4,9 +4,11 @@ import dev.linkcentral.database.entity.Friend;
 import dev.linkcentral.database.entity.FriendStatus;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.FriendRequestDTO;
+import dev.linkcentral.presentation.dto.FriendshipDetailDTO;
 import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
 import dev.linkcentral.presentation.dto.response.friend.FriendReceivedResponse;
 import dev.linkcentral.presentation.dto.response.friend.FriendRequestResponse;
+import dev.linkcentral.presentation.dto.response.friend.FriendshipDetailResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -55,4 +57,31 @@ public class FriendMapper {
             return new FriendReceivedResponse(true, "친구 요청 목록을 성공적으로 불러왔습니다.", friendRequests);
         }
     }
+
+    public List<FriendshipDetailDTO> toFriendshipDetailDTOList(List<Friend> friendships) {
+        return friendships.stream()
+                .map(friendship -> FriendshipDetailDTO.builder()
+                        .friendshipId(friendship.getId())
+                        .senderId(friendship.getSender().getId())
+                        .receiverId(friendship.getReceiver().getId())
+                        .senderName(friendship.getSender().getName())
+                        .receiverName(friendship.getReceiver().getName())
+                        .status(friendship.getStatus())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public List<FriendshipDetailResponse> toFriendshipDetailResponseList(List<FriendshipDetailDTO> friendshipDetails) {
+        return friendshipDetails.stream()
+                .map(dto -> FriendshipDetailResponse.builder()
+                        .friendshipId(dto.getFriendshipId())
+                        .senderId(dto.getSenderId())
+                        .receiverId(dto.getReceiverId())
+                        .senderName(dto.getSenderName())
+                        .receiverName(dto.getReceiverName())
+                        .status(dto.getStatus())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }
