@@ -145,32 +145,60 @@ public class ArticleService {
 
     @Transactional
     public ArticleLikeDTO toggleArticleLike(Long articleId, Member member) {
+        for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
+            try {
+                return processLikeToggle(articleId, member);
+            } catch (OptimisticLockException e) {
+                handleRetry(attempt, e);
+            }
+        }
+        throw new CustomOptimisticLockException("최대 재시도 횟수 이후 업데이트에 실패했습니다.");
+    }
+
+    private ArticleLikeDTO processLikeToggle(Long articleId, Member member) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        Optional<ArticleLike> like = articleLikeRepository.findByMemberAndArticle(member, article);
-        ArticleStatistic articleStatistic = articleStatisticRepository.findByArticle(article)
-                .orElseGet(() -> new ArticleStatistic(article));
+        ArticleStatistic statistic = getOrCreateStatistic(article);
+        boolean isLiked = updateLikes(member, article, statistic);
 
-        boolean isLiked = isLiked(member, article, like, articleStatistic);
-        articleStatisticRepository.save(articleStatistic);
-        return new ArticleLikeDTO(isLiked, articleStatistic.getLikes());
+        articleStatisticRepository.saveAndFlush(statistic);
+        return new ArticleLikeDTO(isLiked, statistic.getLikes());
     }
 
-    private boolean isLiked(Member member, Article article,
-                            Optional<ArticleLike> like, ArticleStatistic articleStatistic) {
-        boolean isLiked;
-        if (like.isPresent()) {
-            articleLikeRepository.delete(like.get());
-            articleStatistic.decrementLikes();
-            isLiked = false;
+    private ArticleStatistic getOrCreateStatistic(Article article) {
+        return articleStatisticRepository.findByArticle(article)
+                .orElseGet(() -> new ArticleStatistic(article));
+    }
+
+    private boolean updateLikes(Member member, Article article, ArticleStatistic statistic) {
+        Optional<ArticleLike> existingLike = articleLikeRepository.findByMemberAndArticle(member, article);
+        if (existingLike.isPresent()) {
+            // 좋아요가 이미 존재하는 경우, 좋아요를 제거하고 likes 카운트 감소
+            articleLikeRepository.delete(existingLike.get());
+            statistic.decrementLikes();
+            return false;
         } else {
-            ArticleLike newLike = new ArticleLike(member, article);
-            articleLikeRepository.save(newLike);
-            articleStatistic.incrementLikes();
-            isLiked = true;
+            // 좋아요가 존재하지 않는 경우, 새로운 좋아요를 추가하고 likes 카운트 증가
+            articleLikeRepository.save(new ArticleLike(member, article));
+            statistic.incrementLikes();
+            return true;
         }
-        return isLiked;
+    }
+
+    private void handleRetry(int attempt, OptimisticLockException e) {
+        if (attempt >= MAX_RETRIES - 1) {
+            log.error("좋아요 토글에 도달한 최대 재시도 횟수 입니다: ", e);
+            throw e;
+        }
+
+        log.info("좋아요 토글 재시도 {}/{}", attempt + 1, MAX_RETRIES);
+        try {
+            Thread.sleep(100); // 재시도 방지하기 위한 짧은 지연
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("재시도 중 스레드가 중단되었습니다.", ie);
+        }
     }
 
     @Transactional(readOnly = true)
