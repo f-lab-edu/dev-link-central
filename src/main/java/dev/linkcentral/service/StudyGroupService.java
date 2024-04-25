@@ -36,6 +36,9 @@ public class StudyGroupService {
 
     @Transactional
     public StudyGroup createStudyGroup(String groupName, String studyTopic, Long leaderId) {
+        Member leader = memberRepository.findById(leaderId)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
+
         StudyGroup studyGroup = StudyGroup.builder()
                 .groupName(groupName)
                 .studyTopic(studyTopic)
@@ -44,9 +47,6 @@ public class StudyGroupService {
                 .build();
 
         StudyGroup savedStudyGroup = studyGroupRepository.save(studyGroup);
-
-        Member leader = memberRepository.findById(leaderId)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
 
         StudyMember studyMember = StudyMember.builder()
                 .member(leader)
