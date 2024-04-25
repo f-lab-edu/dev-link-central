@@ -30,7 +30,7 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	implementation 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	// queryDSL 설정
@@ -82,6 +82,9 @@ dependencies {
 
 	// AWS (S3)
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// Swagger
+	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 }
 
 
