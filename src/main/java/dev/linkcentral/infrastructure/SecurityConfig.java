@@ -1,5 +1,6 @@
 package dev.linkcentral.infrastructure;
 
+import dev.linkcentral.database.entity.MemberStatus;
 import dev.linkcentral.infrastructure.jwt.JwtAuthenticationFilter;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class SecurityConfig {
                         "/api/v1/profile/**",
                         "/api/v1/friends/**",
                         "/api/v1/study-group/**"
-                ).hasAuthority("USER") // `USER` 권한을 가진 사용자만 접근 가능하도록 설정
+                ).hasAuthority(String.valueOf(MemberStatus.USER)) // `USER` 권한을 가진 사용자만 접근 가능하도록 설정
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

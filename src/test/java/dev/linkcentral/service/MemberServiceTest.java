@@ -4,6 +4,7 @@ import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.MemberStatus;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
@@ -46,7 +47,7 @@ public class MemberServiceTest {
                 "john.doe@example.com",
                 "securePassword123",
                 "johndoe",
-                Collections.singletonList("USER"));
+                Collections.singletonList(String.valueOf(MemberStatus.USER)));
     }
 
     private Member createTestMember() {
@@ -55,7 +56,7 @@ public class MemberServiceTest {
                 "hashed_password",
                 "john.doe@example.com",
                 "johndoe",
-                Collections.singletonList("USER"), false);
+                Collections.singletonList(String.valueOf(MemberStatus.USER)), false);
     }
 
     @DisplayName("회원 가입시 데이터베이스 저장 검증")

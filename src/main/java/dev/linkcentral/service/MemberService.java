@@ -5,6 +5,7 @@ import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.MemberStatus;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
@@ -100,7 +101,7 @@ public class MemberService {
 
         try {
             List<String> roles = new ArrayList<>();
-            roles.add("USER");
+            roles.add(String.valueOf(MemberStatus.USER));
             Member memberEntity = memberMapper.createMemberFromDTO(memberDTO, roles);
             return memberRepository.save(memberEntity);
         } catch (Exception e) {

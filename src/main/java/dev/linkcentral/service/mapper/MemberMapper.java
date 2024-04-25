@@ -1,6 +1,7 @@
 package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.MemberStatus;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.dto.MemberEditDTO;
 import dev.linkcentral.presentation.dto.MemberInfoDTO;
@@ -53,7 +54,7 @@ public class MemberMapper {
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .nickname(request.getNickname())
-                .roles(Collections.singletonList("USER"))
+                .roles(Collections.singletonList(String.valueOf(MemberStatus.USER)))
                 .build();
     }
 
