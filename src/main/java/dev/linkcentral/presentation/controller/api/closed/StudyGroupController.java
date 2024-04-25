@@ -3,16 +3,16 @@ package dev.linkcentral.presentation.controller.api.closed;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
+import dev.linkcentral.presentation.dto.StudyGroupIdsDTO;
 import dev.linkcentral.presentation.dto.request.StudyGroupInfoRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupWithMembersRequest;
 import dev.linkcentral.presentation.dto.request.StudyMemberRequest;
 import dev.linkcentral.presentation.dto.response.StudyGroupCreateResponse;
 import dev.linkcentral.presentation.dto.response.StudyGroupDetailsResponse;
-import dev.linkcentral.service.ArticleService;
-import dev.linkcentral.service.MemberService;
-import dev.linkcentral.service.StudyGroupService;
-import dev.linkcentral.service.StudyMemberService;
+import dev.linkcentral.presentation.dto.response.StudyGroupIdsResponse;
+import dev.linkcentral.service.facade.StudyGroupFacade;
+import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
@@ -32,16 +33,14 @@ import java.util.List;
 @RequestMapping("/api/v1/study-group")
 public class StudyGroupController {
 
-    private final MemberService memberService;
-    private final ArticleService articleService;
-    private final StudyGroupService studyGroupService;
-    private final StudyMemberService studyMemberService;
+    private final StudyGroupFacade studyGroupFacade;
+    private final StudyGroupMapper studyGroupMapper;
 
     @GetMapping("/study-group-id")
-    public ResponseEntity<List<Long>> getStudyGroupIdsForMember() {
-        Member member = memberService.getCurrentMember();
-        List<Long> studyGroupIds = studyMemberService.getStudyGroupIdsByMemberId(member.getId());
-        return ResponseEntity.ok(studyGroupIds);
+    public ResponseEntity<StudyGroupIdsResponse> getStudyGroupIdsForMember() {
+        StudyGroupIdsDTO studyGroupIdsDTO = studyGroupFacade.getStudyGroupIdsForMember();
+        StudyGroupIdsResponse response = studyGroupMapper.toStudyGroupIdsResponse(studyGroupIdsDTO);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/auth/member-info")
@@ -85,11 +84,11 @@ public class StudyGroupController {
     }
 
     @PostMapping
-    public ResponseEntity<StudyGroupCreateResponse> createStudyGroup(@RequestBody StudyGroupRequest studyGroupDto) {
+    public ResponseEntity<StudyGroupCreateResponse> createStudyGroup(@Validated @RequestBody StudyGroupRequest studyGroupRequest) {
         Member currentMember = memberService.getCurrentMember();
         StudyGroup studyGroup = studyGroupService.createStudyGroup(
-                studyGroupDto.getGroupName(),
-                studyGroupDto.getStudyTopic(),
+                studyGroupRequest.getGroupName(),
+                studyGroupRequest.getStudyTopic(),
                 currentMember.getId());
 
         StudyGroupCreateResponse studyGroupResponse = new StudyGroupCreateResponse(

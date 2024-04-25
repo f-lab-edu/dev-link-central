@@ -107,9 +107,9 @@
                 url: "/api/v1/study-group/study-group-id",
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                 type: "GET",
-                success: function(data) {
+                success: function(response) {
                     var listHtml = '<ul>';
-                    $.each(data, function(index, studyGroupId) {
+                    $.each(response.studyGroupIds, function(index, studyGroupId) {
                         GroupId = studyGroupId;
                         listHtml += '<li>스터디 그룹 ID: ' + studyGroupId + '</li>';
                     });
