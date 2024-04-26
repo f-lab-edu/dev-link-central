@@ -3,14 +3,18 @@ package dev.linkcentral.presentation.controller.api.closed;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
+import dev.linkcentral.presentation.dto.StudyGroupDeletionDTO;
 import dev.linkcentral.presentation.dto.StudyGroupIdsDTO;
+import dev.linkcentral.presentation.dto.StudyGroupMemberInfoDTO;
 import dev.linkcentral.presentation.dto.request.StudyGroupInfoRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupWithMembersRequest;
 import dev.linkcentral.presentation.dto.request.StudyMemberRequest;
-import dev.linkcentral.presentation.dto.response.StudyGroupCreateResponse;
-import dev.linkcentral.presentation.dto.response.StudyGroupDetailsResponse;
-import dev.linkcentral.presentation.dto.response.StudyGroupIdsResponse;
+import dev.linkcentral.presentation.dto.response.*;
+import dev.linkcentral.service.ArticleService;
+import dev.linkcentral.service.MemberService;
+import dev.linkcentral.service.StudyGroupService;
+import dev.linkcentral.service.StudyMemberService;
 import dev.linkcentral.service.facade.StudyGroupFacade;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
@@ -44,43 +48,17 @@ public class StudyGroupController {
     }
 
     @GetMapping("/auth/member-info")
-    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Member member = memberService.getCurrentMember();
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
-        }
-        return ResponseEntity.ok(Collections.singletonMap("memberId", member.getId()));
+    public ResponseEntity<StudyGroupMemberInfoResponse> getCurrentMemberInfo() {
+        StudyGroupMemberInfoDTO memberInfoDTO = studyGroupFacade.getCurrentMemberInfo();
+        StudyGroupMemberInfoResponse response = studyGroupMapper.toStudyGroupMemberResponse(memberInfoDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{studyGroupId}/leave")
-    public ResponseEntity<?> leaveStudyGroup(@PathVariable Long studyGroupId,
-                                             @AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Member currentMember = memberService.getCurrentMember();
-        StudyGroup studyGroup = studyGroupService.getStudyGroupById(studyGroupId);
-
-        if (studyGroup == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("스터디 그룹을 찾을 수 없습니다.");
-        }
-
-        if (studyGroup.getStudyLeaderId().equals(currentMember.getId())) {
-            studyMemberService.removeAllMembersByStudyGroupId(studyGroupId);
-            studyGroupService.deleteStudyGroup(studyGroupId, currentMember.getId());
-            return ResponseEntity.ok().body("스터디 그룹이 삭제되었습니다.");
-        }
-
-        boolean isLeft = studyGroupService.leaveStudyGroupAsMember(studyGroupId, currentMember.getId());
-        if (isLeft) {
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().body("스터디 그룹 또는 멤버를 찾을 수 없습니다.");
+    public ResponseEntity<StudyGroupDeletionResponse> leaveStudyGroup(@PathVariable Long studyGroupId) {
+        StudyGroupDeletionDTO studyGroupDeletionDTO = studyGroupFacade.removeStudyGroupAsLeader(studyGroupId);
+        StudyGroupDeletionResponse response = studyGroupMapper.toStudyGroupDeletionResponse(studyGroupDeletionDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping

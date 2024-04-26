@@ -201,13 +201,17 @@
                     url: "/api/v1/study-group/" + studyGroupId + "/leave",
                     type: "DELETE",
                     headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                    success: function() {
-                        alert("스터디 그룹에서 탈퇴했습니다.");
-                        loadAcceptedStudyGroups();
-                        window.location.reload();
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            loadAcceptedStudyGroups();
+                            window.location.reload();
+                        } else {
+                            alert("스터디 그룹을 탈퇴하지 못했습니다.: " + response.message);
+                        }
                     },
-                    error: function(xhr, status, error) {
-                        alert("탈퇴 처리에 실패했습니다: " + xhr.responseText);
+                    error: function(xhr) {
+                        alert("스터디 그룹을 떠나는 중 오류 발생: " + xhr.responseText);
                     }
                 });
             });
