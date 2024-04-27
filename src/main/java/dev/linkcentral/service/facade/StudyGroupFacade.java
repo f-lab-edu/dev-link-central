@@ -106,4 +106,21 @@ public class StudyGroupFacade {
     public List<StudyGroupMembersDetailDTO> getStudyGroupsAndMembers(Long userId) {
         return studyGroupService.getStudyGroupsAndMembers(userId);
     }
+
+    public void expelStudyGroupMember(Long groupId, Long memberId) {
+        Member currentMember = memberService.getCurrentMember();
+        studyGroupService.expelMember(groupId, memberId, currentMember.getId());
+    }
+
+    public void rejectStudyGroupJoinRequest(Long studyGroupId, Long requestId) {
+        studyMemberService.rejectJoinRequest(studyGroupId, requestId);
+    }
+
+    public void acceptStudyGroupJoinRequest(Long studyGroupId, Long requestId) {
+        studyMemberService.acceptJoinRequest(studyGroupId, requestId);
+    }
+
+    public void requestJoinStudyGroup(Long studyGroupId) {
+        studyMemberService.requestJoinStudyGroup(studyGroupId);
+    }
 }

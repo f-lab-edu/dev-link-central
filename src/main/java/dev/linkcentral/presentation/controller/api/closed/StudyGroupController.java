@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
-import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
 import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
@@ -10,13 +9,10 @@ import dev.linkcentral.service.facade.StudyGroupFacade;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
@@ -68,7 +64,7 @@ public class StudyGroupController {
 
     @PostMapping("/{studyGroupId}/join-requests")
     public ResponseEntity<Void> requestJoinStudyGroup(@PathVariable Long studyGroupId) {
-        studyMemberService.requestJoinStudyGroup(studyGroupId);
+        studyGroupFacade.requestJoinStudyGroup(studyGroupId);
         return ResponseEntity.ok().build();
     }
 
@@ -81,13 +77,13 @@ public class StudyGroupController {
 
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/accept")
     public ResponseEntity<Void> acceptJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
-        studyMemberService.acceptJoinRequest(studyGroupId, requestId);
+        studyGroupFacade.acceptStudyGroupJoinRequest(studyGroupId, requestId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/reject")
     public ResponseEntity<Void> rejectJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
-        studyMemberService.rejectJoinRequest(studyGroupId, requestId);
+        studyGroupFacade.rejectStudyGroupJoinRequest(studyGroupId, requestId);
         return ResponseEntity.ok().build();
     }
 
@@ -113,14 +109,9 @@ public class StudyGroupController {
     }
 
     @DeleteMapping("/{groupId}/members/{memberId}/expel")
-    public ResponseEntity<?> expelMember(@PathVariable Long groupId, @PathVariable Long memberId) {
-        try {
-            Member currentMember = memberService.getCurrentMember();
-            studyGroupService.expelMember(groupId, memberId, currentMember.getId());
-            return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException | AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<?> expelStudyGroupMember(@PathVariable Long groupId, @PathVariable Long memberId) {
+        studyGroupFacade.expelStudyGroupMember(groupId, memberId);
+        return ResponseEntity.ok().build();
     }
 
 }
