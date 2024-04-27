@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
-import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
 import dev.linkcentral.presentation.dto.*;
@@ -67,21 +66,9 @@ public class StudyGroupController {
 
     @GetMapping("/details/{articleId}")
     public ResponseEntity<StudyGroupDetailsResponse> getStudyGroupDetails(@PathVariable Long articleId) {
-        Member currentMember = memberService.getCurrentMember();
-
-        Article article = articleService.getArticleById(articleId);
-        StudyGroup studyGroup = studyGroupService.findStudyGroupByLeaderId(article.getMember().getId());
-
-        boolean isLeader = studyGroup.getStudyLeaderId().equals(currentMember.getId());
-
-        StudyGroupDetailsResponse responseDTO = StudyGroupDetailsResponse.builder()
-                .id(studyGroup.getId())
-                .groupName(studyGroup.getGroupName())
-                .studyTopic(studyGroup.getStudyTopic())
-                .leaderStatus(isLeader)
-                .build();
-
-        return ResponseEntity.ok(responseDTO);
+        StudyGroupDetailsDTO studyGroupDetailsDTO = studyGroupFacade.getStudyGroupDetails(articleId);
+        StudyGroupDetailsResponse response = studyGroupMapper.toStudyGroupDetailsResponse(studyGroupDetailsDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{studyGroupId}/join-requests")

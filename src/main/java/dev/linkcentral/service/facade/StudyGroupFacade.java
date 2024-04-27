@@ -1,5 +1,6 @@
 package dev.linkcentral.service.facade;
 
+import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
 import dev.linkcentral.presentation.dto.*;
@@ -67,4 +68,13 @@ public class StudyGroupFacade {
         return studyGroupMapper.toStudyGroupRegistrationDTO(studyGroup);
     }
 
+    public StudyGroupDetailsDTO getStudyGroupDetails(Long articleId) {
+        Member currentMember = memberService.getCurrentMember();
+        Article article = articleService.getArticleById(articleId);
+
+        StudyGroup studyGroup = studyGroupService.findStudyGroupByLeaderId(article.getMember().getId());
+        boolean isLeader = studyGroup.getStudyLeaderId().equals(currentMember.getId());
+
+        return studyGroupMapper.toStudyGroupDetailsDTO(studyGroup, isLeader);
+    }
 }

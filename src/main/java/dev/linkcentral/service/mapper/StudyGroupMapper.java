@@ -4,10 +4,7 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
 import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
-import dev.linkcentral.presentation.dto.response.StudyGroupCreateResponse;
-import dev.linkcentral.presentation.dto.response.StudyGroupDeletionResponse;
-import dev.linkcentral.presentation.dto.response.StudyGroupIdsResponse;
-import dev.linkcentral.presentation.dto.response.StudyGroupMemberInfoResponse;
+import dev.linkcentral.presentation.dto.response.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -61,5 +58,23 @@ public class StudyGroupMapper {
                 registrationDTO.getId(),
                 registrationDTO.getGroupName(),
                 registrationDTO.getStudyTopic());
+    }
+
+    public StudyGroupDetailsDTO toStudyGroupDetailsDTO(StudyGroup studyGroup, boolean isLeader) {
+        return StudyGroupDetailsDTO.builder()
+                .id(studyGroup.getId())
+                .groupName(studyGroup.getGroupName())
+                .studyTopic(studyGroup.getStudyTopic())
+                .leaderStatus(isLeader)
+                .build();
+    }
+
+    public StudyGroupDetailsResponse toStudyGroupDetailsResponse(StudyGroupDetailsDTO studyGroup) {
+        return StudyGroupDetailsResponse.builder()
+                .id(studyGroup.getId())
+                .groupName(studyGroup.getGroupName())
+                .studyTopic(studyGroup.getStudyTopic())
+                .leaderStatus(studyGroup.isLeaderStatus())
+                .build();
     }
 }
