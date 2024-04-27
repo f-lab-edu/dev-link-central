@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyGroupInfoRequest {
+public class AcceptedStudyGroupDetailsDTO {
 
     private Long id;
     private String groupName;

@@ -8,7 +8,7 @@ import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.StudyGroupRepository;
 import dev.linkcentral.database.repository.StudyMemberRepository;
 import dev.linkcentral.presentation.dto.request.MemberRequest;
-import dev.linkcentral.presentation.dto.request.StudyGroupInfoRequest;
+import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
 import dev.linkcentral.presentation.dto.request.StudyGroupWithMembersRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -125,10 +125,10 @@ public class StudyGroupService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudyGroupInfoRequest> findAcceptedStudyGroupInfoDTOsByUserId(Long userId) {
+    public List<AcceptedStudyGroupDetailsDTO> getAcceptedGroupsByUser(Long userId) {
         List<StudyGroup> groups = findAcceptedStudyGroupsByMemberId(userId);
         return groups.stream()
-                .map(group -> new StudyGroupInfoRequest(
+                .map(group -> new AcceptedStudyGroupDetailsDTO(
                         group.getId(),
                         group.getGroupName(),
                         group.getStudyTopic()))

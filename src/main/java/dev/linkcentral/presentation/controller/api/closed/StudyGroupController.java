@@ -2,8 +2,8 @@ package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.*;
+import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
 import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
-import dev.linkcentral.presentation.dto.request.StudyGroupInfoRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupWithMembersRequest;
 import dev.linkcentral.presentation.dto.response.*;
 import dev.linkcentral.service.facade.StudyGroupFacade;
@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,23 +98,11 @@ public class StudyGroupController {
         return ResponseEntity.ok(response);
     }
 
-
-
-
-
-
-
-
     @GetMapping("/current-accepted")
-    public ResponseEntity<List<StudyGroupInfoRequest>> getCurrentUserAcceptedStudyGroups(@AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Member currentMember = memberService.getCurrentMember();
-        List<StudyGroupInfoRequest> groupInfoDTOs = studyGroupService.findAcceptedStudyGroupInfoDTOsByUserId(currentMember.getId());
-
-        return ResponseEntity.ok(groupInfoDTOs);
+    public ResponseEntity<AcceptedStudyGroupDetailsResponse> getCurrentUserAcceptedStudyGroups() {
+        List<AcceptedStudyGroupDetailsDTO> acceptedStudyGroupDetailsDTOS = studyGroupFacade.getCurrentUserAcceptedStudyGroups();
+        AcceptedStudyGroupDetailsResponse response = studyGroupMapper.toAcceptedStudyGroupDetailsResponse(acceptedStudyGroupDetailsDTOS);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user/{userId}/groups-with-members")

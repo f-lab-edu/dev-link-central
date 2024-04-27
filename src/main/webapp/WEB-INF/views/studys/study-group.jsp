@@ -229,13 +229,13 @@
                 url: "/api/v1/study-group/current-accepted",
                 type: "GET",
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                success: function(groups) {
+                success: function(response) {
                     $("#currentGroupsTable tbody").empty();
-                    if (groups.length === 0) {
+                    if (response.acceptedStudyGroupDetails.length === 0) {
                         $("#noGroupsMessage").show(); // 스터디 그룹이 없을 경우 메시지를 보여준다.
                     } else {
                         $("#noGroupsMessage").hide(); // 스터디 그룹이 있을 경우 메시지를 숨긴다.
-                        groups.forEach(function(group) {
+                        response.acceptedStudyGroupDetails.forEach(function(group) {
                             var row = $("<tr>").append(
                                 $("<td>").text(group.groupName),
                                 $("<td>").append(

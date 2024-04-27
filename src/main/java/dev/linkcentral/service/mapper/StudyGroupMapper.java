@@ -3,6 +3,7 @@ package dev.linkcentral.service.mapper;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
 import dev.linkcentral.presentation.dto.*;
+import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
 import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
 import dev.linkcentral.presentation.dto.response.*;
 import org.springframework.stereotype.Component;
@@ -98,4 +99,7 @@ public class StudyGroupMapper {
         return new StudyGroupCheckMembershipResponse(membershipDTO.isExists());
     }
 
+    public AcceptedStudyGroupDetailsResponse toAcceptedStudyGroupDetailsResponse(List<AcceptedStudyGroupDetailsDTO> groupDetailsDTOS) {
+        return new AcceptedStudyGroupDetailsResponse(groupDetailsDTOS);
+    }
 }

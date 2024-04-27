@@ -4,6 +4,7 @@ import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
 import dev.linkcentral.presentation.dto.*;
+import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.StudyGroupService;
@@ -94,6 +95,11 @@ public class StudyGroupFacade {
     public StudyGroupCheckMembershipDTO checkMembership(Long userId) {
         boolean exists = studyGroupService.checkIfUserHasStudyGroup(userId);
         return studyGroupMapper.toStudyGroupCheckMembershipDTO(exists);
+    }
+
+    public List<AcceptedStudyGroupDetailsDTO> getCurrentUserAcceptedStudyGroups() {
+        Member currentMember = memberService.getCurrentMember();
+        return studyGroupService.getAcceptedGroupsByUser(currentMember.getId());
     }
 
 }
