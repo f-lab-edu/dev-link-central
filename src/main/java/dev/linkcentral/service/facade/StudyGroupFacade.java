@@ -12,6 +12,7 @@ import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -76,5 +77,17 @@ public class StudyGroupFacade {
         boolean isLeader = studyGroup.getStudyLeaderId().equals(currentMember.getId());
 
         return studyGroupMapper.toStudyGroupDetailsDTO(studyGroup, isLeader);
+    }
+
+    public StudyGroupListJoinRequestsDTO listStudyGroupJoinRequests(Long studyGroupId) {
+        Member currentMember = memberService.getCurrentMember();
+        StudyGroup studyGroup = studyGroupService.getStudyGroupById(studyGroupId);
+
+        if (!studyGroup.getStudyLeaderId().equals(currentMember.getId())) {
+            return new StudyGroupListJoinRequestsDTO(Collections.emptyList());
+        }
+
+        List<StudyGroupJoinRequestDTO> requestDTOList = studyMemberService.listJoinRequestsForStudyGroup(studyGroupId);
+        return studyGroupMapper.toStudyGroupListJoinRequestsDTO(requestDTOList);
     }
 }

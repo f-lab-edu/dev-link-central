@@ -137,8 +137,8 @@
                 url: '/api/v1/study-group/' + groupId + '/received-requests',
                 type: 'GET',
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
-                success: function(requests) {
-                    var requestsHtml = requests.map(function(request) {
+                success: function(response) {
+                    var requestsHtml = response.studyMemberRequests.map(function(request) {
                         return '<tr>' +
                             '<td>' + request.memberName + '</td>' +
                             '<td>' + request.groupName + '</td>' +

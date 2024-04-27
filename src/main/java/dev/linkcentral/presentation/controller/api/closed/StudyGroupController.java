@@ -1,12 +1,10 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.database.entity.StudyGroup;
 import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupInfoRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupWithMembersRequest;
-import dev.linkcentral.presentation.dto.request.StudyMemberRequest;
 import dev.linkcentral.presentation.dto.response.*;
 import dev.linkcentral.service.facade.StudyGroupFacade;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
@@ -21,7 +19,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -72,27 +69,22 @@ public class StudyGroupController {
     }
 
     @PostMapping("/{studyGroupId}/join-requests")
-    public ResponseEntity<?> requestJoinStudyGroup(@PathVariable Long studyGroupId) {
+    public ResponseEntity<Void> requestJoinStudyGroup(@PathVariable Long studyGroupId) {
         studyMemberService.requestJoinStudyGroup(studyGroupId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{studyGroupId}/received-requests")
-    public ResponseEntity<?> listJoinRequests(@PathVariable Long studyGroupId,
-                                              @AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Member currentMember = memberService.getCurrentMember();
-        StudyGroup studyGroup = studyGroupService.getStudyGroupById(studyGroupId);
-        if (!studyGroup.getStudyLeaderId().equals(currentMember.getId())) {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
-
-        List<StudyMemberRequest> joinRequests = studyMemberService.listJoinRequestsForStudyGroup(studyGroupId);
-        return ResponseEntity.ok(joinRequests);
+    public ResponseEntity<StudyGroupListJoinResponse> listStudyGroupJoinRequests(@PathVariable Long studyGroupId) {
+        StudyGroupListJoinRequestsDTO listJoinRequestsDTO = studyGroupFacade.listStudyGroupJoinRequests(studyGroupId);
+        StudyGroupListJoinResponse response = studyGroupMapper.toStudyGroupListJoinResponse(listJoinRequestsDTO);
+        return ResponseEntity.ok(response);
     }
+
+
+
+
+
 
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/accept")
     public ResponseEntity<?> acceptJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {

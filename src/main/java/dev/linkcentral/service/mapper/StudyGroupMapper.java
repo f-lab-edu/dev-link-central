@@ -77,4 +77,17 @@ public class StudyGroupMapper {
                 .leaderStatus(studyGroup.isLeaderStatus())
                 .build();
     }
+
+    public StudyGroupListJoinRequestsDTO toStudyGroupListJoinRequestsDTO(List<StudyGroupJoinRequestDTO> joinRequests) {
+        return StudyGroupListJoinRequestsDTO.builder()
+                .studyMemberRequests(joinRequests)
+                .build();
+    }
+
+    public StudyGroupListJoinResponse toStudyGroupListJoinResponse(StudyGroupListJoinRequestsDTO listJoinRequestsDTO) {
+        return StudyGroupListJoinResponse.builder()
+                .studyMemberRequests(listJoinRequestsDTO.getStudyMemberRequests())
+                .build();
+    }
+
 }
