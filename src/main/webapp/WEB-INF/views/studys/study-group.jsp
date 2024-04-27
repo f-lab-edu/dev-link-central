@@ -280,8 +280,10 @@
                 url: "/api/v1/study-group/user/" + userId + "/groups-with-members",
                 type: 'GET',
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
-                success: function(groupsAndMembers) {
+                success: function(response) {
+                    var groupsAndMembers = response.groupMembersDetailDTOS;
                     var contentHtml = '';
+
                     groupsAndMembers.forEach(function(group) {
                         contentHtml += '<div class="study-group">';
                         contentHtml += '<h3>' + group.groupName + '</h3>';
@@ -325,7 +327,7 @@
                     $('#studyGroupsAndMembers').html(contentHtml);
                 },
                 error: function(xhr, status, error) {
-                    console.error("Failed to load study groups and members", status, error);
+                    console.error("스터디 그룹 및 구성원을 로드하지 못했습니다.", status, error, xhr.responseText);
                 }
             });
         });

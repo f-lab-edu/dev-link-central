@@ -4,7 +4,7 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
 import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
-import dev.linkcentral.presentation.dto.request.StudyGroupWithMembersRequest;
+import dev.linkcentral.presentation.dto.request.StudyGroupMembersDetailDTO;
 import dev.linkcentral.presentation.dto.response.*;
 import dev.linkcentral.service.facade.StudyGroupFacade;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
@@ -106,9 +106,10 @@ public class StudyGroupController {
     }
 
     @GetMapping("/user/{userId}/groups-with-members")
-    public ResponseEntity<?> getStudyGroupsAndMembers(@PathVariable Long userId) {
-        List<StudyGroupWithMembersRequest> groupsAndMembers = studyGroupService.getStudyGroupsAndMembers(userId);
-        return ResponseEntity.ok(groupsAndMembers);
+    public ResponseEntity<StudyGroupMembersDetailResponse> getStudyGroupsAndMembers(@PathVariable Long userId) {
+        List<StudyGroupMembersDetailDTO> groupMembersDetailDTOS = studyGroupFacade.getStudyGroupsAndMembers(userId);
+        StudyGroupMembersDetailResponse response = studyGroupMapper.toStudyGroupMembersDetailResponse(groupMembersDetailDTOS);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{groupId}/members/{memberId}/expel")

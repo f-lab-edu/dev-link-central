@@ -5,6 +5,7 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
 import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
+import dev.linkcentral.presentation.dto.request.StudyGroupMembersDetailDTO;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.StudyGroupService;
@@ -102,4 +103,7 @@ public class StudyGroupFacade {
         return studyGroupService.getAcceptedGroupsByUser(currentMember.getId());
     }
 
+    public List<StudyGroupMembersDetailDTO> getStudyGroupsAndMembers(Long userId) {
+        return studyGroupService.getStudyGroupsAndMembers(userId);
+    }
 }
