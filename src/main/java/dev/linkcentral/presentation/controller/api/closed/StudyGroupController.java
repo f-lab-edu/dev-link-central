@@ -81,28 +81,31 @@ public class StudyGroupController {
         return ResponseEntity.ok(response);
     }
 
-
-
-
-
-
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/accept")
-    public ResponseEntity<?> acceptJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
+    public ResponseEntity<Void> acceptJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
         studyMemberService.acceptJoinRequest(studyGroupId, requestId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/reject")
-    public ResponseEntity<?> rejectJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
+    public ResponseEntity<Void> rejectJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
         studyMemberService.rejectJoinRequest(studyGroupId, requestId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/exists")
-    public ResponseEntity<Boolean> checkIfUserHasStudyGroup(@RequestParam Long userId) {
-        boolean exists = studyGroupService.checkIfUserHasStudyGroup(userId);
-        return ResponseEntity.ok(exists);
+    public ResponseEntity<StudyGroupCheckMembershipResponse> checkIfUserHasStudyGroup(@RequestParam Long userId) {
+        StudyGroupCheckMembershipDTO membershipDTO = studyGroupFacade.checkMembership(userId);
+        StudyGroupCheckMembershipResponse response = studyGroupMapper.toStudyGroupCheckMembershipResponse(membershipDTO);
+        return ResponseEntity.ok(response);
     }
+
+
+
+
+
+
+
 
     @GetMapping("/current-accepted")
     public ResponseEntity<List<StudyGroupInfoRequest>> getCurrentUserAcceptedStudyGroups(@AuthenticationPrincipal UserDetails userDetails) {

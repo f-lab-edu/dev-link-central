@@ -257,8 +257,8 @@
                 url: "/api/v1/study-group/exists?userId=" + userId,
                 type: "GET",
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                success: function(exists) {
-                    if (exists) {
+                success: function(response) {
+                    if (response.exists) {
                         $("#createStudyGroupButton").hide();
                         $("#alreadyCreatedMessage").show();
                     } else {
@@ -272,29 +272,6 @@
             });
         }
     </script>
-
-    <script>
-        function checkStudyGroupExists(userId) {
-            $.ajax({
-                url: "/api/v1/study-group/exists?userId=" + userId,
-                type: "GET",
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                success: function(isStudyGroupCreated) {
-                    if(isStudyGroupCreated) {
-                        $("#createStudyGroupButton").hide();
-                        $("#alreadyCreatedMessage").show();
-                    } else {
-                        $("#createStudyGroupButton").show();
-                        $("#alreadyCreatedMessage").hide();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("스터디 그룹 존재 여부 확인 중 에러 발생: ", status, error);
-                }
-            });
-        }
-    </script>
-
 
     <script>
         $(document).ready(function() {

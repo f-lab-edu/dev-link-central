@@ -90,4 +90,10 @@ public class StudyGroupFacade {
         List<StudyGroupJoinRequestDTO> requestDTOList = studyMemberService.listJoinRequestsForStudyGroup(studyGroupId);
         return studyGroupMapper.toStudyGroupListJoinRequestsDTO(requestDTOList);
     }
+
+    public StudyGroupCheckMembershipDTO checkMembership(Long userId) {
+        boolean exists = studyGroupService.checkIfUserHasStudyGroup(userId);
+        return studyGroupMapper.toStudyGroupCheckMembershipDTO(exists);
+    }
+
 }

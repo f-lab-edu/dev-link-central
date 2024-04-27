@@ -90,4 +90,12 @@ public class StudyGroupMapper {
                 .build();
     }
 
+    public StudyGroupCheckMembershipDTO toStudyGroupCheckMembershipDTO(boolean exists) {
+        return new StudyGroupCheckMembershipDTO(exists);
+    }
+
+    public StudyGroupCheckMembershipResponse toStudyGroupCheckMembershipResponse(StudyGroupCheckMembershipDTO membershipDTO) {
+        return new StudyGroupCheckMembershipResponse(membershipDTO.isExists());
+    }
+
 }
