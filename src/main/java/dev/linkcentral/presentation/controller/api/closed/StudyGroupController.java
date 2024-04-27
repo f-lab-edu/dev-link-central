@@ -3,18 +3,12 @@ package dev.linkcentral.presentation.controller.api.closed;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
-import dev.linkcentral.presentation.dto.StudyGroupDeletionDTO;
-import dev.linkcentral.presentation.dto.StudyGroupIdsDTO;
-import dev.linkcentral.presentation.dto.StudyGroupMemberInfoDTO;
+import dev.linkcentral.presentation.dto.*;
+import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupInfoRequest;
-import dev.linkcentral.presentation.dto.request.StudyGroupRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupWithMembersRequest;
 import dev.linkcentral.presentation.dto.request.StudyMemberRequest;
 import dev.linkcentral.presentation.dto.response.*;
-import dev.linkcentral.service.ArticleService;
-import dev.linkcentral.service.MemberService;
-import dev.linkcentral.service.StudyGroupService;
-import dev.linkcentral.service.StudyMemberService;
 import dev.linkcentral.service.facade.StudyGroupFacade;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
@@ -62,18 +56,13 @@ public class StudyGroupController {
     }
 
     @PostMapping
-    public ResponseEntity<StudyGroupCreateResponse> createStudyGroup(@Validated @RequestBody StudyGroupRequest studyGroupRequest) {
-        Member currentMember = memberService.getCurrentMember();
-        StudyGroup studyGroup = studyGroupService.createStudyGroup(
-                studyGroupRequest.getGroupName(),
-                studyGroupRequest.getStudyTopic(),
-                currentMember.getId());
+    public ResponseEntity<StudyGroupCreateResponse> createStudyGroup(
+            @Validated @RequestBody StudyGroupCreateRequest studyGroupCreateRequest) {
 
-        StudyGroupCreateResponse studyGroupResponse = new StudyGroupCreateResponse(
-                studyGroup.getId(),
-                studyGroup.getGroupName(),
-                studyGroup.getStudyTopic());
-        return ResponseEntity.ok(studyGroupResponse);
+        StudyGroupCreateDTO studyGroupCreateDTO = studyGroupMapper.toStudyGroupCreateDTO(studyGroupCreateRequest);
+        StudyGroupRegistrationDTO registrationDTO = studyGroupFacade.createStudyGroup(studyGroupCreateDTO);
+        StudyGroupCreateResponse response = studyGroupMapper.toStudyGroupCreateResponse(registrationDTO);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/details/{articleId}")

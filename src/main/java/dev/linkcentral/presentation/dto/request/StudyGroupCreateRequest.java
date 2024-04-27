@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyGroupRequest {
+public class StudyGroupCreateRequest {
 
     @ApiModelProperty(value = "스터디 그룹의 이름", required = true)
     @NotBlank(message = "그룹 이름은 필수 입력 항목입니다.")

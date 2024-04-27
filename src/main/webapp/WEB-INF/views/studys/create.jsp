@@ -36,7 +36,7 @@
                         studyTopic: studyTopic
                     }),
                     success: function(response) {
-                        alert('스터디 그룹이 생성되었습니다.');
+                        alert('스터디 그룹이 성공적으로 생성되었습니다. 스터디 그룹 ID: ' + response.id);
                         StudyGroupMember();
                     },
                     error: function(xhr, status, error) {

@@ -2,9 +2,7 @@ package dev.linkcentral.service.facade;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
-import dev.linkcentral.presentation.dto.StudyGroupDeletionDTO;
-import dev.linkcentral.presentation.dto.StudyGroupIdsDTO;
-import dev.linkcentral.presentation.dto.StudyGroupMemberInfoDTO;
+import dev.linkcentral.presentation.dto.*;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.StudyGroupService;
@@ -60,5 +58,13 @@ public class StudyGroupFacade {
         return studyGroupMapper.toStudyGroupDeletionDTO(false, "스터디 그룹 또는 멤버를 찾을 수 없습니다.");
     }
 
+    public StudyGroupRegistrationDTO createStudyGroup(StudyGroupCreateDTO studyGroupCreateDTO) {
+        Member currentMember = memberService.getCurrentMember();
+        StudyGroup studyGroup = studyGroupService.createStudyGroup(
+                studyGroupCreateDTO.getGroupName(),
+                studyGroupCreateDTO.getStudyTopic(),
+                currentMember.getId());
+        return studyGroupMapper.toStudyGroupRegistrationDTO(studyGroup);
+    }
 
 }

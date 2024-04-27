@@ -1,9 +1,10 @@
 package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.presentation.dto.StudyGroupDeletionDTO;
-import dev.linkcentral.presentation.dto.StudyGroupIdsDTO;
-import dev.linkcentral.presentation.dto.StudyGroupMemberInfoDTO;
+import dev.linkcentral.database.entity.StudyGroup;
+import dev.linkcentral.presentation.dto.*;
+import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
+import dev.linkcentral.presentation.dto.response.StudyGroupCreateResponse;
 import dev.linkcentral.presentation.dto.response.StudyGroupDeletionResponse;
 import dev.linkcentral.presentation.dto.response.StudyGroupIdsResponse;
 import dev.linkcentral.presentation.dto.response.StudyGroupMemberInfoResponse;
@@ -40,5 +41,25 @@ public class StudyGroupMapper {
         return new StudyGroupDeletionResponse(
                 dto.isSuccess(),
                 dto.getMessage());
+    }
+
+    public StudyGroupCreateDTO toStudyGroupCreateDTO(StudyGroupCreateRequest studyGroupCreateRequest) {
+        return new StudyGroupCreateDTO(
+                studyGroupCreateRequest.getGroupName(),
+                studyGroupCreateRequest.getStudyTopic());
+    }
+
+    public StudyGroupRegistrationDTO toStudyGroupRegistrationDTO(StudyGroup studyGroup) {
+        return new StudyGroupRegistrationDTO(
+                studyGroup.getId(),
+                studyGroup.getGroupName(),
+                studyGroup.getStudyTopic());
+    }
+
+    public StudyGroupCreateResponse toStudyGroupCreateResponse(StudyGroupRegistrationDTO registrationDTO) {
+        return new StudyGroupCreateResponse(
+                registrationDTO.getId(),
+                registrationDTO.getGroupName(),
+                registrationDTO.getStudyTopic());
     }
 }
