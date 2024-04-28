@@ -2,10 +2,10 @@ package dev.linkcentral.presentation.controller.view;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.infrastructure.SecurityUtils;
-import dev.linkcentral.presentation.dto.ArticleCommentViewDTO;
-import dev.linkcentral.presentation.dto.ArticleDetailsDTO;
-import dev.linkcentral.presentation.dto.ArticleViewDTO;
-import dev.linkcentral.presentation.dto.response.article.ArticleCommentPageResponse;
+import dev.linkcentral.service.dto.ArticleCommentViewDTO;
+import dev.linkcentral.service.dto.ArticleDetailsDTO;
+import dev.linkcentral.service.dto.ArticleViewDTO;
+import dev.linkcentral.presentation.response.article.ArticleCommentPageResponse;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.mapper.ArticleCommentMapper;

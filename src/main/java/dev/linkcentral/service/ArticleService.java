@@ -3,7 +3,7 @@ package dev.linkcentral.service;
 import dev.linkcentral.common.exception.CustomOptimisticLockException;
 import dev.linkcentral.database.entity.*;
 import dev.linkcentral.database.repository.*;
-import dev.linkcentral.presentation.dto.*;
+import dev.linkcentral.service.dto.*;
 import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;

@@ -1,13 +1,13 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.presentation.dto.MemberEditDTO;
-import dev.linkcentral.presentation.dto.MemberInfoDTO;
-import dev.linkcentral.presentation.dto.request.member.MemberDeleteRequest;
-import dev.linkcentral.presentation.dto.request.member.MemberEditRequest;
-import dev.linkcentral.presentation.dto.response.member.MemberDeleteResponse;
-import dev.linkcentral.presentation.dto.response.member.MemberEditResponse;
-import dev.linkcentral.presentation.dto.response.member.MemberInfoResponse;
+import dev.linkcentral.service.dto.MemberEditDTO;
+import dev.linkcentral.service.dto.MemberInfoDTO;
+import dev.linkcentral.presentation.request.member.MemberDeleteRequest;
+import dev.linkcentral.presentation.request.member.MemberEditRequest;
+import dev.linkcentral.presentation.response.member.MemberDeleteResponse;
+import dev.linkcentral.presentation.response.member.MemberEditResponse;
+import dev.linkcentral.presentation.response.member.MemberInfoResponse;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;

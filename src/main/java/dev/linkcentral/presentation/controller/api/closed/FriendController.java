@@ -1,12 +1,12 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
-import dev.linkcentral.presentation.dto.FriendRequestDTO;
-import dev.linkcentral.presentation.dto.FriendshipDetailDTO;
-import dev.linkcentral.presentation.dto.request.friend.FriendRequest;
-import dev.linkcentral.presentation.dto.response.friend.FriendReceivedResponse;
-import dev.linkcentral.presentation.dto.response.friend.FriendRequestResponse;
-import dev.linkcentral.presentation.dto.response.friend.FriendshipDetailResponse;
-import dev.linkcentral.presentation.dto.response.friend.FriendshipResponse;
+import dev.linkcentral.service.dto.FriendRequestDTO;
+import dev.linkcentral.service.dto.FriendshipDetailDTO;
+import dev.linkcentral.presentation.request.friend.FriendRequest;
+import dev.linkcentral.presentation.response.friend.FriendReceivedResponse;
+import dev.linkcentral.presentation.response.friend.FriendRequestResponse;
+import dev.linkcentral.presentation.response.friend.FriendshipDetailResponse;
+import dev.linkcentral.presentation.response.friend.FriendshipResponse;
 import dev.linkcentral.service.FriendService;
 import dev.linkcentral.service.mapper.FriendMapper;
 import lombok.RequiredArgsConstructor;

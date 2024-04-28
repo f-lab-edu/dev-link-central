@@ -1,10 +1,10 @@
 package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.presentation.dto.ProfileUpdateDTO;
-import dev.linkcentral.presentation.dto.request.profile.ProfileDetailsRequest;
-import dev.linkcentral.presentation.dto.response.profile.ProfileInfoResponse;
-import dev.linkcentral.presentation.dto.response.profile.ProfileUpdateResponse;
+import dev.linkcentral.service.dto.ProfileUpdateDTO;
+import dev.linkcentral.presentation.request.profile.ProfileDetailsRequest;
+import dev.linkcentral.presentation.response.profile.ProfileInfoResponse;
+import dev.linkcentral.presentation.response.profile.ProfileUpdateResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-<%@ page import="dev.linkcentral.presentation.dto.request.article.ArticleUpdateRequest" %>
+<%@ page import="dev.linkcentral.presentation.request.article.ArticleUpdateRequest" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">

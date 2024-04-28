@@ -1,9 +1,9 @@
 package dev.linkcentral.common.exception.handler;
 
 import dev.linkcentral.common.exception.*;
-import dev.linkcentral.presentation.dto.response.member.AuthenticationErrorResponse;
-import dev.linkcentral.presentation.dto.response.member.RegistrationErrorResponse;
-import dev.linkcentral.presentation.dto.response.profile.ProfileUpdateResponse;
+import dev.linkcentral.presentation.response.member.AuthenticationErrorResponse;
+import dev.linkcentral.presentation.response.member.RegistrationErrorResponse;
+import dev.linkcentral.presentation.response.profile.ProfileUpdateResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

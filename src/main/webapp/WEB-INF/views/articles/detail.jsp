@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest" %>
-<%@ page import="dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest" %>
+<%@ page import="dev.linkcentral.presentation.request.article.ArticleCreateRequest" %>
+<%@ page import="dev.linkcentral.presentation.request.article.ArticleCommentRequest" %>
 <%@ page import="java.util.List" %>
 <%@ page import="dev.linkcentral.database.entity.Member" %>
 <%@ page import="org.springframework.data.domain.Page" %>
-<%@ page import="dev.linkcentral.presentation.dto.ArticleViewDTO" %>
+<%@ page import="dev.linkcentral.service.dto.ArticleViewDTO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">

@@ -1,7 +1,7 @@
 package dev.linkcentral.presentation.controller.view;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.presentation.dto.ProfileDetailsDTO;
+import dev.linkcentral.service.dto.ProfileDetailsDTO;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.ProfileService;
 import lombok.RequiredArgsConstructor;

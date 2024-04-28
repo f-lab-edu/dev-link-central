@@ -1,13 +1,13 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.presentation.dto.*;
-import dev.linkcentral.presentation.dto.request.article.ArticleCommentRequest;
-import dev.linkcentral.presentation.dto.request.article.ArticleCreateRequest;
-import dev.linkcentral.presentation.dto.request.article.ArticleUpdateRequest;
-import dev.linkcentral.presentation.dto.response.article.*;
+import dev.linkcentral.presentation.request.article.ArticleCommentRequest;
+import dev.linkcentral.presentation.request.article.ArticleCreateRequest;
+import dev.linkcentral.presentation.request.article.ArticleUpdateRequest;
+import dev.linkcentral.presentation.response.article.*;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
+import dev.linkcentral.service.dto.*;
 import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package dev.linkcentral.presentation.controller.api.open;
 
-import dev.linkcentral.presentation.dto.ArticleDetailsDTO;
-import dev.linkcentral.presentation.dto.response.article.ArticleDetailsResponse;
+import dev.linkcentral.service.dto.ArticleDetailsDTO;
+import dev.linkcentral.presentation.response.article.ArticleDetailsResponse;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
