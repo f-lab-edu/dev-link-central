@@ -26,9 +26,6 @@ public class FriendService {
     private final MemberRepository memberRepository;
     private final FriendRepository friendRepository;
 
-    /**
-     * 친구 요청 보내기
-     */
     @Transactional
     public Long sendFriendRequest(Long senderId, Long receiverId) {
         Member sender = memberRepository.findById(senderId)
@@ -51,9 +48,6 @@ public class FriendService {
         return friendRequest.getId();
     }
 
-    /**
-     * 받은 친구 요청 목록 조회
-     */
     @Transactional(readOnly = true)
     public List<FriendRequest> getReceivedFriendRequests(Long receiverId) {
         Member receiver = memberRepository.findById(receiverId)
@@ -61,7 +55,7 @@ public class FriendService {
 
         return friendRepository.findAllByReceiverAndStatus(receiver, FriendStatus.REQUESTED).stream()
                 .map(friend -> new FriendRequest(
-                        friend.getId(), // 친구 요청의 ID 추가
+                        friend.getId(),
                         friend.getSender().getId(),
                         friend.getReceiver().getId(),
                         friend.getSender().getNickname()
@@ -69,9 +63,6 @@ public class FriendService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 친구 요청 수락
-     */
     @Transactional
     public void acceptFriendRequest(Long requestId) {
         Friend friendRequest = friendRepository.findByIdAndStatus(requestId, FriendStatus.REQUESTED)
@@ -81,9 +72,6 @@ public class FriendService {
         friendRepository.save(friendRequest);
     }
 
-    /**
-     * 친구 요청 거절
-     */
     @Transactional
     public void rejectFriendRequest(Long requestId) {
         Friend friendRequest = friendRepository.findById(requestId)
@@ -92,9 +80,6 @@ public class FriendService {
         friendRepository.delete(friendRequest);
     }
 
-    /**
-     * 친구 요청 상태 조회
-     */
     @Transactional
     public Long findFriendshipId(Long senderId, Long receiverId) {
         Member sender = memberRepository.findById(senderId)
@@ -105,12 +90,9 @@ public class FriendService {
 
         return friendRepository.findBySenderAndReceiver(sender, receiver)
                 .map(Friend::getId)
-                .orElse(null); // 이 부분을 변경
+                .orElse(null);
     }
 
-    /**
-     * 친구 관계를 끊기
-     */
     @Transactional
     public void deleteFriendship(Long friendId) {
         Friend friendship = friendRepository.findById(friendId)
@@ -124,24 +106,20 @@ public class FriendService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다."));
 
-        // 현재 멤버가 sender인 경우
         List<Friend> sentFriends = friendRepository.findBySenderAndStatus(member, FriendStatus.ACCEPTED);
         List<FriendListResponse> friendsFromSent = sentFriends.stream()
                 .map(friend -> new FriendListResponse(friend.getReceiver().getId(), friend.getReceiver().getName()))
                 .collect(Collectors.toList());
 
-        // 현재 멤버가 receiver인 경우
         List<Friend> receivedFriends = friendRepository.findByReceiverAndStatus(member, FriendStatus.ACCEPTED);
         List<FriendListResponse> friendsFromReceived = receivedFriends.stream()
                 .map(friend -> new FriendListResponse(friend.getSender().getId(), friend.getSender().getName()))
                 .collect(Collectors.toList());
 
-        // 두 목록을 합치고 중복을 제거
         return Stream.concat(friendsFromSent.stream(), friendsFromReceived.stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
-
 
     @Transactional
     public void unfriendSelected(List<Long> friendIds) {
@@ -149,7 +127,6 @@ public class FriendService {
             throw new IllegalArgumentException("친구 ID는 null이거나 비워 둘 수 없습니다.");
         }
 
-        // 각 친구 관계 ID에 대해서 삭제를 수행합니다.
         for (Long friendId : friendIds) {
             Friend friend = friendRepository.findById(friendId)
                     .orElseThrow(() -> new EntityNotFoundException("친구를 찾을 수 없습니다."));
@@ -160,17 +137,14 @@ public class FriendService {
 
     @Transactional(readOnly = true)
     public List<FriendshipDetailResponse> getFriendships(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다."));
-
         List<Friend> friendships = friendRepository.findBySenderOrReceiver(memberId);
         return friendships.stream()
                 .map(friendship -> FriendshipDetailResponse.builder()
                         .friendshipId(friendship.getId())
                         .senderId(friendship.getSender().getId())
                         .receiverId(friendship.getReceiver().getId())
-                        .senderName(friendship.getSender().getName())  // 이름을 설정
-                        .receiverName(friendship.getReceiver().getName())  // 이름을 설정
+                        .senderName(friendship.getSender().getName())
+                        .receiverName(friendship.getReceiver().getName())
                         .status(friendship.getStatus())
                         .build())
                 .collect(Collectors.toList());

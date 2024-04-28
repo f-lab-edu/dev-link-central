@@ -100,6 +100,12 @@
         #comment-write-btn:hover {
             background-color: #218838;
         }
+
+        #leaderMessage {
+            color: #007bff;
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 
     <script>
@@ -374,6 +380,59 @@
             loadComments(); // 초기 댓글 로드
         });
     </script>
+
+    <%-- 스터디 그룹 요청 함수 --%>
+    <script>
+        $(document).ready(function() {
+            // 게시글 ID를 기반으로 스터디 그룹 상세 정보를 조회하는 AJAX 요청
+            var articleId = $('#articleData').data('articleId');
+
+            $.ajax({
+                url: "/api/v1/study-group/details/" + articleId,
+                type: "GET",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function(response) {
+                    // 서버 응답에서 스터디 그룹의 이름과 주제를 표시
+                    $("#studyGroupName").text(response.groupName);
+                    $("#studyTopic").text(response.studyTopic);
+
+                    if (!response.leaderStatus) {
+                        $("#requestJoinStudyGroup").data("studyGroupId", response.id).show();
+                    } else {
+                        $("#requestJoinStudyGroup").hide();
+                        $("#leaderMessage").show(); // 메시지를 표시
+                    }
+                },
+
+                error: function(xhr, status, error) {
+                    console.error("스터디 그룹 정보 조회 실패:", status, error);
+                    $("#studyGroupSection").hide();
+                }
+            });
+
+            // 스터디 그룹 가입 요청 버튼 클릭 이벤트 처리
+            $("#requestJoinStudyGroup").click(function() {
+                var studyGroupId = $(this).data("studyGroupId");
+                console.log("--> studyGroupId: " + studyGroupId);
+
+                $.ajax({
+                    url: "/api/v1/study-group/" + studyGroupId + "/join-requests",
+                    type: "POST",
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                    },
+                    success: function(response) {
+                        alert("스터디 그룹 가입 요청이 성공적으로 전송되었습니다.");
+                    },
+                    error: function(xhr, status, error) {
+                        alert("해당 게시글 사용자가 스터디 그룹을 생성하지 않았습니다.");
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 
@@ -418,6 +477,23 @@
 <button id="likeButton" onclick="toggleLike()">좋아요</button>
 <span id="likesCount">0</span>
 
+
+<%--스터디 신청--%>
+<div id="studyGroupDetails">
+    <h2>스터디 그룹 이름: <span id="studyGroupName"></span></h2>
+    <p>스터디 주제: <span id="studyTopic"></span></p>
+    <!-- 여기에 더 많은 스터디 그룹 정보를 표시할 수 있습니다 -->
+</div>
+
+<button id="requestJoinStudyGroup">스터디 그룹 가입 요청</button>
+
+
+<div id="articleData" data-article-id="<%= article.getId() %>"></div>
+
+
+<div id="leaderMessage" style="display: none;">해당 게시글의 스터디 그룹을 생성한 유저입니다.</div>
+
+
 <!-- 댓글 작성 부분 -->
 <div id="comment-write">
     <input type="text" id="contents" placeholder="내용">
@@ -441,6 +517,9 @@
         </tbody>
     </table>
 </div>
+
+
+
 
 </body>
 </html>

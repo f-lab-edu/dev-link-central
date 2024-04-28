@@ -17,7 +17,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(of = {"name", "password", "email", "nickname", "role"})
 public class MemberSaveRequest {
 
     @Length(max = 50, message = "이름은 50자 이내로 입력해 주세요.")
@@ -40,16 +39,4 @@ public class MemberSaveRequest {
 
     private List<String> roles = new ArrayList<>();
 
-    public void updateRole(List<String> roles) {
-        this.roles = roles;
-    }
-
-    public Member toEntity() {
-        return Member.builder()
-                .name(name)
-                .passwordHash(password)
-                .email(email)
-                .roles(roles)
-                .build();
-    }
 }

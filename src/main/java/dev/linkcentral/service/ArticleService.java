@@ -103,11 +103,11 @@ public class ArticleService {
     private boolean isFirstView(Member member, Article article) {
         boolean alreadyViewed = articleViewRepository.existsByMemberAndArticle(member, article);
         if (alreadyViewed) {
-            return false; // 이미 조회한 경우
+            return false;
         }
         ArticleView articleView = new ArticleView(member, article);
         articleViewRepository.save(articleView);
-        return true; // 처음 조회한 경우
+        return true;
     }
 
     @Transactional
@@ -158,16 +158,15 @@ public class ArticleService {
 
         if (like.isPresent()) {
             articleLikeRepository.delete(like.get());
-            articleStatistic.decrementLikes(); // 좋아요 감소
+            articleStatistic.decrementLikes();
         } else {
             ArticleLike newLike = new ArticleLike(member, article);
             articleLikeRepository.save(newLike);
-            articleStatistic.incrementLikes(); // 좋아요 증가
+            articleStatistic.incrementLikes();
         }
-        articleStatisticRepository.save(articleStatistic); // 상태 업데이트 저장
+        articleStatisticRepository.save(articleStatistic);
     }
 
-    // 특정 게시글의 "좋아요" 총 갯수를 반환
     @Transactional(readOnly = true)
     public int countArticleLikes(Long articleId) {
         Article article = articleRepository.findById(articleId)
@@ -184,7 +183,7 @@ public class ArticleService {
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
 
         ArticleComment commentEntity = ArticleComment.toSaveEntity(commentDTO, article, writerNickname);
-        commentEntity.updateMember(member); // 여기를 추가
+        commentEntity.updateMember(member);
         articleCommentRepository.save(commentEntity);
         return commentEntity.getId();
     }
