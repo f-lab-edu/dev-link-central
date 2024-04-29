@@ -1,14 +1,14 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
-import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.service.dto.MemberEditDTO;
-import dev.linkcentral.service.dto.MemberInfoDTO;
 import dev.linkcentral.presentation.request.member.MemberDeleteRequest;
 import dev.linkcentral.presentation.request.member.MemberEditRequest;
 import dev.linkcentral.presentation.response.member.MemberDeleteResponse;
 import dev.linkcentral.presentation.response.member.MemberEditResponse;
 import dev.linkcentral.presentation.response.member.MemberInfoResponse;
-import dev.linkcentral.service.MemberService;
+import dev.linkcentral.service.dto.member.MemberDeleteRequestDTO;
+import dev.linkcentral.service.dto.member.MemberEditDTO;
+import dev.linkcentral.service.dto.member.MemberInfoDTO;
+import dev.linkcentral.service.facade.MemberFacade;
 import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,33 +21,30 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/member")
 public class MemberController {
 
-    private final MemberService memberService;
     private final MemberMapper memberMapper;
+    private final MemberFacade memberFacade;
 
     @GetMapping("/info")
     public ResponseEntity<MemberInfoResponse> getUserInfo() {
-        MemberInfoDTO memberInfoDTO = memberService.getCurrentUserInfo();
+        MemberInfoDTO memberInfoDTO = memberFacade.getUserInfo();
         MemberInfoResponse response = memberMapper.toMemberInfoResponse(memberInfoDTO);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping
-    public ResponseEntity<MemberEditResponse> memberUpdate(@RequestBody MemberEditRequest request) {
+    public ResponseEntity<MemberEditResponse> updateMember(@RequestBody MemberEditRequest request) {
         MemberEditDTO memberEditDTO = memberMapper.toMemberEditDTO(request);
-        memberService.editMember(memberEditDTO);
-        return ResponseEntity.ok(new MemberEditResponse(200, "Update successful"));
+        memberFacade.updateMember(memberEditDTO);
+        MemberEditResponse response = memberMapper.toupdateMemberResponse();
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping
     public ResponseEntity<MemberDeleteResponse> softDeleteMember(@RequestBody MemberDeleteRequest request) {
-        Member member = memberService.getCurrentMember();
-        boolean result = memberService.removeMember(member.getNickname(), request.getPassword());
-
-        if (result) {
-            return ResponseEntity.ok(new MemberDeleteResponse(true, "회원 탈퇴가 완료되었습니다."));
-        }
-        return ResponseEntity.badRequest()
-                .body(new MemberDeleteResponse(false, "회원 탈퇴 처리 중 오류가 발생했습니다."));
-
+        MemberDeleteRequestDTO memberDeleteRequestDTO = memberMapper.toMemberDeleteRequestDTO(request);
+        boolean softDeleteMember = memberFacade.softDeleteMember(memberDeleteRequestDTO);
+        MemberDeleteResponse response = memberMapper.toSoftDeleteMemberResponse(softDeleteMember);
+        return ResponseEntity.ok(response);
     }
+
 }

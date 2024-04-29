@@ -1,18 +1,21 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class MemberDTO {
+@NoArgsConstructor
+public class MemberRegistrationDTO {
 
-    private Long id;
     private String name;
     private String email;
+    private String password;
     private String nickname;
+    private List<String> roles;
 }

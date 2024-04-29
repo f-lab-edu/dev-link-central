@@ -3,14 +3,14 @@ package dev.linkcentral.service.mapper;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.MemberStatus;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
-import dev.linkcentral.service.dto.MemberEditDTO;
-import dev.linkcentral.service.dto.MemberInfoDTO;
-import dev.linkcentral.service.dto.MemberRegistrationDTO;
+import dev.linkcentral.presentation.request.member.MemberDeleteRequest;
+import dev.linkcentral.presentation.request.member.MemberLoginRequest;
+import dev.linkcentral.presentation.response.member.*;
+import dev.linkcentral.service.dto.member.*;
 import dev.linkcentral.presentation.request.member.MemberEditRequest;
 import dev.linkcentral.presentation.request.member.MemberSaveRequest;
-import dev.linkcentral.presentation.response.member.MemberInfoResponse;
-import dev.linkcentral.presentation.response.member.LoginSuccessResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -68,11 +68,11 @@ public class MemberMapper {
                 .build();
     }
 
-    public LoginSuccessResponse toLoginSuccessResponse(JwtTokenDTO jwtToken, String redirectUrl) {
+    public LoginSuccessResponse toLoginSuccessResponse(JwtTokenDTO jwtTokenDTO, String redirectUrl) {
         return LoginSuccessResponse.builder()
-                .grantType(jwtToken.getGrantType())
-                .accessToken(jwtToken.getAccessToken())
-                .refreshToken(jwtToken.getRefreshToken())
+                .grantType(jwtTokenDTO.getGrantType())
+                .accessToken(jwtTokenDTO.getAccessToken())
+                .refreshToken(jwtTokenDTO.getRefreshToken())
                 .redirectUrl(redirectUrl)
                 .build();
     }
@@ -85,4 +85,44 @@ public class MemberMapper {
                 .build();
     }
 
+    public MemberDeleteRequestDTO toMemberDeleteRequestDTO(MemberDeleteRequest request) {
+        return new MemberDeleteRequestDTO(request.getPassword());
+    }
+
+    public MemberRegistrationResultDTO toMemberRegistrationResultDTO(Long memberId) {
+        return new MemberRegistrationResultDTO(memberId);
+    }
+
+    public MemberLoginRequestDTO toMemberLoginRequestDTO(MemberLoginRequest memberLoginRequest) {
+        return new MemberLoginRequestDTO(
+                memberLoginRequest.getEmail(),
+                memberLoginRequest.getPassword());
+    }
+
+    public MemberPasswordResponse toMemberPasswordResponse(boolean pwFindCheck) {
+        return new MemberPasswordResponse(pwFindCheck);
+    }
+
+    public MemberSaveResponse toMemberSaveResponse(MemberRegistrationResultDTO registrationResultDTO) {
+        return new MemberSaveResponse(registrationResultDTO.getMemberId(), "회원 등록 성공");
+    }
+
+    public MailPasswordResetResponse toMailPasswordResetResponse() {
+        return new MailPasswordResetResponse(true, "임시 비밀번호가 이메일로 발송되었습니다.");
+    }
+
+    public MemberEditFormDTO toCurrentMember(Member currentMember) {
+        return new MemberEditFormDTO(currentMember);
+    }
+
+    public MemberEditResponse toupdateMemberResponse() {
+        return new MemberEditResponse(200, "업데이트 성공되었습니다.");
+    }
+
+    public MemberDeleteResponse toSoftDeleteMemberResponse(boolean softDeleteMember) {
+        if (softDeleteMember) {
+            return new MemberDeleteResponse(true, "회원 탈퇴가 완료되었습니다.");
+        }
+        return new MemberDeleteResponse(false, "회원 탈퇴 처리 중 오류가 발생했습니다.");
+    }
 }

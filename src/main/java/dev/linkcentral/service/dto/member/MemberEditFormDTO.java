@@ -1,5 +1,6 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.member;
 
+import dev.linkcentral.database.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberInfoDTO {
+public class MemberEditFormDTO {
 
-    private Long userId;
-    private String email;
-    private String nickname;
+    private Member member;
+
 }

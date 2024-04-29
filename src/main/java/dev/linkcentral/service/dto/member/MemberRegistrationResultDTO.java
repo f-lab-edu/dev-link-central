@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation.response.member;
+package dev.linkcentral.service.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberPasswordResponse {
+public class MemberRegistrationResultDTO {
 
-    private boolean result;
+    private Long memberId;
 
 }

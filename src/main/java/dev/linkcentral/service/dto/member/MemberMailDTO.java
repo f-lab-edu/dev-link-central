@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

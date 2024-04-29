@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberEditDTO {
+public class MemberInfoDTO {
 
-    private Long id;
-    private String name;
-    private String password;
+    private Long userId;
+    private String email;
     private String nickname;
 }

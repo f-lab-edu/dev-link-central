@@ -51,8 +51,8 @@
                     url: "/api/v1/public/member/forgot-password",
                     data: { "userEmail": userEmail, "userName": userName },
                     success: function (response) {
-                        if (response) {
-                            Swal.fire({
+                        if (response.result) {
+                                Swal.fire({
                                 title: '발송 완료!',
                                 text: '입력하신 이메일로 임시 비밀번호가 발송되었습니다.',
                                 icon: 'success'
