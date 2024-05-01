@@ -2,7 +2,6 @@ package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
-import dev.linkcentral.service.dto.ArticleDetailsDTO;
 import dev.linkcentral.presentation.request.studygroup.StudyGroupInfoRequest;
 import dev.linkcentral.presentation.request.studygroup.StudyGroupRequest;
 import dev.linkcentral.presentation.request.studygroup.StudyGroupWithMembersRequest;
@@ -13,6 +12,7 @@ import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.StudyGroupService;
 import dev.linkcentral.service.StudyMemberService;
+import dev.linkcentral.service.dto.article.ArticleDetailsDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

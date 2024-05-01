@@ -1,4 +1,4 @@
-<%@ page import="dev.linkcentral.service.dto.ProfileDetailsDTO" %>
+<%@ page import="dev.linkcentral.service.dto.profile.ProfileDetailsDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
