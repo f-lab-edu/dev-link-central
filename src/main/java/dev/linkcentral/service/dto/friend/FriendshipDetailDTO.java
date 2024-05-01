@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.friend;
 
 import dev.linkcentral.database.entity.FriendStatus;
 import lombok.AllArgsConstructor;

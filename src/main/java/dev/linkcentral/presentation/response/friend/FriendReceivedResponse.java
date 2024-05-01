@@ -1,6 +1,6 @@
 package dev.linkcentral.presentation.response.friend;
 
-import dev.linkcentral.service.dto.FriendRequestDTO;
+import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
