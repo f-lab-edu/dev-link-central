@@ -27,7 +27,7 @@ public class FriendController {
 
     @PostMapping("/request")
     public ResponseEntity<FriendRequestResponse> sendFriendRequest(@RequestBody FriendRequest friendRequest) {
-        FriendRequestDTO friendRequestDTO = friendMapper.toFriendRequestDTO(friendRequest);
+        FriendRequestDTO friendRequestDTO = friendMapper.toFriendRequestCommand(friendRequest);
         Long friendRequestId = friendFacade.sendFriendRequest(friendRequestDTO);
         FriendRequestResponse response = friendMapper.createFriendRequestResponse(friendRequestId);
         return ResponseEntity.ok(response);

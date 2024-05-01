@@ -38,7 +38,7 @@ public class MemberPublicController {
             return ResponseEntity.badRequest().body(new RegistrationErrorResponse(errorMessage));
         }
 
-        MemberRegistrationDTO memberDTO = memberMapper.toMemberRegistrationDTO(memberSaveRequest);
+        MemberRegistrationDTO memberDTO = memberMapper.toMemberRegistrationCommand(memberSaveRequest);
         MemberRegistrationResultDTO registrationResultDTO = memberFacade.registerNewMember(memberDTO);
 
         MemberSaveResponse response = memberMapper.toMemberSaveResponse(registrationResultDTO);
@@ -48,7 +48,7 @@ public class MemberPublicController {
     @PostMapping("/login")
     public ResponseEntity<LoginSuccessResponse> login(@Valid @RequestBody MemberLoginRequest memberLoginRequest,
                                                       HttpServletRequest request) {
-        MemberLoginRequestDTO loginRequestDTO = memberMapper.toMemberLoginRequestDTO(memberLoginRequest);
+        MemberLoginRequestDTO loginRequestDTO = memberMapper.toMemberLoginRequestCommand(memberLoginRequest);
         JwtTokenDTO jwtTokenDTO = memberFacade.loginMember(loginRequestDTO);
 
         final String redirectUrl = BaseUrlUtil.getBaseUrl(request) + "/api/v1/view/member/login";

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Component
 public class FriendMapper {
 
-    public FriendRequestDTO toFriendRequestDTO(FriendRequest friendRequest) {
+    public FriendRequestDTO toFriendRequestCommand(FriendRequest friendRequest) {
         return FriendRequestDTO.builder()
                 .senderId(friendRequest.getSenderId())
                 .receiverId(friendRequest.getReceiverId())

@@ -10,7 +10,6 @@ import dev.linkcentral.service.dto.member.*;
 import dev.linkcentral.presentation.request.member.MemberEditRequest;
 import dev.linkcentral.presentation.request.member.MemberSaveRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,7 @@ public class MemberMapper {
 
     private final PasswordEncoder passwordEncoder;
 
-    public MemberEditDTO toMemberEditDTO(MemberEditRequest request) {
+    public MemberEditDTO toMemberEditCommand(MemberEditRequest request) {
         return MemberEditDTO.builder()
                 .id(request.getId())
                 .name(request.getName())
@@ -48,7 +47,7 @@ public class MemberMapper {
                 .build();
     }
 
-    public MemberRegistrationDTO toMemberRegistrationDTO(MemberSaveRequest request) {
+    public MemberRegistrationDTO toMemberRegistrationCommand(MemberSaveRequest request) {
         return MemberRegistrationDTO.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -85,7 +84,7 @@ public class MemberMapper {
                 .build();
     }
 
-    public MemberDeleteRequestDTO toMemberDeleteRequestDTO(MemberDeleteRequest request) {
+    public MemberDeleteRequestDTO toMemberDeleteRequestCommand(MemberDeleteRequest request) {
         return new MemberDeleteRequestDTO(request.getPassword());
     }
 
@@ -93,7 +92,7 @@ public class MemberMapper {
         return new MemberRegistrationResultDTO(memberId);
     }
 
-    public MemberLoginRequestDTO toMemberLoginRequestDTO(MemberLoginRequest memberLoginRequest) {
+    public MemberLoginRequestDTO toMemberLoginRequestCommand(MemberLoginRequest memberLoginRequest) {
         return new MemberLoginRequestDTO(
                 memberLoginRequest.getEmail(),
                 memberLoginRequest.getPassword());

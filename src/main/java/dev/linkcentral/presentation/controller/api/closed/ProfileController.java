@@ -4,6 +4,7 @@ import dev.linkcentral.presentation.request.profile.ProfileDetailsRequest;
 import dev.linkcentral.presentation.response.profile.ProfileInfoResponse;
 import dev.linkcentral.presentation.response.profile.ProfileUpdateResponse;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
+import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import dev.linkcentral.service.facade.ProfileFacade;
 import dev.linkcentral.service.mapper.ProfileMapper;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,9 @@ public class ProfileController {
     public ResponseEntity<ProfileUpdateResponse> updateProfile(@ModelAttribute ProfileDetailsRequest profileDetailsRequest,
                                                     @RequestParam(value = "image", required = false) MultipartFile image) {
 
-        profileFacade.updateProfile(profileDetailsRequest, image);
-        ProfileUpdateResponse response = profileMapper.profileUpdatedResponse(profileDetailsRequest.getMemberId());
+        ProfileUpdateDTO profileUpdateDTO = profileMapper.toUpdateProfileCommand(profileDetailsRequest);
+        profileFacade.updateProfile(profileUpdateDTO, image);
+        ProfileUpdateResponse response = profileMapper.profileUpdatedResponse(profileUpdateDTO.getMemberId());
         return ResponseEntity.ok(response);
     }
 }

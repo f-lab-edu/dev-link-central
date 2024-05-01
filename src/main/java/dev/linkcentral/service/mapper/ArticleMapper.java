@@ -178,7 +178,7 @@ public class ArticleMapper {
                 .build();
     }
 
-    public ArticleUpdateRequestDTO toArticleUpdateRequestDTO(ArticleUpdateRequest updateRequest) {
+    public ArticleUpdateRequestDTO toArticleUpdateRequestCommand(ArticleUpdateRequest updateRequest) {
         return ArticleUpdateRequestDTO.builder()
                 .id(updateRequest.getId())
                 .writer(updateRequest.getWriter())
@@ -187,7 +187,7 @@ public class ArticleMapper {
                 .build();
     }
 
-    public ArticleCommentRequestDTO toArticleCommentRequestDTO(ArticleCommentRequest commentRequest) {
+    public ArticleCommentRequestDTO toArticleCommentRequestCommand(ArticleCommentRequest commentRequest) {
         return new ArticleCommentRequestDTO(
                 commentRequest.getId(),
                 commentRequest.getArticleId(),

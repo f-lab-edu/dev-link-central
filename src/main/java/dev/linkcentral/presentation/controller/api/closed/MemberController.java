@@ -33,7 +33,7 @@ public class MemberController {
 
     @PutMapping
     public ResponseEntity<MemberEditResponse> updateMember(@RequestBody MemberEditRequest request) {
-        MemberEditDTO memberEditDTO = memberMapper.toMemberEditDTO(request);
+        MemberEditDTO memberEditDTO = memberMapper.toMemberEditCommand(request);
         memberFacade.updateMember(memberEditDTO);
         MemberEditResponse response = memberMapper.toupdateMemberResponse();
         return ResponseEntity.ok(response);
@@ -41,7 +41,7 @@ public class MemberController {
 
     @DeleteMapping
     public ResponseEntity<MemberDeleteResponse> softDeleteMember(@RequestBody MemberDeleteRequest request) {
-        MemberDeleteRequestDTO memberDeleteRequestDTO = memberMapper.toMemberDeleteRequestDTO(request);
+        MemberDeleteRequestDTO memberDeleteRequestDTO = memberMapper.toMemberDeleteRequestCommand(request);
         boolean softDeleteMember = memberFacade.softDeleteMember(memberDeleteRequestDTO);
         MemberDeleteResponse response = memberMapper.toSoftDeleteMemberResponse(softDeleteMember);
         return ResponseEntity.ok(response);

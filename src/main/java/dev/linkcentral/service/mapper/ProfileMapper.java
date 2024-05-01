@@ -1,12 +1,11 @@
 package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
-import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import dev.linkcentral.presentation.request.profile.ProfileDetailsRequest;
 import dev.linkcentral.presentation.response.profile.ProfileInfoResponse;
 import dev.linkcentral.presentation.response.profile.ProfileUpdateResponse;
-import org.springframework.http.ResponseEntity;
+import dev.linkcentral.service.dto.member.MemberCurrentDTO;
+import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,7 +27,7 @@ public class ProfileMapper {
                 .build();
     }
 
-    public ProfileUpdateDTO toProfileUpdateDTO(ProfileDetailsRequest profileDetailsRequest) {
+    public ProfileUpdateDTO toProfileUpdateDTO(ProfileUpdateDTO profileDetailsRequest) {
         return ProfileUpdateDTO.builder()
                 .memberId(profileDetailsRequest.getMemberId())
                 .bio(profileDetailsRequest.getBio())
@@ -38,6 +37,13 @@ public class ProfileMapper {
 
     public MemberCurrentDTO toMemberCurrentDTO(Member currentMember) {
         return new MemberCurrentDTO(currentMember);
+    }
+
+    public ProfileUpdateDTO toUpdateProfileCommand(ProfileDetailsRequest profileDetailsRequest) {
+        return new ProfileUpdateDTO(
+                profileDetailsRequest.getMemberId(),
+                profileDetailsRequest.getBio(),
+                profileDetailsRequest.getImageUrl());
     }
 
 }

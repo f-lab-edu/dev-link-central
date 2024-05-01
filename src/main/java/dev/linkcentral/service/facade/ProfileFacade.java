@@ -1,14 +1,12 @@
 package dev.linkcentral.service.facade;
 
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.presentation.request.profile.ProfileDetailsRequest;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.ProfileService;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.dto.profile.ProfileDetailsDTO;
 import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import dev.linkcentral.service.mapper.ArticleMapper;
-import dev.linkcentral.service.mapper.MemberMapper;
 import dev.linkcentral.service.mapper.ProfileMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,7 +19,6 @@ public class ProfileFacade {
     private final MemberService memberService;
     private final ProfileService profileService;
     private final ProfileMapper profileMapper;
-    private final MemberMapper memberMapper;
     private final ArticleMapper articleMapper;
 
     public MemberCurrentDTO getUserInfo() {
@@ -29,7 +26,7 @@ public class ProfileFacade {
         return articleMapper.toMemberCurrentDTO(currentMember);
     }
 
-    public void updateProfile(ProfileDetailsRequest profileDetailsRequest, MultipartFile image) {
+    public void updateProfile(ProfileUpdateDTO profileDetailsRequest, MultipartFile image) {
         Member member = memberService.getCurrentMember();
         ProfileUpdateDTO profileUpdateDTO = profileMapper.toProfileUpdateDTO(profileDetailsRequest);
         profileService.updateProfile(profileUpdateDTO, image);
@@ -43,4 +40,5 @@ public class ProfileFacade {
         Member member = memberService.getMemberById(memberId);
         return profileMapper.toMemberCurrentDTO(member);
     }
+
 }

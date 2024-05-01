@@ -34,7 +34,7 @@ public class ArticleController {
 
     @PutMapping
     public ResponseEntity<ArticleUpdateResponse> updateArticle(@RequestBody ArticleUpdateRequest updateRequest) {
-        ArticleUpdateRequestDTO updateRequestDTO = articleMapper.toArticleUpdateRequestDTO(updateRequest);
+        ArticleUpdateRequestDTO updateRequestDTO = articleMapper.toArticleUpdateRequestCommand(updateRequest);
         ArticleUpdatedDTO articleUpdatedDTO = articleFacade.updateArticle(updateRequestDTO);
         ArticleUpdateResponse response = new ArticleUpdateResponse(HttpStatus.OK.value(), articleUpdatedDTO);
         return ResponseEntity.ok(response);
@@ -68,7 +68,7 @@ public class ArticleController {
             throw new IllegalArgumentException("댓글 내용은 null이 아니어야 합니다.");
         }
         commentRequest.setArticleId(id);
-        ArticleCommentRequestDTO commentRequestDTO = articleMapper.toArticleCommentRequestDTO(commentRequest);
+        ArticleCommentRequestDTO commentRequestDTO = articleMapper.toArticleCommentRequestCommand(commentRequest);
         ArticleCommentDTO commentSaveDTO = articleFacade.commentSave(commentRequestDTO);
 
         ArticleCommentResponse response = articleCommentMapper.createCommentResponse(commentSaveDTO);
@@ -78,7 +78,7 @@ public class ArticleController {
     @PutMapping("/comment/{commentId}")
     public ResponseEntity<ArticleCommentUpdateResponse> updateArticleComment(@PathVariable Long commentId,
                                                                       @RequestBody ArticleCommentRequest commentRequest) {
-        ArticleCommentRequestDTO commentRequestDTO = articleMapper.toArticleCommentRequestDTO(commentRequest);
+        ArticleCommentRequestDTO commentRequestDTO = articleMapper.toArticleCommentRequestCommand(commentRequest);
         ArticleCommentUpdateDTO commentUpdateDTO = articleFacade.updateComment(commentRequestDTO, commentId);
         ArticleCommentUpdateResponse response = articleCommentMapper.toArticleCommentUpdateResponse(commentUpdateDTO);
         return ResponseEntity.ok(response);
