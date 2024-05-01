@@ -4,7 +4,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="dev.linkcentral.database.entity.Member" %>
 <%@ page import="org.springframework.data.domain.Page" %>
-<%@ page import="dev.linkcentral.service.dto.ArticleViewDTO" %>
+<%@ page import="dev.linkcentral.service.dto.article.ArticleViewDTO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">

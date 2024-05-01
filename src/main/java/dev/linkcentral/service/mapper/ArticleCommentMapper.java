@@ -3,9 +3,10 @@ package dev.linkcentral.service.mapper;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.ArticleComment;
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.service.dto.ArticleCommentDTO;
-import dev.linkcentral.service.dto.ArticleCommentUpdateDTO;
-import dev.linkcentral.service.dto.ArticleCommentViewDTO;
+import dev.linkcentral.service.dto.article.ArticleCommentDTO;
+import dev.linkcentral.service.dto.article.ArticleCommentRequestDTO;
+import dev.linkcentral.service.dto.article.ArticleCommentUpdateDTO;
+import dev.linkcentral.service.dto.article.ArticleCommentViewDTO;
 import dev.linkcentral.presentation.request.article.ArticleCommentRequest;
 import dev.linkcentral.presentation.response.article.ArticleCommentPageResponse;
 import dev.linkcentral.presentation.response.article.ArticleCommentResponse;
@@ -37,7 +38,7 @@ public class ArticleCommentMapper {
         );
     }
 
-    public ArticleCommentDTO toArticleCommentDTO(ArticleCommentRequest request, String writerNickname) {
+    public ArticleCommentDTO toArticleCommentDTO(ArticleCommentRequestDTO request, String writerNickname) {
         ArticleCommentDTO commentDTO = new ArticleCommentDTO();
         commentDTO.setId(request.getId());
         commentDTO.setArticleId(request.getArticleId());
@@ -65,7 +66,7 @@ public class ArticleCommentMapper {
         );
     }
 
-    public ArticleCommentUpdateDTO toArticleCommentUpdateDto(ArticleCommentRequest request, Long commentId) {
+    public ArticleCommentUpdateDTO toArticleCommentUpdateDto(ArticleCommentRequestDTO request, Long commentId) {
         return new ArticleCommentUpdateDTO(
                 commentId,
                 request.getArticleId(),

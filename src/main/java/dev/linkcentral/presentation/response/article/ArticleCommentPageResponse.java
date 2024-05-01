@@ -1,6 +1,6 @@
 package dev.linkcentral.presentation.response.article;
 
-import dev.linkcentral.service.dto.ArticleCommentViewDTO;
+import dev.linkcentral.service.dto.article.ArticleCommentViewDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

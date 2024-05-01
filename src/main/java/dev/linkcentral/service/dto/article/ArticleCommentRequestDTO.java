@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.article;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticleCommentUpdateDTO {
+public class ArticleCommentRequestDTO {
 
     private Long id;
     private Long articleId;
     private String contents;
     private String nickname;
     private LocalDateTime createdAt;
+
 }

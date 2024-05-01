@@ -1,6 +1,6 @@
 package dev.linkcentral.presentation.response.article;
 
-import dev.linkcentral.service.dto.ArticleDetailsDTO;
+import dev.linkcentral.service.dto.article.ArticleDetailsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.article;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

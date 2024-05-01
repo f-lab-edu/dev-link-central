@@ -1,25 +1,23 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.article;
 
+import dev.linkcentral.database.entity.Member;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class ArticleViewDTO {
+@NoArgsConstructor
+public class ArticleDetailsDTO {
 
     private Long id;
+    private Member member;
     private String title;
     private String content;
     private String writer;
-    private Long writerId;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private int views;
 
 }

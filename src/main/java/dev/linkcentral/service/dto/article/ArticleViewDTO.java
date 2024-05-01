@@ -1,4 +1,4 @@
-package dev.linkcentral.service.dto;
+package dev.linkcentral.service.dto.article;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCreateDTO {
+@AllArgsConstructor
+public class ArticleViewDTO {
 
     private Long id;
     private String title;
@@ -21,4 +21,5 @@ public class ArticleCreateDTO {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private int views;
+
 }
