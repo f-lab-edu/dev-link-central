@@ -23,7 +23,7 @@ public class ProfileController {
     private final ProfileMapper profileMapper;
 
     @GetMapping("/auth/member-info")
-    public ResponseEntity<ProfileInfoResponse> getUserInfo() {
+    public ResponseEntity<ProfileInfoResponse> getProfileInfo() {
         MemberCurrentDTO memberCurrentDTO = profileFacade.getUserInfo();
         ProfileInfoResponse response = profileMapper.toProfileInfoResponse(memberCurrentDTO);
         return ResponseEntity.ok(response);
@@ -35,7 +35,7 @@ public class ProfileController {
 
         ProfileUpdateDTO profileUpdateDTO = profileMapper.toUpdateProfileCommand(profileDetailsRequest);
         profileFacade.updateProfile(profileUpdateDTO, image);
-        ProfileUpdateResponse response = profileMapper.profileUpdatedResponse(profileUpdateDTO.getMemberId());
+        ProfileUpdateResponse response = profileMapper.createProfileUpdateResponse(profileUpdateDTO.getMemberId());
         return ResponseEntity.ok(response);
     }
 }

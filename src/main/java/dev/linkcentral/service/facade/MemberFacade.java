@@ -20,7 +20,7 @@ public class MemberFacade {
         return memberMapper.toCurrentMember(currentMember);
     }
 
-    public MemberInfoDTO getUserInfo() {
+    public MemberInfoDTO getMemberInfo() {
         return memberService.getCurrentUserInfo();
     }
 

@@ -114,7 +114,7 @@ public class MemberMapper {
         return new MemberEditFormDTO(currentMember);
     }
 
-    public MemberEditResponse toupdateMemberResponse() {
+    public MemberEditResponse toUpdateMemberResponse() {
         return new MemberEditResponse(200, "업데이트 성공되었습니다.");
     }
 

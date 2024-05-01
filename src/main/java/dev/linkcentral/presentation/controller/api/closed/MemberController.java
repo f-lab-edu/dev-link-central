@@ -25,23 +25,23 @@ public class MemberController {
     private final MemberFacade memberFacade;
 
     @GetMapping("/info")
-    public ResponseEntity<MemberInfoResponse> getUserInfo() {
-        MemberInfoDTO memberInfoDTO = memberFacade.getUserInfo();
+    public ResponseEntity<MemberInfoResponse> getMemberInfo() {
+        MemberInfoDTO memberInfoDTO = memberFacade.getMemberInfo();
         MemberInfoResponse response = memberMapper.toMemberInfoResponse(memberInfoDTO);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping
-    public ResponseEntity<MemberEditResponse> updateMember(@RequestBody MemberEditRequest request) {
-        MemberEditDTO memberEditDTO = memberMapper.toMemberEditCommand(request);
+    public ResponseEntity<MemberEditResponse> updateMember(@RequestBody MemberEditRequest editRequest) {
+        MemberEditDTO memberEditDTO = memberMapper.toMemberEditCommand(editRequest);
         memberFacade.updateMember(memberEditDTO);
-        MemberEditResponse response = memberMapper.toupdateMemberResponse();
+        MemberEditResponse response = memberMapper.toUpdateMemberResponse();
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping
-    public ResponseEntity<MemberDeleteResponse> softDeleteMember(@RequestBody MemberDeleteRequest request) {
-        MemberDeleteRequestDTO memberDeleteRequestDTO = memberMapper.toMemberDeleteRequestCommand(request);
+    public ResponseEntity<MemberDeleteResponse> softDeleteMember(@RequestBody MemberDeleteRequest deleteRequest) {
+        MemberDeleteRequestDTO memberDeleteRequestDTO = memberMapper.toMemberDeleteRequestCommand(deleteRequest);
         boolean softDeleteMember = memberFacade.softDeleteMember(memberDeleteRequestDTO);
         MemberDeleteResponse response = memberMapper.toSoftDeleteMemberResponse(softDeleteMember);
         return ResponseEntity.ok(response);

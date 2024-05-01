@@ -4,7 +4,10 @@ import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.BaseUrlUtil;
 import dev.linkcentral.presentation.request.member.MemberLoginRequest;
 import dev.linkcentral.presentation.request.member.MemberSaveRequest;
-import dev.linkcentral.presentation.response.member.*;
+import dev.linkcentral.presentation.response.member.LoginSuccessResponse;
+import dev.linkcentral.presentation.response.member.MailPasswordResetResponse;
+import dev.linkcentral.presentation.response.member.MemberPasswordResponse;
+import dev.linkcentral.presentation.response.member.MemberSaveResponse;
 import dev.linkcentral.service.dto.member.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationResultDTO;
@@ -15,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,12 +35,7 @@ public class MemberPublicController {
 
     @PostMapping("/register")
     @ResponseBody
-    public ResponseEntity<?> register(@Valid @RequestBody MemberSaveRequest memberSaveRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
-            return ResponseEntity.badRequest().body(new RegistrationErrorResponse(errorMessage));
-        }
-
+    public ResponseEntity<MemberSaveResponse> register(@Validated @RequestBody MemberSaveRequest memberSaveRequest) {
         MemberRegistrationDTO memberDTO = memberMapper.toMemberRegistrationCommand(memberSaveRequest);
         MemberRegistrationResultDTO registrationResultDTO = memberFacade.registerNewMember(memberDTO);
 
@@ -58,7 +56,7 @@ public class MemberPublicController {
 
     @GetMapping("/forgot-password")
     @ResponseBody
-    public ResponseEntity<MemberPasswordResponse> isPasswordValid(String userEmail, String userName) {
+    public ResponseEntity<MemberPasswordResponse> validatePassword(String userEmail, String userName) {
         boolean pwFindCheck = memberFacade.isPasswordValid(userEmail, userName);
         MemberPasswordResponse response = memberMapper.toMemberPasswordResponse(pwFindCheck);
         return ResponseEntity.ok(response);
@@ -73,7 +71,7 @@ public class MemberPublicController {
 
     @PostMapping("/check-current-password")
     @ResponseBody
-    public ResponseEntity<MemberPasswordResponse> checkPassword(@RequestParam String password) {
+    public ResponseEntity<MemberPasswordResponse> verifyCurrentPassword(@RequestParam String password) {
         boolean isPasswordValid = memberFacade.checkPassword(password);
         MemberPasswordResponse response = memberMapper.toMemberPasswordResponse(isPasswordValid);
         return ResponseEntity.ok(response);

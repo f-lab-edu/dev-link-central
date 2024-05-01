@@ -26,7 +26,7 @@ public class FriendFacade {
         friendService.acceptFriendRequest(requestId);
     }
 
-    public Long getFriendshipId(Long senderId, Long receiverId) {
+    public Long findFriendshipId(Long senderId, Long receiverId) {
         return friendService.findFriendshipId(senderId, receiverId);
     }
 

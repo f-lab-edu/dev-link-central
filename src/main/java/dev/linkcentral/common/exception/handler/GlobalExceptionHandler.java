@@ -5,15 +5,19 @@ import dev.linkcentral.presentation.response.member.AuthenticationErrorResponse;
 import dev.linkcentral.presentation.response.member.RegistrationErrorResponse;
 import dev.linkcentral.presentation.response.profile.ProfileUpdateResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
@@ -77,6 +81,15 @@ public class GlobalExceptionHandler {
     public String handleEntityNotFoundException(EntityNotFoundException e, Model model) {
         model.addAttribute("error", "해당 memberId에 대한 프로필을 찾을 수 없습니다.");
         return "error";
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<String> errors = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+        return ResponseEntity.badRequest().body(errors);
     }
 
 }

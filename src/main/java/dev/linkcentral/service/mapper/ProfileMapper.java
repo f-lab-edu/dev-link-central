@@ -20,7 +20,7 @@ public class ProfileMapper {
                 .build();
     }
 
-    public ProfileUpdateResponse profileUpdatedResponse(Long memberId) {
+    public ProfileUpdateResponse createProfileUpdateResponse(Long memberId) {
         return ProfileUpdateResponse.builder()
                 .message("프로필이 성공적으로 업데이트되었습니다.")
                 .memberId(memberId)

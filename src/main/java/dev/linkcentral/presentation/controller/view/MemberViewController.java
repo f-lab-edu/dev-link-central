@@ -18,27 +18,27 @@ public class MemberViewController {
     private final MemberFacade memberFacade;
 
     @GetMapping("/")
-    public String Home() {
+    public String showHomePage() {
         return "/home";
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String showLoginPage() {
         return "/members/login";
     }
 
     @GetMapping("/join-form")
-    public String joinMember() {
+    public String showJoinForm() {
         return "/members/join";
     }
 
     @GetMapping("reset-password")
-    public String mailAndChangePassword() {
+    public String showResetPasswordForm() {
         return "/members/reset-password";
     }
 
     @GetMapping("/edit-form")
-    public String memberEditForm(Model model) {
+    public String showMemberEditForm(Model model) {
         MemberEditFormDTO memberDTO = memberFacade.memberEditForm();
         if (memberDTO.getMember() == null) {
             return "redirect:/login";
@@ -48,7 +48,7 @@ public class MemberViewController {
     }
 
     @GetMapping("/delete-page")
-    public String logout() {
+    public String showDeleteMemberPage() {
         return "/members/delete";
     }
 }

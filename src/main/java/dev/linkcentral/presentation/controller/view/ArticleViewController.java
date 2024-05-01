@@ -33,21 +33,21 @@ public class ArticleViewController {
     private final ArticleCommentMapper articleCommentMapper;
 
     @GetMapping("/save-form")
-    public String saveForm(Model model) {
+    public String showArticleSaveForm(Model model) {
         MemberCurrentDTO memberCurrentDTO = articleFacade.saveForm();
         model.addAttribute("nickname", memberCurrentDTO.getMember().getNickname());
         return "articles/save";
     }
 
     @GetMapping("/")
-    public String findAll(Model model) {
+    public String showAllArticles(Model model) {
         List<ArticleViewDTO> articleViewDTOList = articleFacade.findAll();
         model.addAttribute("articleList", articleViewDTOList);
         return "/articles/list";
     }
 
     @GetMapping("/{id}")
-    public String findById(@PageableDefault(size = 5, sort = "id",
+    public String showArticleDetails(@PageableDefault(size = 5, sort = "id",
                            direction = Sort.Direction.DESC) Pageable pageable,
                            @PathVariable Long id, Model model) {
 
@@ -58,20 +58,20 @@ public class ArticleViewController {
     }
 
     @GetMapping("/update-form/{id}")
-    public String updateForm(@PathVariable Long id, Model model) {
+    public String showArticleUpdateForm(@PathVariable Long id, Model model) {
         ArticleDetailsDTO articleDetailsDTO = articleFacade.updateForm(id);
         model.addAttribute("articleUpdate", articleDetailsDTO);
         return "/articles/update";
     }
 
     @GetMapping("/delete-form/{id}")
-    public String deleteForm(@PathVariable Long id) {
+    public String deleteArticleAndRedirect(@PathVariable Long id) {
         articleFacade.deleteForm(id);
         return "redirect:/api/v1/view/article/";
     }
 
     @GetMapping("/paging")
-    public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
+    public String showArticlesWithPagination(@PageableDefault(page = 1) Pageable pageable, Model model) {
         Page<ArticleViewDTO> articlePage = articleFacade.paging(pageable);
         List<ArticleViewDTO> articleList = articlePage.getContent(); // Page에서 List로 변환
 
@@ -89,7 +89,7 @@ public class ArticleViewController {
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<ArticleCommentPageResponse> getCommentsForArticle(@PathVariable Long id,
+    public ResponseEntity<ArticleCommentPageResponse> showCommentsForArticle(@PathVariable Long id,
              @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Page<ArticleCommentViewDTO> commentsPage = articleFacade.getCommentsForArticle(id, pageable);

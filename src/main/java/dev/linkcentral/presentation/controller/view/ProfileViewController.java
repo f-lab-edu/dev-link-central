@@ -20,7 +20,7 @@ public class ProfileViewController {
     private final ProfileFacade profileFacade;
 
     @GetMapping("/view")
-    public String viewProfile(@RequestParam(value = "memberId", required = false) Long memberId, Model model) {
+    public String showProfile(@RequestParam(value = "memberId", required = false) Long memberId, Model model) {
         if (memberId == null) {
             model.addAttribute("error", "memberId가 제공되지 않았습니다.");
             return "profile/view";
@@ -38,7 +38,7 @@ public class ProfileViewController {
     }
 
     @GetMapping("/edit")
-    public String profileEditForm(@RequestParam Long memberId, Model model) {
+    public String showProfileEditForm(@RequestParam Long memberId, Model model) {
         ProfileDetailsDTO profile = profileFacade.getProfile(memberId);
         model.addAttribute("profile", profile);
         return "profile/edit";

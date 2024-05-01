@@ -47,8 +47,8 @@ public class FriendController {
     }
 
     @GetMapping("/friendship-ids")
-    public ResponseEntity<FriendshipResponse> getFriendshipId(@RequestParam Long senderId, @RequestParam Long receiverId) {
-        Long friendshipId = friendFacade.getFriendshipId(senderId, receiverId);
+    public ResponseEntity<FriendshipResponse> findFriendshipId(@RequestParam Long senderId, @RequestParam Long receiverId) {
+        Long friendshipId = friendFacade.findFriendshipId(senderId, receiverId);
         return ResponseEntity.ok(new FriendshipResponse(friendshipId));
     }
 
