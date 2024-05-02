@@ -42,7 +42,7 @@ public class FriendService {
     }
 
     private void validateFriendRequest(Member sender, Member receiver) {
-        boolean friendRequestExists = friendRepository.existsBySenderAndReceiverOrReceiverAndSender(sender, receiver, sender, receiver);
+        boolean friendRequestExists = friendRepository.existsFriendshipBothWays(sender, receiver);
         if (friendRequestExists) {
             throw new IllegalStateException("친구 요청을 이미 보냈거나 받았습니다.");
         }

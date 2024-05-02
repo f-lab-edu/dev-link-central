@@ -1,6 +1,5 @@
 ### TODO 리스트
 - 페이징 처리 테스트 코드 실패
-- existsBySenderAndReceiverOrReceiverAndSender() 쿼리의 검색조건에 적합한 index를 생성
 - SpringBoot 전체를 띄우는 @IntegrationTEST의 경우 local database를 사용하다보면 기존에 데이터가 존재해서 성공 테스트가 실패
    - 그래서 보통은 docker을 활용해 데이터베이스 container을 띄워서 테스트를 수행
 - 게시글을 수정 했다면, 스터디 그룹 정보를 가져오지 못함.
