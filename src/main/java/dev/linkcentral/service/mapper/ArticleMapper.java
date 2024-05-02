@@ -3,13 +3,6 @@ package dev.linkcentral.service.mapper;
 import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.ArticleComment;
 import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.presentation.request.article.ArticleCommentRequest;
-import dev.linkcentral.presentation.request.article.ArticleCreateRequest;
-import dev.linkcentral.presentation.request.article.ArticleUpdateRequest;
-import dev.linkcentral.presentation.response.article.ArticleCreateResponse;
-import dev.linkcentral.presentation.response.article.ArticleDeleteResponse;
-import dev.linkcentral.presentation.response.article.ArticleDetailsResponse;
-import dev.linkcentral.presentation.response.article.ArticleLikeResponse;
 import dev.linkcentral.service.dto.article.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import lombok.RequiredArgsConstructor;
@@ -46,15 +39,6 @@ public class ArticleMapper {
                 .build();
     }
 
-    public ArticleCreateResponse toArticleCreateResponse(ArticleCreateDTO articleDTO) {
-        return new ArticleCreateResponse(
-                true,
-                "글이 성공적으로 작성되었습니다.",
-                articleDTO.getWriterId(),
-                articleDTO.getTitle()
-        );
-    }
-
     public ArticleUpdateDTO toArticleUpdateDTO(ArticleUpdateRequestDTO updateRequestDTO) {
         return new ArticleUpdateDTO(
                 updateRequestDTO.getId(),
@@ -89,20 +73,6 @@ public class ArticleMapper {
         return updatedDTO;
     }
 
-    public ArticleDeleteResponse toArticleDeleteResponse() {
-        return ArticleDeleteResponse.builder()
-                .success(true)
-                .message("성공적으로 삭제되었습니다.")
-                .build();
-    }
-
-    public ArticleLikeResponse toArticleLikeResponse(ArticleLikeDTO dto) {
-        return new ArticleLikeResponse(
-                dto.isLiked(),
-                dto.getTotalLikes()
-        );
-    }
-
     public ArticleDetailsDTO toArticleDetailsDTO(Article article) {
         return new ArticleDetailsDTO(
                 article.getId(),
@@ -112,14 +82,6 @@ public class ArticleMapper {
                 article.getWriter(),
                 article.getCreatedAt(),
                 article.getModifiedAt()
-        );
-    }
-
-    public ArticleDetailsResponse toArticleDetailsResponse(ArticleDetailsDTO articleDetailsDTO) {
-        return new ArticleDetailsResponse(
-                true,
-                "게시글 조회 성공",
-                articleDetailsDTO
         );
     }
 
@@ -163,38 +125,6 @@ public class ArticleMapper {
         }
         commentDTO.setCreatedAt(comment.getCreatedAt());
         return commentDTO;
-    }
-
-    public ArticleCreateRequestDTO toArticleCreateCommand(ArticleCreateRequest articleCreateRequest) {
-        return ArticleCreateRequestDTO.builder()
-                .id(articleCreateRequest.getId())
-                .title(articleCreateRequest.getTitle())
-                .content(articleCreateRequest.getContent())
-                .writer(articleCreateRequest.getWriter())
-                .writerId(articleCreateRequest.getWriterId())
-                .createdAt(articleCreateRequest.getCreatedAt())
-                .modifiedAt(articleCreateRequest.getModifiedAt())
-                .views(articleCreateRequest.getViews())
-                .build();
-    }
-
-    public ArticleUpdateRequestDTO toArticleUpdateRequestCommand(ArticleUpdateRequest updateRequest) {
-        return ArticleUpdateRequestDTO.builder()
-                .id(updateRequest.getId())
-                .writer(updateRequest.getWriter())
-                .title(updateRequest.getTitle())
-                .content(updateRequest.getContent())
-                .build();
-    }
-
-    public ArticleCommentRequestDTO toArticleCommentRequestCommand(ArticleCommentRequest commentRequest) {
-        return new ArticleCommentRequestDTO(
-                commentRequest.getId(),
-                commentRequest.getArticleId(),
-                commentRequest.getContents(),
-                commentRequest.getNickname(),
-                commentRequest.getCreatedAt()
-        );
     }
 
     public MemberCurrentDTO toMemberCurrentDTO(Member currentMember) {

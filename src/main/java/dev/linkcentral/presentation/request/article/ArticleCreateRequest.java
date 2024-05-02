@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.request.article;
 
+import dev.linkcentral.service.dto.article.ArticleCreateRequestDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -55,5 +56,18 @@ public class ArticleCreateRequest {
         this.title = title;
         this.writer = writer;
         this.createdAt = createdAt;
+    }
+
+    public static ArticleCreateRequestDTO toArticleCreateCommand(ArticleCreateRequest articleCreateRequest) {
+        return ArticleCreateRequestDTO.builder()
+                .id(articleCreateRequest.getId())
+                .title(articleCreateRequest.getTitle())
+                .content(articleCreateRequest.getContent())
+                .writer(articleCreateRequest.getWriter())
+                .writerId(articleCreateRequest.getWriterId())
+                .createdAt(articleCreateRequest.getCreatedAt())
+                .modifiedAt(articleCreateRequest.getModifiedAt())
+                .views(articleCreateRequest.getViews())
+                .build();
     }
 }

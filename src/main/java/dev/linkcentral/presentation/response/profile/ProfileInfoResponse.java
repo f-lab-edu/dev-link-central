@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.response.profile;
 
+import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,4 +14,12 @@ public class ProfileInfoResponse {
 
     private Long memberId;
 
+    public static ProfileInfoResponse toProfileInfoResponse(MemberCurrentDTO memberCurrentDTO) {
+        if (memberCurrentDTO.getMember() == null) {
+            return null;
+        }
+        return ProfileInfoResponse.builder()
+                .memberId(memberCurrentDTO.getMember().getId())
+                .build();
+    }
 }

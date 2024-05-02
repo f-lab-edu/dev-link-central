@@ -1,5 +1,7 @@
 package dev.linkcentral.presentation.request.member;
 
+import dev.linkcentral.database.entity.MemberStatus;
+import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -44,5 +47,15 @@ public class MemberSaveRequest {
 
     @ApiModelProperty(value = "사용자의 역할 목록", notes = "사용자에게 할당된 역할의 리스트")
     private List<String> roles = new ArrayList<>();
+
+    public static MemberRegistrationDTO toMemberRegistrationCommand(MemberSaveRequest request) {
+        return MemberRegistrationDTO.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .nickname(request.getNickname())
+                .roles(Collections.singletonList(String.valueOf(MemberStatus.USER)))
+                .build();
+    }
 
 }

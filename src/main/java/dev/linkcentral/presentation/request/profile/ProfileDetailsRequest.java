@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.request.profile;
 
+import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -26,4 +27,10 @@ public class ProfileDetailsRequest {
     @ApiModelProperty(value = "프로필 이미지 URL")
     private String imageUrl;
 
+    public static ProfileUpdateDTO toUpdateProfileCommand(ProfileDetailsRequest profileDetailsRequest) {
+        return new ProfileUpdateDTO(
+                profileDetailsRequest.getMemberId(),
+                profileDetailsRequest.getBio(),
+                profileDetailsRequest.getImageUrl());
+    }
 }

@@ -84,7 +84,7 @@ class MemberServiceIntegrationTest {
     void save_member_and_verify_database() {
         // given
         MemberSaveRequest memberSaveRequest = createTestMemberSaveRequestDTO();
-        MemberRegistrationDTO memberDTO = memberMapper.toMemberRegistrationCommand(memberSaveRequest);
+        MemberRegistrationDTO memberDTO = MemberSaveRequest.toMemberRegistrationCommand(memberSaveRequest);
 
         // when
         Member savedMember = memberService.registerMember(memberDTO);
@@ -109,7 +109,7 @@ class MemberServiceIntegrationTest {
         MemberSaveRequest newMemberRequest = createMemberSaveRequestWithDuplicateEmail();
 
         // when & then
-        MemberRegistrationDTO newMemberDTO = memberMapper.toMemberRegistrationCommand(newMemberRequest);
+        MemberRegistrationDTO newMemberDTO = MemberSaveRequest.toMemberRegistrationCommand(newMemberRequest);
         assertThrows(DuplicateEmailException.class, () -> {memberService.registerMember(newMemberDTO);});
     }
 
@@ -123,7 +123,7 @@ class MemberServiceIntegrationTest {
         MemberSaveRequest newMemberRequest = createMemberSaveRequestWithDuplicateNickname();
 
         // when & then
-        MemberRegistrationDTO newMemberDTO = memberMapper.toMemberRegistrationCommand(newMemberRequest);
+        MemberRegistrationDTO newMemberDTO = MemberSaveRequest.toMemberRegistrationCommand(newMemberRequest);
         assertThrows(DuplicateNicknameException.class, () -> {memberService.registerMember(newMemberDTO);});
     }
 

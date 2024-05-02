@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.request.friend;
 
+import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -30,4 +31,11 @@ public class FriendshipRequest {
     @NotNull(message = "보내는 사람의 이름은 필수입니다.")
     @Size(min = 1, max = 100, message = "보내는 사람의 이름은 1자 이상 100자 이하이어야 합니다.")
     private String senderName;
+
+    public static FriendRequestDTO toFriendRequestCommand(FriendshipRequest friendshipRequest) {
+        return FriendRequestDTO.builder()
+                .senderId(friendshipRequest.getSenderId())
+                .receiverId(friendshipRequest.getReceiverId())
+                .build();
+    }
 }

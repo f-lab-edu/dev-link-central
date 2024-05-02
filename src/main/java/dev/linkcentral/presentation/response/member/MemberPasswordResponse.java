@@ -13,4 +13,7 @@ public class MemberPasswordResponse {
 
     private boolean result;
 
+    public static MemberPasswordResponse toMemberPasswordResponse(boolean pwFindCheck) {
+        return new MemberPasswordResponse(pwFindCheck);
+    }
 }

@@ -12,4 +12,8 @@ import lombok.NoArgsConstructor;
 public class FriendshipResponse {
 
     private Long friendshipId;
+
+    public static FriendshipResponse toFriendshipId(Long friendshipId) {
+        return new FriendshipResponse(friendshipId);
+    }
 }

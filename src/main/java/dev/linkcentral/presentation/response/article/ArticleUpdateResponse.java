@@ -14,4 +14,11 @@ public class ArticleUpdateResponse {
 
     private int status;
     private ArticleUpdatedDTO articleUpdatedDTO;
+
+    public static ArticleUpdateResponse toArticleUpdateResponse(int status, ArticleUpdatedDTO dto) {
+        return ArticleUpdateResponse.builder()
+                .status(status)
+                .articleUpdatedDTO(dto)
+                .build();
+    }
 }

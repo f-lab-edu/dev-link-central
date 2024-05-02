@@ -7,7 +7,6 @@ import dev.linkcentral.service.dto.article.ArticleDetailsDTO;
 import dev.linkcentral.service.dto.article.ArticleViewDTO;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.facade.ArticleFacade;
-import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,7 +29,6 @@ import java.util.List;
 public class ArticleViewController {
 
     private final ArticleFacade articleFacade;
-    private final ArticleCommentMapper articleCommentMapper;
 
     @GetMapping("/save-form")
     public String showArticleSaveForm(Model model) {
@@ -93,7 +91,7 @@ public class ArticleViewController {
              @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Page<ArticleCommentViewDTO> commentsPage = articleFacade.getCommentsForArticle(id, pageable);
-        ArticleCommentPageResponse response = articleCommentMapper.toArticleCommentPageResponse(commentsPage);
+        ArticleCommentPageResponse response = ArticleCommentPageResponse.toArticleCommentPageResponse(commentsPage);
         return ResponseEntity.ok(response);
     }
 

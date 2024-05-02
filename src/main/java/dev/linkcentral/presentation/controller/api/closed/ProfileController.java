@@ -6,7 +6,6 @@ import dev.linkcentral.presentation.response.profile.ProfileUpdateResponse;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import dev.linkcentral.service.facade.ProfileFacade;
-import dev.linkcentral.service.mapper.ProfileMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileController {
 
     private final ProfileFacade profileFacade;
-    private final ProfileMapper profileMapper;
 
     @GetMapping("/auth/member-info")
     public ResponseEntity<ProfileInfoResponse> getProfileInfo() {
         MemberCurrentDTO memberCurrentDTO = profileFacade.getUserInfo();
-        ProfileInfoResponse response = profileMapper.toProfileInfoResponse(memberCurrentDTO);
+        ProfileInfoResponse response = ProfileInfoResponse.toProfileInfoResponse(memberCurrentDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -35,9 +33,9 @@ public class ProfileController {
                                                     @Validated @ModelAttribute ProfileDetailsRequest profileDetailsRequest,
                                                     @RequestParam(value = "image", required = false) MultipartFile image) {
 
-        ProfileUpdateDTO profileUpdateDTO = profileMapper.toUpdateProfileCommand(profileDetailsRequest);
+        ProfileUpdateDTO profileUpdateDTO = ProfileDetailsRequest.toUpdateProfileCommand(profileDetailsRequest);
         profileFacade.updateProfile(profileUpdateDTO, image);
-        ProfileUpdateResponse response = profileMapper.createProfileUpdateResponse(profileUpdateDTO.getMemberId());
+        ProfileUpdateResponse response = ProfileUpdateResponse.toProfileUpdateResponse(profileUpdateDTO.getMemberId());
         return ResponseEntity.ok(response);
     }
 }

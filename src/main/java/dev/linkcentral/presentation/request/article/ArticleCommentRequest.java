@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.request.article;
 
+import dev.linkcentral.service.dto.article.ArticleCommentRequestDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -39,4 +40,13 @@ public class ArticleCommentRequest {
     @ApiModelProperty(value = "댓글 작성 시간")
     private LocalDateTime createdAt;
 
+    public static ArticleCommentRequestDTO toArticleCommentRequestCommand(ArticleCommentRequest commentRequest) {
+        return new ArticleCommentRequestDTO(
+                commentRequest.getId(),
+                commentRequest.getArticleId(),
+                commentRequest.getContents(),
+                commentRequest.getNickname(),
+                commentRequest.getCreatedAt()
+        );
+    }
 }

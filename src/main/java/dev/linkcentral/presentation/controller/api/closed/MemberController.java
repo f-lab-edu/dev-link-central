@@ -9,7 +9,6 @@ import dev.linkcentral.service.dto.member.MemberDeleteRequestDTO;
 import dev.linkcentral.service.dto.member.MemberEditDTO;
 import dev.linkcentral.service.dto.member.MemberInfoDTO;
 import dev.linkcentral.service.facade.MemberFacade;
-import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,29 +21,28 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/member")
 public class MemberController {
 
-    private final MemberMapper memberMapper;
     private final MemberFacade memberFacade;
 
     @GetMapping("/info")
     public ResponseEntity<MemberInfoResponse> getMemberInfo() {
         MemberInfoDTO memberInfoDTO = memberFacade.getMemberInfo();
-        MemberInfoResponse response = memberMapper.toMemberInfoResponse(memberInfoDTO);
+        MemberInfoResponse response = MemberInfoResponse.toMemberInfoResponse(memberInfoDTO);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping
     public ResponseEntity<MemberEditResponse> updateMember(@Validated @RequestBody MemberEditRequest editRequest) {
-        MemberEditDTO memberEditDTO = memberMapper.toMemberEditCommand(editRequest);
+        MemberEditDTO memberEditDTO = MemberEditRequest.toMemberEditCommand(editRequest);
         memberFacade.updateMember(memberEditDTO);
-        MemberEditResponse response = memberMapper.toUpdateMemberResponse();
+        MemberEditResponse response = MemberEditResponse.toUpdateMemberResponse();
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping
     public ResponseEntity<MemberDeleteResponse> softDeleteMember(@Validated @RequestBody MemberDeleteRequest deleteRequest) {
-        MemberDeleteRequestDTO memberDeleteRequestDTO = memberMapper.toMemberDeleteRequestCommand(deleteRequest);
+        MemberDeleteRequestDTO memberDeleteRequestDTO = MemberDeleteRequest.toMemberDeleteRequestCommand(deleteRequest);
         boolean softDeleteMember = memberFacade.softDeleteMember(memberDeleteRequestDTO);
-        MemberDeleteResponse response = memberMapper.toSoftDeleteMemberResponse(softDeleteMember);
+        MemberDeleteResponse response = MemberDeleteResponse.toSoftDeleteMemberResponse(softDeleteMember);
         return ResponseEntity.ok(response);
     }
 

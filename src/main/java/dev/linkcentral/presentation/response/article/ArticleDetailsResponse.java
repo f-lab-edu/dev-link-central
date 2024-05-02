@@ -14,4 +14,12 @@ public class ArticleDetailsResponse {
     private String message;
     private ArticleDetailsDTO articleDetails;
 
+    public static ArticleDetailsResponse toArticleDetailsResponse(ArticleDetailsDTO articleDetailsDTO) {
+        return new ArticleDetailsResponse(
+                true,
+                "게시글 조회 성공",
+                articleDetailsDTO
+        );
+    }
+
 }

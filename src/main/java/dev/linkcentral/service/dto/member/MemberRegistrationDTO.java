@@ -18,4 +18,5 @@ public class MemberRegistrationDTO {
     private String password;
     private String nickname;
     private List<String> roles;
+
 }

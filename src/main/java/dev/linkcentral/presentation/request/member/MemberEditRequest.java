@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.request.member;
 
+import dev.linkcentral.service.dto.member.MemberEditDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -37,4 +38,12 @@ public class MemberEditRequest {
     @Size(min = 2, max = 50, message = "별명은 2자 이상 50자 이하이어야 합니다.")
     private String nickname;
 
+    public static MemberEditDTO toMemberEditCommand(MemberEditRequest request) {
+        return MemberEditDTO.builder()
+                .id(request.getId())
+                .name(request.getName())
+                .password(request.getPassword())
+                .nickname(request.getNickname())
+                .build();
+    }
 }

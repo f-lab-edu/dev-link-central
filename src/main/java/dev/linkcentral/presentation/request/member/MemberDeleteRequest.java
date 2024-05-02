@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.request.member;
 
+import dev.linkcentral.service.dto.member.MemberDeleteRequestDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -22,4 +23,7 @@ public class MemberDeleteRequest {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d).+$", message = "비밀번호는 최소 하나의 소문자와 숫자를 포함해야 합니다.")
     private String password;
 
+    public static MemberDeleteRequestDTO toMemberDeleteRequestCommand(MemberDeleteRequest request) {
+        return new MemberDeleteRequestDTO(request.getPassword());
+    }
 }

@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.request.member;
 
+import dev.linkcentral.service.dto.member.MemberLoginRequestDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -29,4 +30,9 @@ public class MemberLoginRequest {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d).+$", message = "비밀번호는 최소 하나의 소문자와 숫자를 포함해야 합니다.")
     private String password;
 
+    public static MemberLoginRequestDTO toMemberLoginRequestCommand(MemberLoginRequest memberLoginRequest) {
+        return new MemberLoginRequestDTO(
+                memberLoginRequest.getEmail(),
+                memberLoginRequest.getPassword());
+    }
 }

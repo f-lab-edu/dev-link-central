@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.request.article;
 
+import dev.linkcentral.service.dto.article.ArticleUpdateRequestDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -34,4 +35,12 @@ public class ArticleUpdateRequest {
     @Size(min = 3, max = 10000, message = "게시글 내용은 3자 이상 10000자 이하이어야 합니다.")
     private String content;
 
+    public static ArticleUpdateRequestDTO toArticleUpdateRequestCommand(ArticleUpdateRequest updateRequest) {
+        return ArticleUpdateRequestDTO.builder()
+                .id(updateRequest.getId())
+                .writer(updateRequest.getWriter())
+                .title(updateRequest.getTitle())
+                .content(updateRequest.getContent())
+                .build();
+    }
 }

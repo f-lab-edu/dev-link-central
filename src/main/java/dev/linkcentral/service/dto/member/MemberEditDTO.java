@@ -15,4 +15,5 @@ public class MemberEditDTO {
     private String name;
     private String password;
     private String nickname;
+
 }

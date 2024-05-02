@@ -11,4 +11,8 @@ public class MailPasswordResetResponse {
 
     private boolean success;
     private String message;
+
+    public static MailPasswordResetResponse toMailPasswordResetResponse() {
+        return new MailPasswordResetResponse(true, "임시 비밀번호가 이메일로 발송되었습니다.");
+    }
 }

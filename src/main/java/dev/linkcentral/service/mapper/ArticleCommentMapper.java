@@ -6,12 +6,6 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.dto.article.ArticleCommentDTO;
 import dev.linkcentral.service.dto.article.ArticleCommentRequestDTO;
 import dev.linkcentral.service.dto.article.ArticleCommentUpdateDTO;
-import dev.linkcentral.service.dto.article.ArticleCommentViewDTO;
-import dev.linkcentral.presentation.request.article.ArticleCommentRequest;
-import dev.linkcentral.presentation.response.article.ArticleCommentPageResponse;
-import dev.linkcentral.presentation.response.article.ArticleCommentResponse;
-import dev.linkcentral.presentation.response.article.ArticleCommentUpdateResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,16 +20,6 @@ public class ArticleCommentMapper {
                 .content(articleCommentDTO.getContents())
                 .writerNickname(writerNickname)
                 .build();
-    }
-
-    public ArticleCommentResponse createCommentResponse(ArticleCommentDTO savedCommentDTO) {
-        return new ArticleCommentResponse(
-                savedCommentDTO.getId(),
-                savedCommentDTO.getArticleId(),
-                savedCommentDTO.getContents(),
-                savedCommentDTO.getWriterNickname(),
-                savedCommentDTO.getCreatedAt()
-        );
     }
 
     public ArticleCommentDTO toArticleCommentDTO(ArticleCommentRequestDTO request, String writerNickname) {
@@ -58,14 +42,6 @@ public class ArticleCommentMapper {
                 .build();
     }
 
-    public ArticleCommentUpdateResponse toArticleCommentUpdateResponse(ArticleCommentUpdateDTO commentUpdateDTO) {
-        return new ArticleCommentUpdateResponse(
-                commentUpdateDTO.getId(),
-                commentUpdateDTO.getContents(),
-                commentUpdateDTO.getNickname()
-        );
-    }
-
     public ArticleCommentUpdateDTO toArticleCommentUpdateDto(ArticleCommentRequestDTO request, Long commentId) {
         return new ArticleCommentUpdateDTO(
                 commentId,
@@ -83,14 +59,6 @@ public class ArticleCommentMapper {
                 comment.getContent(),
                 comment.getMember().getNickname(),
                 comment.getCreatedAt()
-        );
-    }
-
-    public ArticleCommentPageResponse toArticleCommentPageResponse(Page<ArticleCommentViewDTO> commentsPage) {
-        return new ArticleCommentPageResponse(
-                commentsPage.getContent(),
-                commentsPage.getNumber(),
-                commentsPage.getTotalPages()
         );
     }
 

@@ -5,10 +5,6 @@ import dev.linkcentral.database.entity.FriendStatus;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;
-import dev.linkcentral.presentation.request.friend.FriendshipRequest;
-import dev.linkcentral.presentation.response.friend.FriendReceivedResponse;
-import dev.linkcentral.presentation.response.friend.FriendRequestResponse;
-import dev.linkcentral.presentation.response.friend.FriendshipDetailResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,25 +13,11 @@ import java.util.stream.Collectors;
 @Component
 public class FriendMapper {
 
-    public FriendRequestDTO toFriendRequestCommand(FriendshipRequest friendshipRequest) {
-        return FriendRequestDTO.builder()
-                .senderId(friendshipRequest.getSenderId())
-                .receiverId(friendshipRequest.getReceiverId())
-                .build();
-    }
-
     public Friend createFriendRequest(Member sender, Member receiver) {
         return Friend.builder()
                 .sender(sender)
                 .receiver(receiver)
                 .status(FriendStatus.REQUESTED)
-                .build();
-    }
-
-    public FriendRequestResponse createFriendRequestResponse(Long friendRequestId) {
-        return FriendRequestResponse.builder()
-                .friendRequestId(friendRequestId)
-                .message("친구 요청이 성공적으로 보내졌습니다.")
                 .build();
     }
 
@@ -50,14 +32,6 @@ public class FriendMapper {
                 .collect(Collectors.toList());
     }
 
-    public FriendReceivedResponse buildFriendReceivedResponse(List<FriendRequestDTO> friendRequests) {
-        if (friendRequests == null || friendRequests.isEmpty()) {
-            return new FriendReceivedResponse(false, "친구 요청 목록이 비어있습니다.", null);
-        } else {
-            return new FriendReceivedResponse(true, "친구 요청 목록을 성공적으로 불러왔습니다.", friendRequests);
-        }
-    }
-
     public List<FriendshipDetailDTO> toFriendshipDetailDTOList(List<Friend> friendships) {
         return friendships.stream()
                 .map(friendship -> FriendshipDetailDTO.builder()
@@ -67,19 +41,6 @@ public class FriendMapper {
                         .senderName(friendship.getSender().getName())
                         .receiverName(friendship.getReceiver().getName())
                         .status(friendship.getStatus())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    public List<FriendshipDetailResponse> toFriendshipDetailResponseList(List<FriendshipDetailDTO> friendshipDetails) {
-        return friendshipDetails.stream()
-                .map(dto -> FriendshipDetailResponse.builder()
-                        .friendshipId(dto.getFriendshipId())
-                        .senderId(dto.getSenderId())
-                        .receiverId(dto.getReceiverId())
-                        .senderName(dto.getSenderName())
-                        .receiverName(dto.getReceiverName())
-                        .status(dto.getStatus())
                         .build())
                 .collect(Collectors.toList());
     }

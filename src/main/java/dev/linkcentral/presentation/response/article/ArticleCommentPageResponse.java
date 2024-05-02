@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -18,4 +19,11 @@ public class ArticleCommentPageResponse {
     private int currentPage;
     private int totalPages;
 
+    public static ArticleCommentPageResponse toArticleCommentPageResponse(Page<ArticleCommentViewDTO> commentsPage) {
+        return new ArticleCommentPageResponse(
+                commentsPage.getContent(),
+                commentsPage.getNumber(),
+                commentsPage.getTotalPages()
+        );
+    }
 }
