@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation.request.member;
+package dev.linkcentral.presentation.request.studygroup;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

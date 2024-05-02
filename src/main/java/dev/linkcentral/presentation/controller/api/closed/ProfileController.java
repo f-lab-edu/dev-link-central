@@ -10,6 +10,7 @@ import dev.linkcentral.service.mapper.ProfileMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +31,8 @@ public class ProfileController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<ProfileUpdateResponse> updateProfile(@ModelAttribute ProfileDetailsRequest profileDetailsRequest,
+    public ResponseEntity<ProfileUpdateResponse> updateProfile(
+                                                    @Validated @ModelAttribute ProfileDetailsRequest profileDetailsRequest,
                                                     @RequestParam(value = "image", required = false) MultipartFile image) {
 
         ProfileUpdateDTO profileUpdateDTO = profileMapper.toUpdateProfileCommand(profileDetailsRequest);

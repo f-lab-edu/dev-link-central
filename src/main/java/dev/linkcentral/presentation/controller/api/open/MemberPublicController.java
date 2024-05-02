@@ -44,7 +44,7 @@ public class MemberPublicController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginSuccessResponse> login(@Valid @RequestBody MemberLoginRequest memberLoginRequest,
+    public ResponseEntity<LoginSuccessResponse> login(@Validated @RequestBody MemberLoginRequest memberLoginRequest,
                                                       HttpServletRequest request) {
         MemberLoginRequestDTO loginRequestDTO = memberMapper.toMemberLoginRequestCommand(memberLoginRequest);
         JwtTokenDTO jwtTokenDTO = memberFacade.loginMember(loginRequestDTO);

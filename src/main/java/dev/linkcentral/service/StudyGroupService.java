@@ -7,7 +7,7 @@ import dev.linkcentral.database.entity.StudyMember;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.StudyGroupRepository;
 import dev.linkcentral.database.repository.StudyMemberRepository;
-import dev.linkcentral.presentation.request.member.MemberRequest;
+import dev.linkcentral.presentation.request.studygroup.MemberRequest;
 import dev.linkcentral.presentation.request.studygroup.StudyGroupInfoRequest;
 import dev.linkcentral.presentation.request.studygroup.StudyGroupWithMembersRequest;
 import lombok.RequiredArgsConstructor;

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,7 +26,7 @@ public class ArticleController {
     private final ArticleCommentMapper articleCommentMapper;
 
     @PostMapping
-    public ResponseEntity<ArticleCreateResponse> createArticle(@RequestBody ArticleCreateRequest articleCreateRequest) {
+    public ResponseEntity<ArticleCreateResponse> createArticle(@Validated @RequestBody ArticleCreateRequest articleCreateRequest) {
         ArticleCreateRequestDTO createRequestDTO = articleMapper.toArticleCreateCommand(articleCreateRequest);
         ArticleCreateDTO articleCreateDTO = articleFacade.createAndSaveArticle(createRequestDTO);
         ArticleCreateResponse response = articleMapper.toArticleCreateResponse(articleCreateDTO);
@@ -33,7 +34,7 @@ public class ArticleController {
     }
 
     @PutMapping
-    public ResponseEntity<ArticleUpdateResponse> updateArticle(@RequestBody ArticleUpdateRequest updateRequest) {
+    public ResponseEntity<ArticleUpdateResponse> updateArticle(@Validated @RequestBody ArticleUpdateRequest updateRequest) {
         ArticleUpdateRequestDTO updateRequestDTO = articleMapper.toArticleUpdateRequestCommand(updateRequest);
         ArticleUpdatedDTO articleUpdatedDTO = articleFacade.updateArticle(updateRequestDTO);
         ArticleUpdateResponse response = new ArticleUpdateResponse(HttpStatus.OK.value(), articleUpdatedDTO);
@@ -63,7 +64,7 @@ public class ArticleController {
 
     @PostMapping("/{id}/comments")
     public ResponseEntity<ArticleCommentResponse> saveArticleComment(@PathVariable Long id,
-                                                              @RequestBody ArticleCommentRequest commentRequest) {
+                                          @Validated @RequestBody ArticleCommentRequest commentRequest) {
         if (commentRequest.getContents() == null) {
             throw new IllegalArgumentException("댓글 내용은 null이 아니어야 합니다.");
         }
@@ -77,7 +78,7 @@ public class ArticleController {
 
     @PutMapping("/comment/{commentId}")
     public ResponseEntity<ArticleCommentUpdateResponse> updateArticleComment(@PathVariable Long commentId,
-                                                                      @RequestBody ArticleCommentRequest commentRequest) {
+                                             @Validated @RequestBody ArticleCommentRequest commentRequest) {
         ArticleCommentRequestDTO commentRequestDTO = articleMapper.toArticleCommentRequestCommand(commentRequest);
         ArticleCommentUpdateDTO commentUpdateDTO = articleFacade.updateComment(commentRequestDTO, commentId);
         ArticleCommentUpdateResponse response = articleCommentMapper.toArticleCommentUpdateResponse(commentUpdateDTO);

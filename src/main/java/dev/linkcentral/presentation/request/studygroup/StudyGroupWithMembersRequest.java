@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.request.studygroup;
 
-import dev.linkcentral.presentation.request.member.MemberRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

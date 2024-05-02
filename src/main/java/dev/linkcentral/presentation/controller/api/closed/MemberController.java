@@ -13,6 +13,7 @@ import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,7 +33,7 @@ public class MemberController {
     }
 
     @PutMapping
-    public ResponseEntity<MemberEditResponse> updateMember(@RequestBody MemberEditRequest editRequest) {
+    public ResponseEntity<MemberEditResponse> updateMember(@Validated @RequestBody MemberEditRequest editRequest) {
         MemberEditDTO memberEditDTO = memberMapper.toMemberEditCommand(editRequest);
         memberFacade.updateMember(memberEditDTO);
         MemberEditResponse response = memberMapper.toUpdateMemberResponse();
@@ -40,7 +41,7 @@ public class MemberController {
     }
 
     @DeleteMapping
-    public ResponseEntity<MemberDeleteResponse> softDeleteMember(@RequestBody MemberDeleteRequest deleteRequest) {
+    public ResponseEntity<MemberDeleteResponse> softDeleteMember(@Validated @RequestBody MemberDeleteRequest deleteRequest) {
         MemberDeleteRequestDTO memberDeleteRequestDTO = memberMapper.toMemberDeleteRequestCommand(deleteRequest);
         boolean softDeleteMember = memberFacade.softDeleteMember(memberDeleteRequestDTO);
         MemberDeleteResponse response = memberMapper.toSoftDeleteMemberResponse(softDeleteMember);

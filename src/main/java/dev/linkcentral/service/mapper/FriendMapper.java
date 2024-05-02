@@ -5,7 +5,7 @@ import dev.linkcentral.database.entity.FriendStatus;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;
-import dev.linkcentral.presentation.request.friend.FriendRequest;
+import dev.linkcentral.presentation.request.friend.FriendshipRequest;
 import dev.linkcentral.presentation.response.friend.FriendReceivedResponse;
 import dev.linkcentral.presentation.response.friend.FriendRequestResponse;
 import dev.linkcentral.presentation.response.friend.FriendshipDetailResponse;
@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 @Component
 public class FriendMapper {
 
-    public FriendRequestDTO toFriendRequestCommand(FriendRequest friendRequest) {
+    public FriendRequestDTO toFriendRequestCommand(FriendshipRequest friendshipRequest) {
         return FriendRequestDTO.builder()
-                .senderId(friendRequest.getSenderId())
-                .receiverId(friendRequest.getReceiverId())
+                .senderId(friendshipRequest.getSenderId())
+                .receiverId(friendshipRequest.getReceiverId())
                 .build();
     }
 

@@ -1,6 +1,6 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
-import dev.linkcentral.presentation.request.friend.FriendRequest;
+import dev.linkcentral.presentation.request.friend.FriendshipRequest;
 import dev.linkcentral.presentation.response.friend.FriendReceivedResponse;
 import dev.linkcentral.presentation.response.friend.FriendRequestResponse;
 import dev.linkcentral.presentation.response.friend.FriendshipDetailResponse;
@@ -12,6 +12,7 @@ import dev.linkcentral.service.mapper.FriendMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +27,8 @@ public class FriendController {
     private final FriendMapper friendMapper;
 
     @PostMapping("/request")
-    public ResponseEntity<FriendRequestResponse> sendFriendRequest(@RequestBody FriendRequest friendRequest) {
-        FriendRequestDTO friendRequestDTO = friendMapper.toFriendRequestCommand(friendRequest);
+    public ResponseEntity<FriendRequestResponse> sendFriendRequest(@Validated @RequestBody FriendshipRequest friendshipRequest) {
+        FriendRequestDTO friendRequestDTO = friendMapper.toFriendRequestCommand(friendshipRequest);
         Long friendRequestId = friendFacade.sendFriendRequest(friendRequestDTO);
         FriendRequestResponse response = friendMapper.createFriendRequestResponse(friendRequestId);
         return ResponseEntity.ok(response);
