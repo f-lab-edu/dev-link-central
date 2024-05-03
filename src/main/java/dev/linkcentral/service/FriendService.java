@@ -5,9 +5,9 @@ import dev.linkcentral.database.entity.FriendStatus;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.repository.FriendRepository;
 import dev.linkcentral.database.repository.MemberRepository;
-import dev.linkcentral.presentation.dto.request.FriendRequest;
-import dev.linkcentral.presentation.dto.response.FriendListResponse;
-import dev.linkcentral.presentation.dto.response.FriendshipDetailResponse;
+import dev.linkcentral.service.dto.friend.FriendRequestDTO;
+import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;
+import dev.linkcentral.service.mapper.FriendMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -25,42 +23,38 @@ public class FriendService {
 
     private final MemberRepository memberRepository;
     private final FriendRepository friendRepository;
+    private final FriendMapper friendMapper;
 
     @Transactional
     public Long sendFriendRequest(Long senderId, Long receiverId) {
-        Member sender = memberRepository.findById(senderId)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다: " + senderId));
+        Member sender = findMemberById(senderId);
+        Member receiver = findMemberById(receiverId);
+        validateFriendRequest(sender, receiver);
 
-        Member receiver = memberRepository.findById(receiverId)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다: " + receiverId));
+        Friend friendEntity = friendMapper.createFriendRequest(sender, receiver);
+        friendRepository.save(friendEntity);
+        return friendEntity.getId();
+    }
 
-        if (friendRepository.existsBySenderAndReceiverOrReceiverAndSender(sender, receiver, sender, receiver)) {
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
+    }
+
+    private void validateFriendRequest(Member sender, Member receiver) {
+        boolean friendRequestExists = friendRepository.existsFriendshipBothWays(sender, receiver);
+        if (friendRequestExists) {
             throw new IllegalStateException("친구 요청을 이미 보냈거나 받았습니다.");
         }
-
-        Friend friendRequest = Friend.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .status(FriendStatus.REQUESTED)
-                .build();
-
-        friendRepository.save(friendRequest);
-        return friendRequest.getId();
     }
 
     @Transactional(readOnly = true)
-    public List<FriendRequest> getReceivedFriendRequests(Long receiverId) {
+    public List<FriendRequestDTO> getReceivedFriendRequests(Long receiverId) {
         Member receiver = memberRepository.findById(receiverId)
                 .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다: " + receiverId));
 
-        return friendRepository.findAllByReceiverAndStatus(receiver, FriendStatus.REQUESTED).stream()
-                .map(friend -> new FriendRequest(
-                        friend.getId(),
-                        friend.getSender().getId(),
-                        friend.getReceiver().getId(),
-                        friend.getSender().getNickname()
-                ))
-                .collect(Collectors.toList());
+        List<Friend> friends = friendRepository.findAllByReceiverAndStatus(receiver, FriendStatus.REQUESTED);
+        return friendMapper.toFriendRequestDTOList(friends);
     }
 
     @Transactional
@@ -82,15 +76,17 @@ public class FriendService {
 
     @Transactional
     public Long findFriendshipId(Long senderId, Long receiverId) {
-        Member sender = memberRepository.findById(senderId)
-                .orElseThrow(() -> new EntityNotFoundException("요청자 ID를 찾을 수 없습니다."));
-
-        Member receiver = memberRepository.findById(receiverId)
-                .orElseThrow(() -> new EntityNotFoundException("대상의 ID를 찾을 수 없습니다."));
+        Member sender = findMemberById(senderId, "요청자 ID를 찾을 수 없습니다.");
+        Member receiver = findMemberById(receiverId, "대상의 ID를 찾을 수 없습니다.");
 
         return friendRepository.findBySenderAndReceiver(sender, receiver)
                 .map(Friend::getId)
-                .orElse(null);
+                .orElseThrow(() -> new EntityNotFoundException("친구 관계 ID를 찾을 수 없습니다."));
+    }
+
+    private Member findMemberById(Long memberId, String errorMessage) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException(errorMessage));
     }
 
     @Transactional
@@ -99,26 +95,6 @@ public class FriendService {
                 .orElseThrow(() -> new EntityNotFoundException("친구 관계를 찾을 수 없습니다."));
 
         friendRepository.delete(friendship);
-    }
-
-    @Transactional(readOnly = true)
-    public List<FriendListResponse> getFriends(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다."));
-
-        List<Friend> sentFriends = friendRepository.findBySenderAndStatus(member, FriendStatus.ACCEPTED);
-        List<FriendListResponse> friendsFromSent = sentFriends.stream()
-                .map(friend -> new FriendListResponse(friend.getReceiver().getId(), friend.getReceiver().getName()))
-                .collect(Collectors.toList());
-
-        List<Friend> receivedFriends = friendRepository.findByReceiverAndStatus(member, FriendStatus.ACCEPTED);
-        List<FriendListResponse> friendsFromReceived = receivedFriends.stream()
-                .map(friend -> new FriendListResponse(friend.getSender().getId(), friend.getSender().getName()))
-                .collect(Collectors.toList());
-
-        return Stream.concat(friendsFromSent.stream(), friendsFromReceived.stream())
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -136,17 +112,9 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
-    public List<FriendshipDetailResponse> getFriendships(Long memberId) {
+    public List<FriendshipDetailDTO> getFriendships(Long memberId) {
         List<Friend> friendships = friendRepository.findBySenderOrReceiver(memberId);
-        return friendships.stream()
-                .map(friendship -> FriendshipDetailResponse.builder()
-                        .friendshipId(friendship.getId())
-                        .senderId(friendship.getSender().getId())
-                        .receiverId(friendship.getReceiver().getId())
-                        .senderName(friendship.getSender().getName())
-                        .receiverName(friendship.getReceiver().getName())
-                        .status(friendship.getStatus())
-                        .build())
-                .collect(Collectors.toList());
+        return friendMapper.toFriendshipDetailDTOList(friendships);
     }
+
 }

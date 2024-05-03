@@ -5,16 +5,19 @@ import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.MemberStatus;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
-import dev.linkcentral.presentation.dto.request.MemberEditRequest;
-import dev.linkcentral.presentation.dto.request.MemberMailRequest;
-import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
-import dev.linkcentral.presentation.dto.response.MemberInfoResponse;
+import dev.linkcentral.service.dto.member.MemberEditDTO;
+import dev.linkcentral.service.dto.member.MemberInfoDTO;
+import dev.linkcentral.service.dto.member.MemberMailDTO;
+import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
+import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -45,13 +48,11 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MemberMapper memberMapper;
 
-    public MemberInfoResponse getCurrentUserInfo() {
+    public MemberInfoDTO getCurrentUserInfo() {
         Member member = getCurrentMember();
-        return new MemberInfoResponse(
-                member.getId(),
-                member.getEmail(),
-                member.getNickname());
+        return memberMapper.toMemberInfoDTO(member);
     }
 
     @Transactional(readOnly = true)
@@ -94,31 +95,21 @@ public class MemberService {
     }
 
     @Transactional
-    public Member registerMember(MemberSaveRequest memberDTO) {
+    public Member registerMember(MemberRegistrationDTO memberDTO) {
         String nickname = memberDTO.getNickname();
         validateForDuplicates(memberDTO, nickname);
 
         try {
             List<String> roles = new ArrayList<>();
-            roles.add("USER");
-            Member memberEntity = createMemberFromDTO(memberDTO, roles);
+            roles.add(String.valueOf(MemberStatus.USER));
+            Member memberEntity = memberMapper.createMemberFromDTO(memberDTO, roles);
             return memberRepository.save(memberEntity);
         } catch (Exception e) {
             throw new MemberRegistrationException("회원 등록 중 오류가 발생했습니다.", e);
         }
     }
 
-    private Member createMemberFromDTO(MemberSaveRequest memberDTO, List<String> roles) {
-        return Member.builder()
-                .name(memberDTO.getName())
-                .passwordHash(passwordEncoder.encode(memberDTO.getPassword()))
-                .email(memberDTO.getEmail())
-                .nickname(memberDTO.getNickname())
-                .roles(roles)
-                .build();
-    }
-
-    private void validateForDuplicates(MemberSaveRequest memberDTO, String nickname) {
+    private void validateForDuplicates(MemberRegistrationDTO memberDTO, String nickname) {
         if (memberRepository.existsByNicknameAndDeletedFalse(nickname)) {
             throw new DuplicateNicknameException("닉네임이 이미 사용 중입니다.");
         }
@@ -142,24 +133,25 @@ public class MemberService {
     public boolean validateUserEmail(String userEmail, String userName) {
         Optional<Member> member = memberRepository.findByEmailAndNameAndDeletedFalse(userEmail, userName);
 
-        if (!member.isPresent()) {
+        if (member.isEmpty()) {
             throw new MemberEmailNotFoundException("유저의 이메일을 찾을 수 없습니다.");
         }
         return true;
     }
 
     @Transactional
-    public MemberMailRequest createMailForPasswordReset(String userEmail, String userName) {
-        MemberMailRequest dto = new MemberMailRequest();
+    public MemberMailDTO createMailForPasswordReset(String userEmail, String userName) {
         String generatedPassword = createTemporaryPassword();
 
-        dto.setAddress(userEmail);
-        dto.setTitle(userName + "님의 HOTTHINK 임시비밀번호 안내 이메일 입니다.");
-        dto.setMessage("안녕하세요. HOTTHINK 임시비밀번호 안내 관련 이메일 입니다."
-                + "[" + userName + "]" + "님의 임시 비밀번호는 " + generatedPassword + " 입니다.");
+        MemberMailDTO memberMailDTO = MemberMailDTO.builder()
+                .address(userEmail)
+                .title(userName + "님의 HOTTHINK 임시비밀번호 안내 이메일 입니다.")
+                .message("안녕하세요. HOTTHINK 임시비밀번호 안내 관련 이메일 입니다." +
+                        "[" + userName + "]" + "님의 임시 비밀번호는 " + generatedPassword + " 입니다.")
+                .build();
 
         resetPassword(generatedPassword, userEmail);
-        return dto;
+        return memberMailDTO;
     }
 
     @Transactional
@@ -186,25 +178,42 @@ public class MemberService {
         return str.toString();
     }
 
-    public void sendMail(MemberMailRequest mailDto) {
+    public void sendMail(MemberMailDTO memberMailDTO) {
         SimpleMailMessage message = new SimpleMailMessage();
+        try {
+            message.setTo(memberMailDTO.getAddress());    // 받는사람 주소
+            message.setFrom(FROM_ADDRESS);                // 보내는 사람 주소
+            message.setSubject(memberMailDTO.getTitle()); // 메일 제목
+            message.setText(memberMailDTO.getMessage());  // 메일 내용
 
-        message.setTo(mailDto.getAddress());    // 받는사람 주소
-        message.setFrom(FROM_ADDRESS);          // 보내는 사람 주소
-        message.setSubject(mailDto.getTitle()); // 메일 제속
-        message.setText(mailDto.getMessage());  // 메일 내용
-        mailSender.send(message);
+            mailSender.send(message);
+            log.info("이메일이 성공적으로 전송되었습니다: {}", memberMailDTO.getAddress());
+        } catch (MailException ex) {
+            log.error("이메일을 보내지 못했습니다: {}: {}", memberMailDTO.getAddress(), ex.getMessage());
+            throw new RuntimeException("이메일 전송 실패", ex);
+        }
     }
 
     @Transactional
-    public void editMember(MemberEditRequest memberEditDTO) {
+    public void editMember(MemberEditDTO memberEditDTO) {
+        validateMemberEditDTO(memberEditDTO);
+
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
 
-        String password = memberEditDTO.getPassword();
-        memberEntity.updatePasswordHash(passwordEncoder.encode(password));
-        memberEntity.updateName(memberEditDTO.getName());
-        memberEntity.updateNickname(memberEditDTO.getNickname());
+        memberMapper.updateMemberFromEditDTO(memberEntity, memberEditDTO);
+    }
+
+    private void validateMemberEditDTO(MemberEditDTO memberEditDTO) {
+        if (memberEditDTO.getId() == null) {
+            throw new IllegalArgumentException("회원 ID가 제공되지 않았습니다.");
+        }
+        if (memberEditDTO.getName() == null || memberEditDTO.getName().isEmpty()) {
+            throw new IllegalArgumentException("회원 이름이 유효하지 않습니다.");
+        }
+        if (memberEditDTO.getNickname() == null || memberEditDTO.getNickname().isEmpty()) {
+            throw new IllegalArgumentException("회원 닉네임이 유효하지 않습니다.");
+        }
     }
 
     @Transactional(readOnly = true)
@@ -223,13 +232,9 @@ public class MemberService {
         Member member = memberRepository.findByNicknameAndDeletedFalse(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("닉네임이 존재하지 않습니다."));
 
-        if (member != null) {
-            String passwordHash = member.getPasswordHash();
-
-            if (passwordEncoder.matches(password, passwordHash)) {
-                memberRepository.softDeleteById(member.getId());
-                return true;
-            }
+        if (passwordEncoder.matches(password, member.getPasswordHash())) {
+            memberRepository.softDeleteById(member.getId());
+            return true;
         }
         return false;
     }

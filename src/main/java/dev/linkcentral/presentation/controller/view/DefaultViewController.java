@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class DefaultViewController {
 
     @GetMapping("/")
-    public String home() {
+    public String showHome() {
         return "/home";
     }
 }

@@ -1,7 +1,8 @@
 package dev.linkcentral.presentation.controller.api.open;
 
-import dev.linkcentral.database.entity.Article;
-import dev.linkcentral.service.ArticleService;
+import dev.linkcentral.presentation.response.article.ArticleDetailsResponse;
+import dev.linkcentral.service.dto.article.ArticleDetailsDTO;
+import dev.linkcentral.service.facade.ArticleFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v1/public/article")
 public class ArticlePublicController {
 
-    private final ArticleService articleService;
+    private final ArticleFacade articleFacade;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Article> updateArticleDetails(@PathVariable Long id) {
-        Article article = articleService.getArticleById(id);
-        return ResponseEntity.ok().body(article);
+    public ResponseEntity<ArticleDetailsResponse> getArticleDetails(@PathVariable Long id) {
+        ArticleDetailsDTO articleDetailsDTO = articleFacade.getArticleDetails(id);
+        ArticleDetailsResponse response = ArticleDetailsResponse.toArticleDetailsResponse(articleDetailsDTO);
+        return ResponseEntity.ok(response);
     }
+
 }

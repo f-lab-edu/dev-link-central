@@ -5,6 +5,8 @@ import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
 import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
 import dev.linkcentral.presentation.dto.request.StudyGroupMembersDetailDTO;
 import dev.linkcentral.presentation.dto.response.*;
+import dev.linkcentral.presentation.response.studygroup.StudyGroupCreateResponse;
+import dev.linkcentral.presentation.response.studygroup.StudyGroupDetailsResponse;
 import dev.linkcentral.service.facade.StudyGroupFacade;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;

@@ -1,12 +1,12 @@
 package dev.linkcentral.database.entity;
 
-import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
 
-@Getter
 @Entity
+@Getter
 public class ArticleComment extends AuditingFields {
 
     @Id
@@ -43,19 +43,16 @@ public class ArticleComment extends AuditingFields {
         this.member = member;
     }
 
-    public static ArticleComment toSaveEntity(ArticleCommentRequest commentDTO, Article article, String writerNickname) {
-        ArticleComment articleComment = new ArticleComment();
-        articleComment.updateContent(commentDTO.getContents());
-        articleComment.updateArticle(article);
-        articleComment.writerNickname = writerNickname;
-        return articleComment;
+    public void updateWriterNickname(String writerNickname) {
+        this.writerNickname = writerNickname;
     }
 
-    public static ArticleComment create(Article article, Member member, String content) {
-        ArticleComment comment = new ArticleComment();
-        comment.article = article;
-        comment.member = member;
-        comment.content = content;
-        return comment;
+    @Builder
+    public ArticleComment(Long id, Article article, Member member, String content, String writerNickname) {
+        this.id = id;
+        this.article = article;
+        this.member = member;
+        this.content = content;
+        this.writerNickname = writerNickname;
     }
 }

@@ -20,8 +20,9 @@ public class ArticleStatistic extends AuditingFields {
 
     private int views;
 
+    // 동시성 이슈를 방지하기 위해 낙관적 락을 사용
     @Version
-    private Long version; // 낙관적 락
+    private Long version;
 
     public ArticleStatistic() {
     }

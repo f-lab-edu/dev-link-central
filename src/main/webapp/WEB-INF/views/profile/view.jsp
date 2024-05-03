@@ -226,13 +226,14 @@
                 success: function (response) {
                     alert('친구 요청이 성공적으로 전송되었습니다.');
 
-                    var friendId = response;
-                    console.log("@@ --> friendId: " + friendId);
+                    var friendRequestId = response.friendRequestId;
+                    console.log("@@ --> friendRequestId: " + friendRequestId);
 
-                    updateUnfriendButton(friendId);
+                    updateUnfriendButton(friendRequestId);
                 },
                 error: function (xhr, status, error) {
-                    alert('친구 요청을 보내지 못했습니다. 오류: ' + error);
+                    var errorMessage = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : error;
+                    alert('친구 요청을 보내지 못했습니다. 오류: ' + errorMessage);
                 }
             });
         }
@@ -381,8 +382,8 @@
                 success: function (response) {
                     console.log("Response:", response);
 
-                    if (response.length > 0) {
-                        var requestsHtml = response.map(function(request) {
+                    if (response.success && response.friendRequests.length > 0) {
+                        var requestsHtml = response.friendRequests.map(function(request) {
                             console.log('Entire request object:', request);
 
                             // request.id를 사용하여 data-request-id를 설정
@@ -513,8 +514,6 @@
             unfriendSelected(selectedFriendshipIds);
         });
 
-
-
         // 사용자 정보를 가져오는 함수
         $(document).ready(function() {
             var memberId;
@@ -526,12 +525,12 @@
                     type: 'GET',
                     headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                     success: function(response) {
-                        console.log("사용자 ID:", response.userId);
-                        memberId = response.userId; // 전역 변수를 업데이트
+                        console.log("사용자 정보 받기 성공:", response);
+                        memberId = response.userId;
 
                         // 사용자 ID를 사용하여 필요한 함수들을 호출
                         initEventListeners();
-                        fetchAndDisplayFriends(); // 통합된 함수 호출
+                        fetchAndDisplayFriends();
                     },
                     error: function(xhr, status, error) {
                         console.error("사용자 정보 요청에 실패했습니다.", xhr.responseText);

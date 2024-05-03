@@ -1,28 +1,26 @@
 package dev.linkcentral.presentation.controller.api.open;
 
-import dev.linkcentral.common.exception.DuplicateNicknameException;
-import dev.linkcentral.common.exception.MemberRegistrationException;
-import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.BaseUrlUtil;
-import dev.linkcentral.presentation.response.LoginSuccessResponse;
-import dev.linkcentral.service.MemberService;
-import dev.linkcentral.presentation.dto.request.MemberLoginRequest;
-import dev.linkcentral.presentation.dto.request.MemberMailRequest;
-import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
-import dev.linkcentral.presentation.dto.response.MemberPasswordResponse;
+import dev.linkcentral.presentation.request.member.MemberLoginRequest;
+import dev.linkcentral.presentation.request.member.MemberSaveRequest;
+import dev.linkcentral.presentation.response.member.LoginSuccessResponse;
+import dev.linkcentral.presentation.response.member.MailPasswordResetResponse;
+import dev.linkcentral.presentation.response.member.MemberPasswordResponse;
+import dev.linkcentral.presentation.response.member.MemberSaveResponse;
+import dev.linkcentral.service.dto.member.MemberLoginRequestDTO;
+import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
+import dev.linkcentral.service.dto.member.MemberRegistrationResultDTO;
+import dev.linkcentral.service.facade.MemberFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 @Controller
 @Slf4j
@@ -30,76 +28,50 @@ import javax.validation.Valid;
 @RequestMapping("/api/v1/public/member")
 public class MemberPublicController {
 
-    private final MemberService memberService;
+    private final MemberFacade memberFacade;
 
     @PostMapping("/register")
     @ResponseBody
-    public ResponseEntity<?> register(@Valid @RequestBody MemberSaveRequest memberDTO,
-                                      BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
-            return ResponseEntity.badRequest().body(errorMessage);
-        }
+    public ResponseEntity<MemberSaveResponse> register(@Validated @RequestBody MemberSaveRequest memberSaveRequest) {
+        MemberRegistrationDTO memberDTO = MemberSaveRequest.toMemberRegistrationCommand(memberSaveRequest);
+        MemberRegistrationResultDTO registrationResultDTO = memberFacade.registerNewMember(memberDTO);
 
-        try {
-            Member member = memberService.registerMember(memberDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (DuplicateNicknameException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("닉네임이 이미 사용 중입니다.");
-        } catch (MemberRegistrationException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 가입 중 오류가 발생했습니다.");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        MemberSaveResponse response = MemberSaveResponse.toMemberSaveResponse(registrationResultDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginSuccessResponse> login(@RequestBody MemberLoginRequest memberLoginDTO,
+    public ResponseEntity<LoginSuccessResponse> login(@Validated @RequestBody MemberLoginRequest memberLoginRequest,
                                                       HttpServletRequest request) {
-        try {
-            JwtTokenDTO jwtToken = memberService.authenticateAndGenerateJwtToken(
-                    memberLoginDTO.getEmail(),
-                    memberLoginDTO.getPassword());
+        MemberLoginRequestDTO loginRequestDTO = MemberLoginRequest.toMemberLoginRequestCommand(memberLoginRequest);
+        JwtTokenDTO jwtTokenDTO = memberFacade.loginMember(loginRequestDTO);
 
-            final String redirectUrl = BaseUrlUtil.getBaseUrl(request) + "/api/v1/view/member/login";
-
-            return ResponseEntity.ok(LoginSuccessResponse.builder()
-                    .grantType(jwtToken.getGrantType())
-                    .accessToken(jwtToken.getAccessToken())
-                    .refreshToken(jwtToken.getRefreshToken())
-                    .redirectUrl(redirectUrl)
-                    .build()); // 정상적인 경우 JwtTokenDTO 반환
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        final String redirectUrl = BaseUrlUtil.getBaseUrl(request) + "/api/v1/view/member/login";
+        LoginSuccessResponse response = LoginSuccessResponse.toLoginSuccessResponse(jwtTokenDTO, redirectUrl);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/forgot-password")
     @ResponseBody
-    public MemberPasswordResponse isPasswordValid(String userEmail, String userName) {
-        // 이메일과 이름이 일치하는 사용자가 있는지 확인.
-        boolean pwFindCheck = memberService.validateUserEmail(userEmail, userName);
-        return new MemberPasswordResponse(pwFindCheck);
+    public ResponseEntity<MemberPasswordResponse> validatePassword(String userEmail, String userName) {
+        boolean pwFindCheck = memberFacade.isPasswordValid(userEmail, userName);
+        MemberPasswordResponse response = MemberPasswordResponse.toMemberPasswordResponse(pwFindCheck);
+        return ResponseEntity.ok(response);
     }
 
-    /**
-     * 등록된 이메일로 임시비밀번호를 발송하고, 발송된 임시비밀번호로 사용자의 pw를 변경하는 API
-     */
     @PostMapping("/send-email/update-password")
-    public void sendEmail(String userEmail, String userName) {
-        MemberMailRequest dto = memberService.createMailForPasswordReset(userEmail, userName);
-        memberService.sendMail(dto);
+    public ResponseEntity<MailPasswordResetResponse> sendPasswordResetEmail(String userEmail, String userName) {
+        memberFacade.sendPasswordResetEmail(userEmail, userName);
+        MailPasswordResetResponse response = MailPasswordResetResponse.toMailPasswordResetResponse();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/check-current-password")
     @ResponseBody
-    public MemberPasswordResponse checkPassword(@RequestParam String password) {
-        Member member = memberService.getCurrentMember();
-        boolean result = memberService.validatePassword(member.getNickname(), password);
-        return new MemberPasswordResponse(result);
+    public ResponseEntity<MemberPasswordResponse> verifyCurrentPassword(@RequestParam String password) {
+        boolean isPasswordValid = memberFacade.checkPassword(password);
+        MemberPasswordResponse response = MemberPasswordResponse.toMemberPasswordResponse(isPasswordValid);
+        return ResponseEntity.ok(response);
     }
+
 }

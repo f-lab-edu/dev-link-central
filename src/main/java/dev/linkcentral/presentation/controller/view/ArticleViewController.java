@@ -1,13 +1,12 @@
 package dev.linkcentral.presentation.controller.view;
 
-import dev.linkcentral.database.entity.Article;
-import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.infrastructure.SecurityUtils;
-import dev.linkcentral.service.ArticleService;
-import dev.linkcentral.service.MemberService;
-import dev.linkcentral.presentation.dto.request.ArticleCommentRequest;
-import dev.linkcentral.presentation.dto.request.ArticleRequest;
-import dev.linkcentral.presentation.dto.response.CommentPageResponse;
+import dev.linkcentral.presentation.response.article.ArticleCommentPageResponse;
+import dev.linkcentral.service.dto.article.ArticleCommentViewDTO;
+import dev.linkcentral.service.dto.article.ArticleDetailsDTO;
+import dev.linkcentral.service.dto.article.ArticleViewDTO;
+import dev.linkcentral.service.dto.member.MemberCurrentDTO;
+import dev.linkcentral.service.facade.ArticleFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,60 +28,55 @@ import java.util.List;
 @RequestMapping("/api/v1/view/article")
 public class ArticleViewController {
 
-    private final ArticleService articleService;
-    private final MemberService memberService;
+    private final ArticleFacade articleFacade;
 
     @GetMapping("/save-form")
-    public String saveForm(Model model) {
-        Member currentMember = memberService.getCurrentMember();
-        model.addAttribute("nickname", currentMember.getNickname());
+    public String showArticleSaveForm(Model model) {
+        MemberCurrentDTO memberCurrentDTO = articleFacade.saveForm();
+        model.addAttribute("nickname", memberCurrentDTO.getMember().getNickname());
         return "articles/save";
     }
 
     @GetMapping("/")
-    public String findAll(Model model) {
-        List<ArticleRequest> articleList = articleService.findAllArticles();
-        model.addAttribute("articleList", articleList);
+    public String showAllArticles(Model model) {
+        List<ArticleViewDTO> articleViewDTOList = articleFacade.findAll();
+        model.addAttribute("articleList", articleViewDTOList);
         return "/articles/list";
     }
 
     @GetMapping("/{id}")
-    public String findById(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+    public String showArticleDetails(@PageableDefault(size = 5, sort = "id",
+                           direction = Sort.Direction.DESC) Pageable pageable,
                            @PathVariable Long id, Model model) {
 
-        Member member = memberService.getAuthenticatedMember();
-        ArticleRequest articleDTO = articleService.findArticleById(id, member);
-
-        model.addAttribute("article", articleDTO);
+        ArticleViewDTO articleViewDTO = articleFacade.findById(id);
+        model.addAttribute("article", articleViewDTO);
         model.addAttribute("page", pageable.getPageNumber());
         return "/articles/detail";
     }
 
     @GetMapping("/update-form/{id}")
-    public String updateForm(@PathVariable Long id, Model model) {
-        Article article = articleService.getArticleById(id);
-        model.addAttribute("articleUpdate", article);
+    public String showArticleUpdateForm(@PathVariable Long id, Model model) {
+        ArticleDetailsDTO articleDetailsDTO = articleFacade.updateForm(id);
+        model.addAttribute("articleUpdate", articleDetailsDTO);
         return "/articles/update";
     }
 
     @GetMapping("/delete-form/{id}")
-    public String deleteForm(@PathVariable Long id) {
-        articleService.deleteArticle(id);
+    public String deleteArticleAndRedirect(@PathVariable Long id) {
+        articleFacade.deleteForm(id);
         return "redirect:/api/v1/view/article/";
     }
 
     @GetMapping("/paging")
-    public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
-        Page<ArticleRequest> articlePage = articleService.paginateArticles(pageable);
-        List<ArticleRequest> articleList = articlePage.getContent(); // Page에서 List로 변환
+    public String showArticlesWithPagination(@PageableDefault(page = 1) Pageable pageable, Model model) {
+        Page<ArticleViewDTO> articlePage = articleFacade.paging(pageable);
+        List<ArticleViewDTO> articleList = articlePage.getContent(); // Page에서 List로 변환
 
         int blockLimit = 3;
         int startPage = (((int) Math.ceil(((double) pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
         int endPage = Math.min((startPage + blockLimit - 1), articlePage.getTotalPages());
-
-        // 인증된 사용자인지 확인
         boolean isAuthenticated = SecurityUtils.isAuthenticated();
-        log.info("--> isAuthenticated: {}", isAuthenticated);
 
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("articleList", articleList); // List로 전달
@@ -93,15 +87,12 @@ public class ArticleViewController {
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<CommentPageResponse> getCommentsForArticle(@PathVariable Long id,
-                                                                     @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<ArticleCommentPageResponse> showCommentsForArticle(@PathVariable Long id,
+             @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<ArticleCommentRequest> commentsPage = articleService.findCommentsForScrolling(id, pageable);
-        CommentPageResponse response = new CommentPageResponse(
-                commentsPage.getContent(),
-                commentsPage.getNumber(),
-                commentsPage.getTotalPages()
-        );
+        Page<ArticleCommentViewDTO> commentsPage = articleFacade.getCommentsForArticle(id, pageable);
+        ArticleCommentPageResponse response = ArticleCommentPageResponse.toArticleCommentPageResponse(commentsPage);
         return ResponseEntity.ok(response);
     }
+
 }

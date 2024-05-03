@@ -90,16 +90,21 @@
 
             $.ajax({
                 url: "/api/v1/member?password=" + encodeURIComponent(password),
+                type: 'DELETE',
+                contentType: 'application/json',
+                data: JSON.stringify({password: password}),
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
-                type: 'DELETE',
-                success: function(response) {
-                    alert('회원 탈퇴가 완료되었습니다.');
-                    window.location.href = "/api/v1/view/member/";
+                success: function(memberDeleteResponse) {
+                    if (memberDeleteResponse.success) {
+                        alert(memberDeleteResponse.message);
+                        window.location.href = "/";
+                    } else {
+                        alert(memberDeleteResponse.message);
+                    }
                 },
                 error: function(xhr, status, error) {
-                    // 요청이 실패했을 때의 동작
                     alert('회원 탈퇴에 실패했습니다. 오류 메시지: ' + xhr.responseText);
                 }
             });

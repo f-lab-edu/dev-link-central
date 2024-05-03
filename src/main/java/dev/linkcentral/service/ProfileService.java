@@ -5,7 +5,8 @@ import dev.linkcentral.database.entity.Profile;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.ProfileRepository;
 import dev.linkcentral.infrastructure.s3.AwsS3Uploader;
-import dev.linkcentral.presentation.dto.request.ProfileRequest;
+import dev.linkcentral.service.dto.profile.ProfileDetailsDTO;
+import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,17 +22,17 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    public ProfileRequest getProfile(Long memberId) {
+    public ProfileDetailsDTO getProfile(Long memberId) {
         return profileRepository.findByMemberId(memberId)
-                .map(profile -> new ProfileRequest(
+                .map(profile -> new ProfileDetailsDTO(
                         profile.getMember().getId(),
                         profile.getBio(),
                         profile.getImageUrl()))
-                .orElse(new ProfileRequest(memberId, "자신을 소개해 주세요!", ""));
+                .orElse(new ProfileDetailsDTO(memberId, "자신을 소개해 주세요!", ""));
     }
 
     @Transactional
-    public void updateProfile(ProfileRequest profileDTO, MultipartFile imageFile) {
+    public void updateProfile(ProfileUpdateDTO profileDTO, MultipartFile imageFile) {
         Profile profile = findOrCreateProfile(profileDTO.getMemberId());
         updateProfileDetails(profile, profileDTO.getBio(), imageFile);
     }
@@ -48,7 +49,9 @@ public class ProfileService {
         profile.updateBio(bio);
 
         if (!imageFile.isEmpty()) {
-            String imageUrl = awsS3Uploader.uploadFile(imageFile, "profile-images/" + profile.getMember().getId());
+            String imageUrl = awsS3Uploader.uploadFile(
+                    imageFile, "profile-images/" + profile.getMember().getId()
+            );
             profile.updateImageUrl(imageUrl);
         }
         profileRepository.save(profile);

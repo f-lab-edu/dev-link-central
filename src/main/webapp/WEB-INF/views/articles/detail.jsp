@@ -1,9 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="dev.linkcentral.presentation.dto.request.ArticleRequest" %>
-<%@ page import="dev.linkcentral.presentation.dto.request.ArticleCommentRequest" %>
+<%@ page import="dev.linkcentral.presentation.request.article.ArticleCreateRequest" %>
+<%@ page import="dev.linkcentral.presentation.request.article.ArticleCommentRequest" %>
 <%@ page import="java.util.List" %>
 <%@ page import="dev.linkcentral.database.entity.Member" %>
 <%@ page import="org.springframework.data.domain.Page" %>
+<%@ page import="dev.linkcentral.service.dto.article.ArticleViewDTO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -109,7 +110,7 @@
     </style>
 
     <script>
-        <% ArticleRequest article = (ArticleRequest) request.getAttribute("article"); %>
+        <% ArticleViewDTO article = (ArticleViewDTO) request.getAttribute("article"); %>
         var articleId = <%= article.getId() %>;
         console.log("Article ID:", articleId);
 
@@ -155,7 +156,12 @@
 
         // AJAX를 통해 수정된 댓글 내용을 서버에 전송
         function submitCommentEdit(commentId) {
-            var newContent = $("#edit-content-" + commentId).val();
+            var newContent = $("#edit-content-" + commentId).val().trim();
+            if (!newContent) {
+                alert("댓글 내용을 입력해주세요.");
+                return;
+            }
+
             $.ajax({
                 url: "/api/v1/article/comment/" + commentId,
                 headers: {
@@ -166,7 +172,9 @@
                 data: JSON.stringify({ contents: newContent }),
                 success: function() {
                     // 성공 시 댓글 목록을 다시 로드
-                    location.reload();
+                    $("#comment-content-" + commentId).text(newContent);
+                    $("#edit-modal").modal('hide');  // Assuming you might use a modal to edit comments
+                    window.location.reload();
                 },
                 error: function(xhr, status, error) {
                     alert("댓글 수정 실패: 다른 유저가 작성한 댓글입니다." + error);
@@ -232,8 +240,11 @@
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
-                success: function(likesCount) {
-                    $('#likesCount').text(likesCount);
+                // success: function(likesCount) {
+                success: function(response) {
+                    // $('#likesCount').text(likesCount);
+                    $('#likesCount').text(response.likesCount);
+
                 },
                 error: function(xhr, status, error) {
                     console.error("Error updating likes count:", status, error);
@@ -254,22 +265,23 @@
                 return;
             }
             $.ajax({
-                url: "/api/v1/article/" + articleId + "/comments", // 서버의 댓글 저장 API 경로
+                url: "/api/v1/article/" + articleId + "/comments",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({ contents: contents }),
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") }, // 필요한 경우 JWT 토큰 추가
-                success: function(comment) {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
+                success: function(response) {
                     $('#contents').val(''); // 입력 필드 초기화
                     // 새로운 댓글만 페이지에 추가
+                    var formattedDate = new Date(response.createdAt).toLocaleString();
                     var newCommentHtml = "<tr>" +
-                        "<td>" + comment.id + "</td>" +
-                        "<td>" + comment.nickname + "</td>" +
-                        "<td>" + comment.contents + "</td>" +
-                        "<td>" + comment.createdAt + "</td>" +
+                        "<td>" + response.id + "</td>" +
+                        "<td>" + response.writerNickname + "</td>" +
+                        "<td>" + response.contents + "</td>" +
+                        "<td>" + formattedDate + "</td>" +
                         "</tr>";
-                    $("#comment-list table tbody").prepend(newCommentHtml); // 댓글 목록의 맨 위에 새 댓글 추가
-                    location.reload(); // 페이지 새로고침
+                    $("#comment-list table tbody").prepend(newCommentHtml);
+                    window.location.reload();
                 },
                 error: function(xhr, status, error) {
                     alert('댓글 작성 실패: ' + xhr.responseText);

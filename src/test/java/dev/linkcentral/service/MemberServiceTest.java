@@ -4,11 +4,12 @@ import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.MemberStatus;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
-import dev.linkcentral.presentation.dto.request.MemberEditRequest;
-import dev.linkcentral.presentation.dto.request.MemberSaveRequest;
+import dev.linkcentral.service.dto.member.MemberEditDTO;
+import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,38 +41,38 @@ public class MemberServiceTest {
     @InjectMocks
     private MemberService memberService;
 
-    private Member createTestMember() {
-        Member member = Member.builder()
-                .name("minseok")
-                .passwordHash(passwordEncoder.encode("1234"))
-                .email("test@naver.com")
-                .nickname("apple")
-                .deleted(false)
-                .build();
-        return member;
+    private MemberRegistrationDTO createTestMemberRegistrationDTO() {
+        return new MemberRegistrationDTO(
+                "John Doe",
+                "john.doe@example.com",
+                "securePassword123",
+                "johndoe",
+                Collections.singletonList(String.valueOf(MemberStatus.USER)));
     }
 
-    private MemberSaveRequest createTestMemberSaveDTO() {
-        MemberSaveRequest memberDTO = new MemberSaveRequest();
-        memberDTO.setName("minseok");
-        memberDTO.setPassword("1234");
-        memberDTO.setEmail("test@naver.com");
-        memberDTO.setNickname("apple");
-        return memberDTO;
+    private Member createTestMember() {
+        return new Member(1L,
+                "John Doe",
+                "hashed_password",
+                "john.doe@example.com",
+                "johndoe",
+                Collections.singletonList(String.valueOf(MemberStatus.USER)), false);
     }
 
     @DisplayName("회원 가입시 데이터베이스 저장 검증")
     @Test
     void save_member_and_verify_database() {
         // given
-        MemberSaveRequest memberDTO = createTestMemberSaveDTO();
+        MemberRegistrationDTO memberRegistrationDTO = createTestMemberRegistrationDTO();
         Member mockMember = createTestMember();
         when(memberRepository.save(any(Member.class))).thenReturn(mockMember);
+        when(passwordEncoder.encode(any(String.class))).thenReturn("hashed_password");
 
         // when
-        Member savedMember = memberService.registerMember(memberDTO);
+        Member savedMember = memberService.registerMember(memberRegistrationDTO);
 
         // then
+        assertNotNull(savedMember);
         assertEquals(mockMember.getId(), savedMember.getId());
         assertEquals(mockMember.getName(), savedMember.getName());
         assertEquals(mockMember.getEmail(), savedMember.getEmail());
@@ -81,12 +83,12 @@ public class MemberServiceTest {
     @Test
     void register_with_duplicate_email_exception() {
         // given
-        MemberSaveRequest newMemberDTO = createTestMemberSaveDTO();
-        when(memberRepository.countByEmailIgnoringDeleted(newMemberDTO.getEmail())).thenReturn(1L);
+        MemberRegistrationDTO memberRegistrationDTO = createTestMemberRegistrationDTO();
+        when(memberRepository.countByEmailIgnoringDeleted(memberRegistrationDTO.getEmail())).thenReturn(1L);
 
         // when & then
         assertThrows(DuplicateEmailException.class, () -> {
-            memberService.registerMember(newMemberDTO);
+            memberService.registerMember(memberRegistrationDTO);
         });
     }
 
@@ -94,12 +96,12 @@ public class MemberServiceTest {
     @Test
     void register_with_duplicate_nickname_exception() {
         // given
-        MemberSaveRequest newMemberDTO = createTestMemberSaveDTO();
-        when(memberRepository.existsByNicknameAndDeletedFalse(newMemberDTO.getNickname())).thenReturn(true);
+        MemberRegistrationDTO memberRegistrationDTO = createTestMemberRegistrationDTO();
+        when(memberRepository.existsByNicknameAndDeletedFalse(memberRegistrationDTO.getNickname())).thenReturn(true);
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> {
-            memberService.registerMember(newMemberDTO);
+            memberService.registerMember(memberRegistrationDTO);
         });
     }
 
@@ -178,11 +180,12 @@ public class MemberServiceTest {
     void modify_member_information_and_verify() {
         // given
         Member originalMember = createTestMember();
-        MemberEditRequest memberEditDTO = new MemberEditRequest(
-                originalMember.getId(),
-                "heedo",
-                "7777",
-                "mango");
+        MemberEditDTO memberEditDTO = MemberEditDTO.builder()
+                .id(originalMember.getId())
+                .name("heedo")
+                .password("7777")
+                .nickname("mango")
+                .build();
 
         when(memberRepository.findById(originalMember.getId())).thenReturn(Optional.of(originalMember));
         when(passwordEncoder.encode("7777")).thenReturn("encodedNewPassword");
