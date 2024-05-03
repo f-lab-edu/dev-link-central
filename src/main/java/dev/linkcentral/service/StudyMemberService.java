@@ -6,7 +6,7 @@ import dev.linkcentral.database.entity.StudyGroupStatus;
 import dev.linkcentral.database.entity.StudyMember;
 import dev.linkcentral.database.repository.StudyGroupRepository;
 import dev.linkcentral.database.repository.StudyMemberRepository;
-import dev.linkcentral.presentation.request.studygroup.StudyMemberRequest;
+import dev.linkcentral.presentation.dto.StudyGroupJoinRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +48,7 @@ public class StudyMemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudyMemberRequest> listJoinRequestsForStudyGroup(Long studyGroupId) {
+    public List<StudyGroupJoinRequestDTO> listJoinRequestsForStudyGroup(Long studyGroupId) {
         StudyGroup studyGroup = studyGroupRepository.findById(studyGroupId)
                 .orElseThrow(() -> new EntityNotFoundException("스터디 그룹을 찾을 수 없습니다."));
 
@@ -57,7 +57,7 @@ public class StudyMemberService {
 
         return studyMembers.stream()
                 .filter(sm -> !sm.getMember().getId().equals(studyGroup.getStudyLeaderId()))
-                .map(sm -> new StudyMemberRequest(
+                .map(sm -> new StudyGroupJoinRequestDTO(
                         sm.getId(),
                         sm.getMember().getName(),
                         sm.getStudyGroup().getGroupName()))

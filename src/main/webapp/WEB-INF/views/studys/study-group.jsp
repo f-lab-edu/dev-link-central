@@ -107,9 +107,9 @@
                 url: "/api/v1/study-group/study-group-id",
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                 type: "GET",
-                success: function(data) {
+                success: function(response) {
                     var listHtml = '<ul>';
-                    $.each(data, function(index, studyGroupId) {
+                    $.each(response.studyGroupIds, function(index, studyGroupId) {
                         GroupId = studyGroupId;
                         listHtml += '<li>스터디 그룹 ID: ' + studyGroupId + '</li>';
                     });
@@ -137,8 +137,8 @@
                 url: '/api/v1/study-group/' + groupId + '/received-requests',
                 type: 'GET',
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
-                success: function(requests) {
-                    var requestsHtml = requests.map(function(request) {
+                success: function(response) {
+                    var requestsHtml = response.studyMemberRequests.map(function(request) {
                         return '<tr>' +
                             '<td>' + request.memberName + '</td>' +
                             '<td>' + request.groupName + '</td>' +
@@ -201,13 +201,17 @@
                     url: "/api/v1/study-group/" + studyGroupId + "/leave",
                     type: "DELETE",
                     headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                    success: function() {
-                        alert("스터디 그룹에서 탈퇴했습니다.");
-                        loadAcceptedStudyGroups();
-                        window.location.reload();
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            loadAcceptedStudyGroups();
+                            window.location.reload();
+                        } else {
+                            alert("스터디 그룹을 탈퇴하지 못했습니다.: " + response.message);
+                        }
                     },
-                    error: function(xhr, status, error) {
-                        alert("탈퇴 처리에 실패했습니다: " + xhr.responseText);
+                    error: function(xhr) {
+                        alert("스터디 그룹을 떠나는 중 오류 발생: " + xhr.responseText);
                     }
                 });
             });
@@ -225,13 +229,13 @@
                 url: "/api/v1/study-group/current-accepted",
                 type: "GET",
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                success: function(groups) {
+                success: function(response) {
                     $("#currentGroupsTable tbody").empty();
-                    if (groups.length === 0) {
+                    if (response.acceptedStudyGroupDetails.length === 0) {
                         $("#noGroupsMessage").show(); // 스터디 그룹이 없을 경우 메시지를 보여준다.
                     } else {
                         $("#noGroupsMessage").hide(); // 스터디 그룹이 있을 경우 메시지를 숨긴다.
-                        groups.forEach(function(group) {
+                        response.acceptedStudyGroupDetails.forEach(function(group) {
                             var row = $("<tr>").append(
                                 $("<td>").text(group.groupName),
                                 $("<td>").append(
@@ -253,8 +257,8 @@
                 url: "/api/v1/study-group/exists?userId=" + userId,
                 type: "GET",
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                success: function(exists) {
-                    if (exists) {
+                success: function(response) {
+                    if (response.exists) {
                         $("#createStudyGroupButton").hide();
                         $("#alreadyCreatedMessage").show();
                     } else {
@@ -270,37 +274,16 @@
     </script>
 
     <script>
-        function checkStudyGroupExists(userId) {
-            $.ajax({
-                url: "/api/v1/study-group/exists?userId=" + userId,
-                type: "GET",
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                success: function(isStudyGroupCreated) {
-                    if(isStudyGroupCreated) {
-                        $("#createStudyGroupButton").hide();
-                        $("#alreadyCreatedMessage").show();
-                    } else {
-                        $("#createStudyGroupButton").show();
-                        $("#alreadyCreatedMessage").hide();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("스터디 그룹 존재 여부 확인 중 에러 발생: ", status, error);
-                }
-            });
-        }
-    </script>
-
-
-    <script>
         $(document).ready(function() {
             console.log("userId: " + userId);
             $.ajax({
                 url: "/api/v1/study-group/user/" + userId + "/groups-with-members",
                 type: 'GET',
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
-                success: function(groupsAndMembers) {
+                success: function(response) {
+                    var groupsAndMembers = response.groupMembersDetailDTOS;
                     var contentHtml = '';
+
                     groupsAndMembers.forEach(function(group) {
                         contentHtml += '<div class="study-group">';
                         contentHtml += '<h3>' + group.groupName + '</h3>';
@@ -344,7 +327,7 @@
                     $('#studyGroupsAndMembers').html(contentHtml);
                 },
                 error: function(xhr, status, error) {
-                    console.error("Failed to load study groups and members", status, error);
+                    console.error("스터디 그룹 및 구성원을 로드하지 못했습니다.", status, error, xhr.responseText);
                 }
             });
         });

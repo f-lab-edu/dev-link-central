@@ -7,9 +7,9 @@ import dev.linkcentral.database.entity.StudyMember;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.StudyGroupRepository;
 import dev.linkcentral.database.repository.StudyMemberRepository;
-import dev.linkcentral.presentation.request.studygroup.MemberRequest;
-import dev.linkcentral.presentation.request.studygroup.StudyGroupInfoRequest;
-import dev.linkcentral.presentation.request.studygroup.StudyGroupWithMembersRequest;
+import dev.linkcentral.presentation.dto.request.MemberRequest;
+import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
+import dev.linkcentral.presentation.dto.request.StudyGroupMembersDetailDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -36,6 +36,9 @@ public class StudyGroupService {
 
     @Transactional
     public StudyGroup createStudyGroup(String groupName, String studyTopic, Long leaderId) {
+        Member leader = memberRepository.findById(leaderId)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
+
         StudyGroup studyGroup = StudyGroup.builder()
                 .groupName(groupName)
                 .studyTopic(studyTopic)
@@ -44,9 +47,6 @@ public class StudyGroupService {
                 .build();
 
         StudyGroup savedStudyGroup = studyGroupRepository.save(studyGroup);
-
-        Member leader = memberRepository.findById(leaderId)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
 
         StudyMember studyMember = StudyMember.builder()
                 .member(leader)
@@ -125,10 +125,10 @@ public class StudyGroupService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudyGroupInfoRequest> findAcceptedStudyGroupInfoDTOsByUserId(Long userId) {
+    public List<AcceptedStudyGroupDetailsDTO> getAcceptedGroupsByUser(Long userId) {
         List<StudyGroup> groups = findAcceptedStudyGroupsByMemberId(userId);
         return groups.stream()
-                .map(group -> new StudyGroupInfoRequest(
+                .map(group -> new AcceptedStudyGroupDetailsDTO(
                         group.getId(),
                         group.getGroupName(),
                         group.getStudyTopic()))
@@ -136,9 +136,9 @@ public class StudyGroupService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudyGroupWithMembersRequest> getStudyGroupsAndMembers(Long userId) {
+    public List<StudyGroupMembersDetailDTO> getStudyGroupsAndMembers(Long userId) {
         List<StudyGroup> studyGroups = studyGroupRepository.findStudyGroupsByUserId(userId);
-        List<StudyGroupWithMembersRequest> result = new ArrayList<>();
+        List<StudyGroupMembersDetailDTO> result = new ArrayList<>();
 
         for (StudyGroup group : studyGroups) {
             List<StudyMember> acceptedMembers = studyMemberRepository
@@ -151,7 +151,7 @@ public class StudyGroupService {
                                 member.getMember().getName()))
                         .collect(Collectors.toList());
 
-                result.add(new StudyGroupWithMembersRequest(
+                result.add(new StudyGroupMembersDetailDTO(
                         group.getId(),
                         group.getStudyLeaderId(),
                         group.getGroupName(),
