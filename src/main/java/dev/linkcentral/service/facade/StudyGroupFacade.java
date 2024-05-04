@@ -1,15 +1,13 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.Article;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
-import dev.linkcentral.presentation.dto.*;
-import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
-import dev.linkcentral.presentation.dto.request.StudyGroupMembersDetailDTO;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.StudyGroupService;
 import dev.linkcentral.service.StudyMemberService;
+import dev.linkcentral.service.dto.article.ArticleDetailsDTO;
+import dev.linkcentral.service.dto.studygroup.*;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -38,7 +36,7 @@ public class StudyGroupFacade {
         return studyGroupMapper.toStudyGroupMemberInfoDTO(currentMember);
     }
 
-    public StudyGroupDeletionDTO removeStudyGroupAsLeader(Long studyGroupId) {
+    public StudyGroupDeleteDTO removeStudyGroupAsLeader(Long studyGroupId) {
         Member currentMember = memberService.getCurrentMember();
         StudyGroup studyGroup = studyGroupService.getStudyGroupById(studyGroupId);
 
@@ -54,7 +52,7 @@ public class StudyGroupFacade {
         return leaveStudyGroupAsMember(studyGroupId, currentMember);
     }
 
-    private StudyGroupDeletionDTO leaveStudyGroupAsMember(Long studyGroupId, Member currentMember) {
+    private StudyGroupDeleteDTO leaveStudyGroupAsMember(Long studyGroupId, Member currentMember) {
         boolean isLeft = studyGroupService.leaveStudyGroupAsMember(studyGroupId, currentMember.getId());
         if (isLeft) {
             return studyGroupMapper.toStudyGroupDeletionDTO(true, "스터디 그룹에서 탈퇴하였습니다.");
@@ -73,7 +71,7 @@ public class StudyGroupFacade {
 
     public StudyGroupDetailsDTO getStudyGroupDetails(Long articleId) {
         Member currentMember = memberService.getCurrentMember();
-        Article article = articleService.getArticleById(articleId);
+        ArticleDetailsDTO article = articleService.getArticleById(articleId);
 
         StudyGroup studyGroup = studyGroupService.findStudyGroupByLeaderId(article.getMember().getId());
         boolean isLeader = studyGroup.getStudyLeaderId().equals(currentMember.getId());
@@ -123,4 +121,22 @@ public class StudyGroupFacade {
     public void requestJoinStudyGroup(Long studyGroupId) {
         studyMemberService.requestJoinStudyGroup(studyGroupId);
     }
+
+    public boolean studyGroupPage(Long memberId) {
+        return studyGroupService.isStudyGroupCreatedForLeader(memberId);
+    }
+
+    public StudyGroupMemberDTO getMemberById(Long memberId) {
+        Member currentMember = memberService.getMemberById(memberId);
+        return studyGroupMapper.toStudyGroupMemberDTO(currentMember);
+    }
+
+    public Long findStudyGroupIdByLeaderId(Long memberId) {
+        return studyGroupService.findStudyGroupIdByLeaderId(memberId);
+    }
+
+    public List<StudyGroup> findStudyGroupsByUserId(Long memberId) {
+        return studyGroupService.findStudyGroupsByUserId(memberId);
+    }
+
 }

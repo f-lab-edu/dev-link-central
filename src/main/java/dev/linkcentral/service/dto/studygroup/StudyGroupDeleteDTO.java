@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation.dto;
+package dev.linkcentral.service.dto.studygroup;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudyGroupDeletionDTO {
+public class StudyGroupDeleteDTO {
 
     private boolean success;
     private String message;

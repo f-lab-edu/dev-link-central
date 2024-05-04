@@ -60,8 +60,10 @@
                                     window.location.href = "/api/v1/view/article/paging";
                                 },
                                 error: function(xhr, status, error) {
-                                    console.log('오류:', status, error);
-                                    alert('글 작성에 실패했습니다.');
+                                    console.log('Error Status:', status);
+                                    console.log('Error:', error);
+                                    console.log('Response Text:', xhr.responseText);
+                                    alert('글 작성에 실패했습니다. 오류를 확인하세요.');
                                 }
                             });
                         });

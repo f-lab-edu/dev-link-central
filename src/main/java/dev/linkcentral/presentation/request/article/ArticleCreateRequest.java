@@ -20,8 +20,6 @@ import java.time.LocalDateTime;
 @ApiModel(description = "게시글 생성을 위한 요청 데이터")
 public class ArticleCreateRequest {
 
-    @ApiModelProperty(value = "게시글의 고유 식별자", required = true)
-    @NotNull(message = "게시글 ID는 필수 입력 항목입니다.")
     private Long id;
 
     @ApiModelProperty(value = "게시글의 제목", required = true)
@@ -38,8 +36,6 @@ public class ArticleCreateRequest {
     @NotBlank(message = "작성자 이름은 필수 입력 항목입니다.")
     private String writer;
 
-    @ApiModelProperty(value = "게시글 작성자의 ID", required = true)
-    @NotNull(message = "작성자 ID는 필수 입력 항목입니다.")
     private Long writerId;
 
     @ApiModelProperty(value = "게시글 생성 시간")

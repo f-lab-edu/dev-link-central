@@ -104,7 +104,7 @@
 
         $(document).ready(function() {
             $.ajax({
-                url: "/api/v1/study-group/study-group-id",
+                url: "/api/v1/study-group/my-groups/ids",
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                 type: "GET",
                 success: function(response) {

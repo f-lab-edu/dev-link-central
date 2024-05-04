@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.response.studygroup;
 
+import dev.linkcentral.service.dto.studygroup.StudyGroupRegistrationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,10 @@ public class StudyGroupCreateResponse {
     private String groupName;
     private String studyTopic;
 
+    public static StudyGroupCreateResponse toStudyGroupCreateResponse(StudyGroupRegistrationDTO registrationDTO) {
+        return new StudyGroupCreateResponse(
+                registrationDTO.getId(),
+                registrationDTO.getGroupName(),
+                registrationDTO.getStudyTopic());
+    }
 }

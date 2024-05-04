@@ -7,9 +7,9 @@ import dev.linkcentral.database.entity.StudyMember;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.StudyGroupRepository;
 import dev.linkcentral.database.repository.StudyMemberRepository;
-import dev.linkcentral.presentation.dto.request.MemberRequest;
-import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
-import dev.linkcentral.presentation.dto.request.StudyGroupMembersDetailDTO;
+import dev.linkcentral.service.dto.studygroup.StudyGroupMemberBasicInfoDTO;
+import dev.linkcentral.service.dto.studygroup.AcceptedStudyGroupDetailsDTO;
+import dev.linkcentral.service.dto.studygroup.StudyGroupMembersDetailDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -145,8 +145,8 @@ public class StudyGroupService {
                     .findAllByStudyGroupAndStatus(group, StudyGroupStatus.ACCEPTED);
 
             if (!acceptedMembers.isEmpty()) {
-                List<MemberRequest> memberDtos = acceptedMembers.stream()
-                        .map(member -> new MemberRequest(
+                List<StudyGroupMemberBasicInfoDTO> memberDtos = acceptedMembers.stream()
+                        .map(member -> new StudyGroupMemberBasicInfoDTO(
                                 member.getMember().getId(),
                                 member.getMember().getName()))
                         .collect(Collectors.toList());

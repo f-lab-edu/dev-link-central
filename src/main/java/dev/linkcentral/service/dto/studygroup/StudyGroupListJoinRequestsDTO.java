@@ -1,4 +1,4 @@
-package dev.linkcentral.presentation.dto;
+package dev.linkcentral.service.dto.studygroup;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

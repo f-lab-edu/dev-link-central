@@ -1,5 +1,6 @@
-package dev.linkcentral.presentation.dto.response;
+package dev.linkcentral.service.dto.studygroup;
 
+import dev.linkcentral.database.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudyGroupDeletionResponse {
+public class StudyGroupMemberDTO {
 
-    private boolean success;
-    private String message;
-
+    private Member member;
 }

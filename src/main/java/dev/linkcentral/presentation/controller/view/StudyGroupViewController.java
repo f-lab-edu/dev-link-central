@@ -1,9 +1,8 @@
 package dev.linkcentral.presentation.controller.view;
 
-import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.StudyGroup;
-import dev.linkcentral.service.MemberService;
-import dev.linkcentral.service.StudyGroupService;
+import dev.linkcentral.service.dto.studygroup.StudyGroupMemberDTO;
+import dev.linkcentral.service.facade.StudyGroupFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -20,32 +19,31 @@ import java.util.List;
 @RequestMapping("/api/v1/view/study-group")
 public class StudyGroupViewController {
 
-    private final MemberService memberService;
-    private final StudyGroupService studyGroupService;
+    private final StudyGroupFacade studyGroupFacade;
 
     @GetMapping("/")
-    public String studyGroupPage(@RequestParam(value = "memberId") Long memberId, Model model) {
-        Member currentMember = memberService.getMemberById(memberId);
-        model.addAttribute("member", currentMember);
+    public String showStudyGroupPage(@RequestParam(value = "memberId") Long memberId, Model model) {
+        StudyGroupMemberDTO currentMember = studyGroupFacade.getMemberById(memberId);
+        model.addAttribute("member", currentMember.getMember());
 
-        boolean isStudyGroupCreated = studyGroupService.isStudyGroupCreatedForLeader(memberId);
+        boolean isStudyGroupCreated = studyGroupFacade.studyGroupPage(memberId);
         model.addAttribute("hasStudyGroup", isStudyGroupCreated);
 
         if (!isStudyGroupCreated) {
             model.addAttribute("showCreateButton", true);
         } else {
-            Long studyGroupId = studyGroupService.findStudyGroupIdByLeaderId(memberId);
+            Long studyGroupId = studyGroupFacade.findStudyGroupIdByLeaderId(memberId);
             model.addAttribute("studyGroupId", studyGroupId);
         }
 
-        List<StudyGroup> studyGroups = studyGroupService.findStudyGroupsByUserId(memberId);
+        List<StudyGroup> studyGroups = studyGroupFacade.findStudyGroupsByUserId(memberId);
         model.addAttribute("studyGroups", studyGroups);
 
         return "studys/study-group";
     }
 
     @GetMapping("/create")
-    public String createStudyGroupForm() {
+    public String showCreateStudyGroupForm() {
         return "/studys/create";
     }
 

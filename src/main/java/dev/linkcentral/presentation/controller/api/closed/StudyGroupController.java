@@ -1,14 +1,9 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
-import dev.linkcentral.presentation.dto.*;
-import dev.linkcentral.presentation.dto.request.AcceptedStudyGroupDetailsDTO;
-import dev.linkcentral.presentation.dto.request.StudyGroupCreateRequest;
-import dev.linkcentral.presentation.dto.request.StudyGroupMembersDetailDTO;
-import dev.linkcentral.presentation.dto.response.*;
-import dev.linkcentral.presentation.response.studygroup.StudyGroupCreateResponse;
-import dev.linkcentral.presentation.response.studygroup.StudyGroupDetailsResponse;
+import dev.linkcentral.presentation.request.studygroup.StudyGroupCreateRequest;
+import dev.linkcentral.presentation.response.studygroup.*;
+import dev.linkcentral.service.dto.studygroup.*;
 import dev.linkcentral.service.facade.StudyGroupFacade;
-import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,26 +19,25 @@ import java.util.List;
 public class StudyGroupController {
 
     private final StudyGroupFacade studyGroupFacade;
-    private final StudyGroupMapper studyGroupMapper;
 
-    @GetMapping("/study-group-id")
+    @GetMapping("/my-groups/ids")
     public ResponseEntity<StudyGroupIdsResponse> getStudyGroupIdsForMember() {
         StudyGroupIdsDTO studyGroupIdsDTO = studyGroupFacade.getStudyGroupIdsForMember();
-        StudyGroupIdsResponse response = studyGroupMapper.toStudyGroupIdsResponse(studyGroupIdsDTO);
+        StudyGroupIdsResponse response = StudyGroupIdsResponse.toStudyGroupIdsResponse(studyGroupIdsDTO);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/auth/member-info")
     public ResponseEntity<StudyGroupMemberInfoResponse> getCurrentMemberInfo() {
         StudyGroupMemberInfoDTO memberInfoDTO = studyGroupFacade.getCurrentMemberInfo();
-        StudyGroupMemberInfoResponse response = studyGroupMapper.toStudyGroupMemberResponse(memberInfoDTO);
+        StudyGroupMemberInfoResponse response = StudyGroupMemberInfoResponse.toStudyGroupMemberResponse(memberInfoDTO);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{studyGroupId}/leave")
-    public ResponseEntity<StudyGroupDeletionResponse> leaveStudyGroup(@PathVariable Long studyGroupId) {
-        StudyGroupDeletionDTO studyGroupDeletionDTO = studyGroupFacade.removeStudyGroupAsLeader(studyGroupId);
-        StudyGroupDeletionResponse response = studyGroupMapper.toStudyGroupDeletionResponse(studyGroupDeletionDTO);
+    public ResponseEntity<StudyGroupDeletionResponse> deleteStudyGroup(@PathVariable Long studyGroupId) {
+        StudyGroupDeleteDTO studyGroupDeleteDTO = studyGroupFacade.removeStudyGroupAsLeader(studyGroupId);
+        StudyGroupDeletionResponse response = StudyGroupDeletionResponse.toStudyGroupDeletionResponse(studyGroupDeleteDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -51,21 +45,21 @@ public class StudyGroupController {
     public ResponseEntity<StudyGroupCreateResponse> createStudyGroup(
             @Validated @RequestBody StudyGroupCreateRequest studyGroupCreateRequest) {
 
-        StudyGroupCreateDTO studyGroupCreateDTO = studyGroupMapper.toStudyGroupCreateDTO(studyGroupCreateRequest);
+        StudyGroupCreateDTO studyGroupCreateDTO = StudyGroupCreateRequest.toStudyGroupCreateDTO(studyGroupCreateRequest);
         StudyGroupRegistrationDTO registrationDTO = studyGroupFacade.createStudyGroup(studyGroupCreateDTO);
-        StudyGroupCreateResponse response = studyGroupMapper.toStudyGroupCreateResponse(registrationDTO);
+        StudyGroupCreateResponse response = StudyGroupCreateResponse.toStudyGroupCreateResponse(registrationDTO);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/details/{articleId}")
     public ResponseEntity<StudyGroupDetailsResponse> getStudyGroupDetails(@PathVariable Long articleId) {
         StudyGroupDetailsDTO studyGroupDetailsDTO = studyGroupFacade.getStudyGroupDetails(articleId);
-        StudyGroupDetailsResponse response = studyGroupMapper.toStudyGroupDetailsResponse(studyGroupDetailsDTO);
+        StudyGroupDetailsResponse response = StudyGroupDetailsResponse.toStudyGroupDetailsResponse(studyGroupDetailsDTO);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{studyGroupId}/join-requests")
-    public ResponseEntity<Void> requestJoinStudyGroup(@PathVariable Long studyGroupId) {
+    public ResponseEntity<Void> createJoinRequest(@PathVariable Long studyGroupId) {
         studyGroupFacade.requestJoinStudyGroup(studyGroupId);
         return ResponseEntity.ok().build();
     }
@@ -73,7 +67,7 @@ public class StudyGroupController {
     @GetMapping("/{studyGroupId}/received-requests")
     public ResponseEntity<StudyGroupListJoinResponse> listStudyGroupJoinRequests(@PathVariable Long studyGroupId) {
         StudyGroupListJoinRequestsDTO listJoinRequestsDTO = studyGroupFacade.listStudyGroupJoinRequests(studyGroupId);
-        StudyGroupListJoinResponse response = studyGroupMapper.toStudyGroupListJoinResponse(listJoinRequestsDTO);
+        StudyGroupListJoinResponse response = StudyGroupListJoinResponse.toStudyGroupListJoinResponse(listJoinRequestsDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -92,21 +86,21 @@ public class StudyGroupController {
     @GetMapping("/exists")
     public ResponseEntity<StudyGroupCheckMembershipResponse> checkIfUserHasStudyGroup(@RequestParam Long userId) {
         StudyGroupCheckMembershipDTO membershipDTO = studyGroupFacade.checkMembership(userId);
-        StudyGroupCheckMembershipResponse response = studyGroupMapper.toStudyGroupCheckMembershipResponse(membershipDTO);
+        StudyGroupCheckMembershipResponse response = StudyGroupCheckMembershipResponse.toStudyGroupCheckMembershipResponse(membershipDTO);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/current-accepted")
     public ResponseEntity<AcceptedStudyGroupDetailsResponse> getCurrentUserAcceptedStudyGroups() {
         List<AcceptedStudyGroupDetailsDTO> acceptedStudyGroupDetailsDTOS = studyGroupFacade.getCurrentUserAcceptedStudyGroups();
-        AcceptedStudyGroupDetailsResponse response = studyGroupMapper.toAcceptedStudyGroupDetailsResponse(acceptedStudyGroupDetailsDTOS);
+        AcceptedStudyGroupDetailsResponse response = AcceptedStudyGroupDetailsResponse.toAcceptedStudyGroupDetailsResponse(acceptedStudyGroupDetailsDTOS);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user/{userId}/groups-with-members")
     public ResponseEntity<StudyGroupMembersDetailResponse> getStudyGroupsAndMembers(@PathVariable Long userId) {
         List<StudyGroupMembersDetailDTO> groupMembersDetailDTOS = studyGroupFacade.getStudyGroupsAndMembers(userId);
-        StudyGroupMembersDetailResponse response = studyGroupMapper.toStudyGroupMembersDetailResponse(groupMembersDetailDTOS);
+        StudyGroupMembersDetailResponse response = StudyGroupMembersDetailResponse.toStudyGroupMembersDetailResponse(groupMembersDetailDTOS);
         return ResponseEntity.ok(response);
     }
 

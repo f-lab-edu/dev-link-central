@@ -6,7 +6,7 @@ import dev.linkcentral.database.entity.StudyGroupStatus;
 import dev.linkcentral.database.entity.StudyMember;
 import dev.linkcentral.database.repository.StudyGroupRepository;
 import dev.linkcentral.database.repository.StudyMemberRepository;
-import dev.linkcentral.presentation.dto.StudyGroupJoinRequestDTO;
+import dev.linkcentral.service.dto.studygroup.StudyGroupJoinRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
