@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.controller.view;
 
-import dev.linkcentral.database.entity.StudyGroup;
 import dev.linkcentral.service.dto.studygroup.StudyGroupMemberDTO;
 import dev.linkcentral.service.facade.StudyGroupFacade;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 @Slf4j
@@ -35,10 +32,6 @@ public class StudyGroupViewController {
             Long studyGroupId = studyGroupFacade.findStudyGroupIdByLeaderId(memberId);
             model.addAttribute("studyGroupId", studyGroupId);
         }
-
-        List<StudyGroup> studyGroups = studyGroupFacade.findStudyGroupsByUserId(memberId);
-        model.addAttribute("studyGroups", studyGroups);
-
         return "studys/study-group";
     }
 

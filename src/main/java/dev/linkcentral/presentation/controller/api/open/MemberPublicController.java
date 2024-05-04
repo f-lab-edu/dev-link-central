@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.controller.api.open;
 
-import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.BaseUrlUtil;
 import dev.linkcentral.presentation.request.member.MemberLoginRequest;
 import dev.linkcentral.presentation.request.member.MemberSaveRequest;
@@ -8,6 +7,7 @@ import dev.linkcentral.presentation.response.member.LoginSuccessResponse;
 import dev.linkcentral.presentation.response.member.MailPasswordResetResponse;
 import dev.linkcentral.presentation.response.member.MemberPasswordResponse;
 import dev.linkcentral.presentation.response.member.MemberSaveResponse;
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.service.dto.member.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationResultDTO;

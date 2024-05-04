@@ -113,11 +113,6 @@ public class StudyGroupService {
     }
 
     @Transactional(readOnly = true)
-    public List<StudyGroup> findStudyGroupsByUserId(Long userId) {
-        return studyMemberRepository.findStudyGroupsByMemberId(userId);
-    }
-
-    @Transactional(readOnly = true)
     public Long findStudyGroupIdByLeaderId(Long leaderId) {
         return studyGroupRepository.findByStudyLeaderId(leaderId)
                 .map(StudyGroup::getId)

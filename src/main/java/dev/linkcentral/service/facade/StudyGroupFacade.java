@@ -135,8 +135,4 @@ public class StudyGroupFacade {
         return studyGroupService.findStudyGroupIdByLeaderId(memberId);
     }
 
-    public List<StudyGroup> findStudyGroupsByUserId(Long memberId) {
-        return studyGroupService.findStudyGroupsByUserId(memberId);
-    }
-
 }
