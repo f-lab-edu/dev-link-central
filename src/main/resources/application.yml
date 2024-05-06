@@ -1,5 +1,70 @@
 spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+    pathmatch:
+      matching-strategy: ant_path_matcher
   datasource:
-    url: jdbc:mysql://localhost:3306/linkcentral?autoReconnect=true
+    url: jdbc:mysql://localhost:3306/linkcentral?useUnicode=true&serverTimezone=Asia/Seoul&autoReconnect=true
     username: seok
     password: 1234
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  session:
+    store-type: jdbc
+    jdbc.initialize-schema: always
+  hiddenmethod:
+    filter:
+      enabled: true
+  profiles:
+    include: oauth
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: alstjr706@gmail.com
+    password: ${MAIL}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+jwt:
+ secret: ${JWT_SECRET:ZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWUK}
+
+logging:
+  level:
+    root: INFO
+    org:
+      hibernate:
+        type:
+          descriptor.sql: trace
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
+cloud:
+  aws:
+    s3:
+      bucket: mingseokbucket
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    credentials:
+      access-key: ${AWS_S3_ACCESS_KEY}
+      secret-key: ${AWS_S3_SECRET_KEY}

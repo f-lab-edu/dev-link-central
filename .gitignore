@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+
 ### STS ###
 .apt_generated
 .classpath
@@ -35,3 +36,11 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+### Querydsl
+/src/main/generated
+
+
+### application.yml
+src/main/resources/application.yml
