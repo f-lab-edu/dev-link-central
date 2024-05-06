@@ -42,4 +42,16 @@ public class ArticleCommentRequest {
                 commentRequest.getCreatedAt()
         );
     }
+
+    public static ArticleCommentRequestDTO toArticleCommentRequestCommand(ArticleCommentRequest commentRequest, Long id) {
+        commentRequest.setArticleId(id);
+
+        return new ArticleCommentRequestDTO(
+                commentRequest.getId(),
+                commentRequest.getArticleId(),
+                commentRequest.getContents(),
+                commentRequest.getNickname(),
+                commentRequest.getCreatedAt()
+        );
+    }
 }

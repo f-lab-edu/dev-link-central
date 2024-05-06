@@ -19,4 +19,7 @@ public class FriendshipDetailDTO {
     private String receiverName;
     private FriendStatus status;
 
+    public String getStatusAsString() {
+        return status.name();
+    }
 }

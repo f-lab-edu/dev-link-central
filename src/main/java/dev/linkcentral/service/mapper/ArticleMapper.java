@@ -127,8 +127,14 @@ public class ArticleMapper {
         return commentDTO;
     }
 
-    public MemberCurrentDTO toMemberCurrentDTO(Member currentMember) {
-        return new MemberCurrentDTO(currentMember);
+    public MemberCurrentDTO toMemberCurrentDTO(Long memberId) {
+        return MemberCurrentDTO.builder()
+                .memberId(memberId)
+                .build();
+    }
+
+    public MemberCurrentDTO toMemberCurrentDTO(Long memberId, String nickname) {
+        return new MemberCurrentDTO(memberId, nickname);
     }
 
 }

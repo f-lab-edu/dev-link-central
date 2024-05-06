@@ -72,7 +72,7 @@ public class ArticleFacade {
 
     public MemberCurrentDTO saveForm() {
         Member currentMember = memberService.getCurrentMember();
-        return articleMapper.toMemberCurrentDTO(currentMember);
+        return articleMapper.toMemberCurrentDTO(currentMember.getId(), currentMember.getNickname());
     }
 
     public List<ArticleViewDTO> findAll() {

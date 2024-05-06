@@ -2,7 +2,10 @@ package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.dto.member.*;
+import dev.linkcentral.service.dto.token.MemberDetailsDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -48,4 +51,26 @@ public class MemberMapper {
         return new MemberEditFormDTO(currentMember);
     }
 
+    public MemberDetailsDTO toMemberDetailsDTO(Member member) {
+        if (member == null) {
+            return null;
+        }
+
+        return new MemberDetailsDTO(
+                member.getId(),
+                member.getPassword(),
+                member.getName(),
+                member.getEmail(),
+                member.getRoles(),
+                member.isDeleted()
+        );
+    }
+
+    public UserDetails createUserDetails(MemberDetailsDTO userDTO) {
+        return User.builder()
+                .username(userDTO.getName())
+                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .roles(userDTO.getRoles().toArray(new String[0]))
+                .build();
+    }
 }

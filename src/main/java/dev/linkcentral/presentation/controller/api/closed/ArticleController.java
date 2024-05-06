@@ -64,8 +64,7 @@ public class ArticleController {
         if (commentRequest.getContents() == null) {
             throw new IllegalArgumentException("댓글 내용은 null이 아니어야 합니다.");
         }
-        commentRequest.setArticleId(id);
-        ArticleCommentRequestDTO commentRequestDTO = ArticleCommentRequest.toArticleCommentRequestCommand(commentRequest);
+        ArticleCommentRequestDTO commentRequestDTO = ArticleCommentRequest.toArticleCommentRequestCommand(commentRequest, id);
         ArticleCommentDTO commentSaveDTO = articleFacade.commentSave(commentRequestDTO);
 
         ArticleCommentResponse response = ArticleCommentResponse.toCommentResponse(commentSaveDTO);

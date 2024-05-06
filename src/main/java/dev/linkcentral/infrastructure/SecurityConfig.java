@@ -1,7 +1,7 @@
 package dev.linkcentral.infrastructure;
 
 import dev.linkcentral.infrastructure.jwt.JwtAuthenticationFilter;
-import dev.linkcentral.infrastructure.jwt.JwtTokenProvider;
+import dev.linkcentral.infrastructure.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
+//    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenProvider tokenProvider;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -50,7 +51,8 @@ public class SecurityConfig {
                 ).hasAuthority("USER") // `USER` 권한을 가진 사용자만 접근 가능하도록 설정
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+//                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider),
                         UsernamePasswordAuthenticationFilter.class);
 
         httpSecurity.cors();

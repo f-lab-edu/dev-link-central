@@ -1,4 +1,4 @@
-package dev.linkcentral.common.exception.handler;
+package dev.linkcentral.presentation.handler;
 
 import dev.linkcentral.common.exception.*;
 import dev.linkcentral.presentation.response.member.AuthenticationErrorResponse;

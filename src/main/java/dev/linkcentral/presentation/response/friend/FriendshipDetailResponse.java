@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.response.friend;
 
-import dev.linkcentral.database.entity.FriendStatus;
 import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +20,7 @@ public class FriendshipDetailResponse {
     private Long receiverId;
     private String senderName;
     private String receiverName;
-    private FriendStatus status;
+    private String status;
 
     public static List<FriendshipDetailResponse> toFriendshipDetailResponseList(List<FriendshipDetailDTO> friendshipDetails) {
         return friendshipDetails.stream()
@@ -31,7 +30,7 @@ public class FriendshipDetailResponse {
                         .receiverId(dto.getReceiverId())
                         .senderName(dto.getSenderName())
                         .receiverName(dto.getReceiverName())
-                        .status(dto.getStatus())
+                        .status(dto.getStatusAsString())
                         .build())
                 .collect(Collectors.toList());
     }

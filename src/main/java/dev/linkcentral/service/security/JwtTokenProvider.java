@@ -1,5 +1,7 @@
-package dev.linkcentral.infrastructure.jwt;
+package dev.linkcentral.service.security;
 
+import dev.linkcentral.infrastructure.jwt.TokenDTO;
+import dev.linkcentral.infrastructure.jwt.TokenProvider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider implements TokenProvider {
 
     private final Key key;
 
@@ -31,7 +33,8 @@ public class JwtTokenProvider {
     }
 
     // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
-    public JwtTokenDTO generateToken(Authentication authentication) {
+    @Override
+    public TokenDTO generateToken(Authentication authentication) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -54,7 +57,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return JwtTokenDTO.builder()
+        return TokenDTO.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -62,6 +65,7 @@ public class JwtTokenProvider {
     }
 
     // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
+    @Override
     public Authentication getAuthentication(String accessToken) {
         // 토큰 복호화
         Claims claims = parseClaims(accessToken);
@@ -83,6 +87,7 @@ public class JwtTokenProvider {
     }
 
     // 토큰 정보를 검증하는 메서드
+    @Override
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);

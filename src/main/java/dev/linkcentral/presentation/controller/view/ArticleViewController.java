@@ -1,12 +1,12 @@
 package dev.linkcentral.presentation.controller.view;
 
-import dev.linkcentral.infrastructure.SecurityUtils;
 import dev.linkcentral.presentation.response.article.ArticleCommentPageResponse;
 import dev.linkcentral.service.dto.article.ArticleCommentViewDTO;
 import dev.linkcentral.service.dto.article.ArticleDetailsDTO;
 import dev.linkcentral.service.dto.article.ArticleViewDTO;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.facade.ArticleFacade;
+import dev.linkcentral.service.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,7 +33,7 @@ public class ArticleViewController {
     @GetMapping("/save-form")
     public String showArticleSaveForm(Model model) {
         MemberCurrentDTO memberCurrentDTO = articleFacade.saveForm();
-        model.addAttribute("nickname", memberCurrentDTO.getMember().getNickname());
+        model.addAttribute("nickname", memberCurrentDTO.getNickname());
         return "articles/save";
     }
 

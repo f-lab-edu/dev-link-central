@@ -4,9 +4,9 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.Profile;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.ProfileRepository;
-import dev.linkcentral.infrastructure.s3.AwsS3Uploader;
 import dev.linkcentral.service.dto.profile.ProfileDetailsDTO;
 import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
+import dev.linkcentral.infrastructure.s3.FileUploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ public class ProfileService {
 
     private final MemberRepository memberRepository;
     private final ProfileRepository profileRepository;
-    private final AwsS3Uploader awsS3Uploader;
+    private final FileUploader fileUploader;
 
     public ProfileDetailsDTO getProfile(Long memberId) {
         return profileRepository.findByMemberId(memberId)
@@ -49,7 +49,7 @@ public class ProfileService {
         profile.updateBio(bio);
 
         if (!imageFile.isEmpty()) {
-            String imageUrl = awsS3Uploader.uploadFile(
+            String imageUrl = fileUploader.uploadFile(
                     imageFile, "profile-images/" + profile.getMember().getId()
             );
             profile.updateImageUrl(imageUrl);

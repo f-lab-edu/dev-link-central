@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import dev.linkcentral.infrastructure.s3.FileUploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,13 +17,14 @@ import java.util.UUID;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class AwsS3Uploader {
+public class AwsS3Uploader implements FileUploader {
 
     private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket; // S3 버킷 이름 주입
 
+    @Override
     public String uploadFile(MultipartFile multipartFile, String dirName) {
         try {
             String fileName = generateFileName(dirName, multipartFile.getOriginalFilename());

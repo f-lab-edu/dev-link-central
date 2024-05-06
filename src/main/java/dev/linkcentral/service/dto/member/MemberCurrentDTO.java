@@ -1,15 +1,17 @@
 package dev.linkcentral.service.dto.member;
 
-import dev.linkcentral.database.entity.Member;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberCurrentDTO {
 
-    private Member member;
+    private Long memberId;
+    private String nickname;
 
 }

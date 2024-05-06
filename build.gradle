@@ -83,6 +83,9 @@ dependencies {
 
 	// Swagger
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+
+	// ArchUnit
+	testImplementation 'com.tngtech.archunit:archunit:0.21.0'
 }
 
 

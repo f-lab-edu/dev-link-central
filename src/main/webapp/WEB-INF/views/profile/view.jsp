@@ -232,7 +232,12 @@
                     updateUnfriendButton(friendRequestId);
                 },
                 error: function (xhr, status, error) {
-                    var errorMessage = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : error;
+                    console.error("Failed to send friend request.");
+                    console.error("Status: " + status);
+                    console.error("Error: " + error);
+                    console.error("XHR Response: " + xhr.responseText);
+
+                    var errorMessage = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : "Unknown error occurred.";
                     alert('친구 요청을 보내지 못했습니다. 오류: ' + errorMessage);
                 }
             });

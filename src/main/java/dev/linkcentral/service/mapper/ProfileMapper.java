@@ -17,7 +17,9 @@ public class ProfileMapper {
     }
 
     public MemberCurrentDTO toMemberCurrentDTO(Member currentMember) {
-        return new MemberCurrentDTO(currentMember);
+        return MemberCurrentDTO.builder()
+                .memberId(currentMember.getId())
+                .build();
     }
 
 }

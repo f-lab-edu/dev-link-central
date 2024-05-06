@@ -1,4 +1,4 @@
-package dev.linkcentral.infrastructure;
+package dev.linkcentral.service.security;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

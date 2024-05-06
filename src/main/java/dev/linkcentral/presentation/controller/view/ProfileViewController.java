@@ -30,8 +30,8 @@ public class ProfileViewController {
         model.addAttribute("profile", profile);
 
         MemberCurrentDTO memberCurrentDTO = profileFacade.getMemberById(memberId);
-        if (memberCurrentDTO.getMember() != null) {
-            model.addAttribute("loggedInUserName", memberCurrentDTO.getMember().getName());
+        if (memberCurrentDTO.getMemberId() != null) {
+            model.addAttribute("loggedInUserName", memberCurrentDTO.getNickname());
             model.addAttribute("viewedMemberId", memberId);
         }
         return "profile/view";

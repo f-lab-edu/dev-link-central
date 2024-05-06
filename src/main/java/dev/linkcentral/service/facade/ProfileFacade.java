@@ -23,7 +23,7 @@ public class ProfileFacade {
 
     public MemberCurrentDTO getUserInfo() {
         Member currentMember = memberService.getCurrentMember();
-        return articleMapper.toMemberCurrentDTO(currentMember);
+        return articleMapper.toMemberCurrentDTO(currentMember.getId());
     }
 
     public void updateProfile(ProfileUpdateDTO profileDetailsRequest, MultipartFile image) {

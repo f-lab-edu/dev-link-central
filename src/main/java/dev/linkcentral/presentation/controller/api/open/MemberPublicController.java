@@ -7,10 +7,10 @@ import dev.linkcentral.presentation.response.member.LoginSuccessResponse;
 import dev.linkcentral.presentation.response.member.MailPasswordResetResponse;
 import dev.linkcentral.presentation.response.member.MemberPasswordResponse;
 import dev.linkcentral.presentation.response.member.MemberSaveResponse;
-import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.service.dto.member.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationResultDTO;
+import dev.linkcentral.infrastructure.jwt.TokenDTO;
 import dev.linkcentral.service.facade.MemberFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +44,10 @@ public class MemberPublicController {
     public ResponseEntity<LoginSuccessResponse> login(@Validated @RequestBody MemberLoginRequest memberLoginRequest,
                                                       HttpServletRequest request) {
         MemberLoginRequestDTO loginRequestDTO = MemberLoginRequest.toMemberLoginRequestCommand(memberLoginRequest);
-        JwtTokenDTO jwtTokenDTO = memberFacade.loginMember(loginRequestDTO);
+        TokenDTO tokenDTO = memberFacade.loginMember(loginRequestDTO);
 
         final String redirectUrl = BaseUrlUtil.getBaseUrl(request) + "/api/v1/view/member/login";
-        LoginSuccessResponse response = LoginSuccessResponse.toLoginSuccessResponse(jwtTokenDTO, redirectUrl);
+        LoginSuccessResponse response = LoginSuccessResponse.toLoginSuccessResponse(tokenDTO, redirectUrl);
         return ResponseEntity.ok(response);
     }
 

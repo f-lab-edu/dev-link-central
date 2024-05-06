@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.request.member;
 
-import dev.linkcentral.database.entity.MemberStatus;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -54,7 +53,7 @@ public class MemberSaveRequest {
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .nickname(request.getNickname())
-                .roles(Collections.singletonList(String.valueOf(MemberStatus.USER)))
+                .roles(Collections.singletonList("USER"))
                 .build();
     }
 
