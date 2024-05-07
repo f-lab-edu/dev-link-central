@@ -75,7 +75,7 @@ IT업계는 새로운 지식이 계속 업데이트 되기에, 트렌드를 잘 
 
 <details>
   <summary> 📱 로그인 및 유저 기능</summary>
-  <!-- 내용 -->
+  <img src="./demo/로그인_화면.png" alt="로그인 화면">
 </details>
 
 <details>
@@ -90,7 +90,7 @@ IT업계는 새로운 지식이 계속 업데이트 되기에, 트렌드를 잘 
 
 <details>
   <summary> 📱 친구 기능</summary>
-  <!-- 내용 -->
+  
 </details>
 
 <details>
