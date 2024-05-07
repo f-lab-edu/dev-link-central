@@ -40,7 +40,6 @@ IT업계는 새로운 지식이 계속 업데이트 되기에, 트렌드를 잘 
 
 
 
-
 <br/><br/>
 
 
@@ -69,32 +68,47 @@ IT업계는 새로운 지식이 계속 업데이트 되기에, 트렌드를 잘 
   - `service` 패키지 -> `database` 패키지
 
 
-
-
-
 <br/><br/>
 
 
+## 📌 주요 기능 & 뷰페이지 화면
+
+<details>
+  <summary> 📱 로그인 및 유저 기능</summary>
+  <!-- 내용 -->
+</details>
+
+<details>
+  <summary> 📱 프로필 기능</summary>
+  <!-- 내용 -->
+</details>
+
+<details>
+  <summary> 📱 스터디 그룹 기능</summary>
+  <!-- 내용 -->
+</details>
+
+<details>
+  <summary> 📱 친구 기능</summary>
+  <!-- 내용 -->
+</details>
+
+<details>
+  <summary> 📱 게시판 및 댓글 기능</summary>
+  <!-- 내용 -->
+</details>
+
+<details>
+  <summary> 📱 피드 기능</summary>
+  <!-- 내용 -->
+</details>
+
+<details>
+  <summary> 📱 알림 기능</summary>
+  <!-- 내용 -->
+</details>
 
 
-
-## 📌 주요 기능
-
-- 유저 기능
-
-- 피드 기능
-
-- 스터디 그룹 기능
-
-- 친구 기능
-
-- 댓글 기능
-
-- 인증 & 인가 기능
-
-- 알림 기능
-
-- 좋아요 기능
 
 
 <br/><br/>
