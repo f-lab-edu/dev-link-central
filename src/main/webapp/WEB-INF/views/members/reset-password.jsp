@@ -4,38 +4,95 @@
 <head>
     <meta charset="UTF-8">
     <title>비밀번호 찾기</title>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
-
     <!-- Bootstrap JS 및 jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
     <style>
         body {
+            font-family: 'Arial', sans-serif;
             background-color: #f8f9fa;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
 
         .container {
-            margin-top: 50px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
         }
 
         .modal-header {
             background-color: #007bff;
             color: #fff;
-            text-align: center;
+            padding: 20px 15px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            font-size: 24px;
         }
 
         .modal-body {
             background-color: #fff;
+            padding: 30px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary, .btn-danger {
+            background-color: #007bff; /* 파란색으로 통일 */
+            color: white;
+            margin-right: 10px; /* 버튼 사이 간격 조정 */
+        }
+
+        .btn-primary:hover, .btn-danger:hover {
+            background-color: #0056b3;
         }
 
         #checkMsg {
             margin-top: 10px;
         }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 20px;
+        }
     </style>
+
 
     <script>
         $(document).ready(function () {
@@ -92,37 +149,31 @@
 </head>
 <body>
 <div class="container">
-    <!-- Modal -->
     <div class="modal fade" id="myModal" role="dialog">
         <div class="modal-dialog">
-            <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <h4><span class="glyphicon glyphicon-lock"></span> 비밀번호 찾기</h4>
                 </div>
                 <div class="modal-body">
-                    <div style="color: #ac2925">
-                        <center>입력된 정보로 임시 비밀번호가 전송됩니다.</center>
-                    </div>
+                    <div style="color: #ac2925; text-align: center;">입력된 정보로 임시 비밀번호가 전송됩니다.</div>
                     <hr>
                     <form role="form">
                         <div class="form-group">
-                            <label for="userEmail"><span class="glyphicon glyphicon-user"></span> Email</label>
+                            <label for="userEmail">Email</label>
                             <input type="text" class="form-control" id="userEmail" placeholder="가입시 등록한 이메일을 입력하세요.">
                         </div>
                         <div class="form-group">
-                            <label for="userName"><span class="glyphicon glyphicon-eye-open"></span> Name</label>
+                            <label for="userName">Name</label>
                             <input type="text" class="form-control" id="userName" placeholder="가입시 등록한 이름을 입력하세요.">
                         </div>
-                        <button type="button" class="btn btn-success btn-block" id="checkEmail">OK</button>
                     </form>
                     <hr>
                     <div class="text-center small mt-2" id="checkMsg" style="color: red"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal" onclick="cancelButtonClicked()">
-                        <span class="glyphicon glyphicon-remove"></span> Cancel
-                    </button>
+                    <button type="button" class="btn btn-danger" onclick="cancelButtonClicked()">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="checkEmail">OK</button>
                 </div>
             </div>
         </div>

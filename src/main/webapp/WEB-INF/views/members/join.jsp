@@ -19,11 +19,12 @@
         }
 
         .container {
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 360px;
         }
 
         form {
@@ -32,44 +33,72 @@
         }
 
         .form_group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
         }
 
         label {
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 600;
+            margin-bottom: 8px;
             display: block;
         }
 
         input {
-            padding: 8px;
-            margin-bottom: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 6px;
             width: 100%;
+            box-sizing: border-box;
         }
 
         button {
-            background-color: #4caf50;
+            background-color: #007bff;
             color: white;
-            padding: 10px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
         }
 
         #passwordMatchMessage {
-            margin-top: 10px;
             color: green;
+            font-size: 14px;
         }
 
         #passwordMismatchMessage {
-            margin-top: 10px;
             color: red;
+            font-size: 14px;
+        }
+
+        .error-message {
+            font-size: 14px;
         }
     </style>
 
@@ -163,6 +192,10 @@
                 }
             }
         });
+
+        function cancelButtonClicked() {
+            window.location.href = "/api/v1/view/member/";
+        }
     </script>
 
 
@@ -191,8 +224,10 @@
             <span id="nicknameError" style="color: red;"></span>
             <span id="nicknameStatus" style="color: green;"></span>
 
-            <%--            <button type="button" id="checkNicknameButton">닉네임 중복 확인</button>--%>
-            <button type="submit" id="signupButton" disabled>회원가입</button>
+            <div class="buttons">
+                <button type="button" class="btn btn-danger" onclick="cancelButtonClicked()">Cancel</button>
+                <button type="submit" id="signupButton" disabled>회원가입</button>
+            </div>
         </div>
     </form>
 </div>

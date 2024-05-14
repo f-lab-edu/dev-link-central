@@ -3,13 +3,17 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- jQuery library -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
-
-    <!-- Bootstrap JS 및 jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <!-- SweetAlert2 JS -->
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- SweetAlert2 CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
     <title>프로젝트!</title>
@@ -19,35 +23,47 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
 
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            text-align: center;
+        .note {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 500px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 15px;
+            align-items: center;
+            justify-items: center;
+            padding-top: 50px;
+            padding-bottom: 50px;
         }
 
-        .container {
-            margin: 20px;
+        .menu-title {
+            grid-column: span 2;
+            font-size: 24px;
+            color: black;
+            margin-bottom: 20px;
+            font-weight: bold;
         }
 
         button {
-            background-color: #4CAF50;
+            background-color: #007bff;
             color: white;
-            padding: 10px 15px;
-            margin: 5px;
+            padding: 15px 20px;
             border: none;
-            border-radius: 3px;
+            border-radius: 5px;
             cursor: pointer;
+            width: 100%;
         }
 
         button:hover {
-            background-color: #45a049;
-        }
-
-        p {
-            font-size: 18px;
+            background-color: #0056b3;
         }
     </style>
 
@@ -204,21 +220,14 @@
     </script>
 </head>
 <body>
-<header>
-    <h1>프로젝트!</h1>
-</header>
-<div class="container">
+<div class="note">
+    <div class="menu-title">메뉴</div>
     <button onclick="logout()">로그아웃</button>
-
     <button onclick="editProfile()">회원수정</button>
-
     <button onclick="deletePage()">회원탈퇴</button>
-
-    <button onclick="profileView()">프로필 보기</button>
-
-    <button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판 페이징 목록</button>
-
-    <button onclick="StudyGroupView()">스터디 그룹 페이지로 이동</button>
+    <button onclick="profileView()">프로필 & 친구 목록</button>
+    <button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판</button>
+    <button onclick="StudyGroupView()">스터디 그룹</button>
 </div>
 </body>
 </html>
