@@ -1,15 +1,133 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
-            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-            crossorigin="anonymous">
-    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- SweetAlert2 CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .header-actions {
+            margin-left: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4A90E2;
+            color: white;
+        }
+
+        a, .pagination span {
+            color: #4A90E2;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style-type: none;
+            padding: 20px;
+        }
+
+        .pagination a, .pagination span {
+            margin: 0 5px;
+            padding: 5px 8px;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        .pagination a.active, .pagination span {
+            background-color: #4A90E2;
+            color: white;
+            border: 1px solid #4A90E2;
+        }
+
+        .pagination a:hover {
+            background-color: #ddd;
+        }
+
+        button {
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #357ABD;
+        }
+    </style>
+
+
     <script>
         $(document).ready(function() {
             // 로컬 스토리지에서 JWT 토큰 확인
@@ -81,7 +199,6 @@
         }
     </script>
 
-
     <script>
         $(document).ready(function() {
             // 링크 클릭 이벤트를 잡아 AJAX 요청으로 변환
@@ -106,76 +223,81 @@
     </script>
 </head>
 <body>
+<div class="container">
+    <div class="header">
+        <div class="title">스터디 모집 게시판</div>
+        <div class="header-actions">
+            <% if ((Boolean) request.getAttribute("isAuthenticated")) { %>
+            <button onclick="saveReq()">글작성</button>
+            <% } %>
+            <button id="writeButton" onclick="saveReq()" style="display:none;">글작성</button>
+        </div>
+    </div>
 
-<% if ((Boolean) request.getAttribute("isAuthenticated")) { %>
-    <button onclick="saveReq()">글작성</button>
-<% } %>
-
-<button id="writeButton" onclick="saveReq()" style="display:none;">글작성</button>
-
-<table>
-    <tr>
-        <th>id</th>
-        <th>writer</th>
-        <th>title</th>
-        <th>date</th>
-    </tr>
-    <c:if test="${not empty articleList}">
-        <c:forEach items="${articleList}" var="article">
-            <tr>
-                <td>${article.id}</td>
-                <td><a href="/api/v1/view/profile/view?memberId=${article.writerId}">${article.writer}</a></td>
-                <td><a class="article-link" href="/api/v1/view/article/${article.id}?page=${articlePage.number + 1}">${article.title}</a></td>
-                <td>${article.createdAt}</td>
-            </tr>
-        </c:forEach>
-    </c:if>
-    <c:if test="${empty articleList}">
+    <table>
+        <thead>
         <tr>
-            <td colspan="5">게시글이 없습니다.</td>
+            <th>글번호</th>
+            <th>작성자</th>
+            <th>스터디 제목</th>
+            <th>작성일</th>
         </tr>
-    </c:if>
-</table>
+        </thead>
+        <tbody>
+        <c:if test="${not empty articleList}">
+            <c:forEach items="${articleList}" var="article" varStatus="status">
+                <tr>
+                    <td>${article.id}</td>
+                    <td><a href="/api/v1/view/profile/view?memberId=${article.writerId}">${article.writer}</a></td>
+                    <td><a class="article-link" href="/api/v1/view/article/${article.id}?page=${articlePage.number + 1}">${article.title}</a></td>
+                    <td>${formattedCreatedAtList[status.index].formattedCreatedAt}</td>
+                </tr>
+            </c:forEach>
+        </c:if>
+        <c:if test="${empty articleList}">
+            <tr>
+                <td colspan="4">게시글이 없습니다.</td>
+            </tr>
+        </c:if>
+        </tbody>
+    </table>
 
-<a href="/api/v1/view/article/paging?page=1">처음 페이지</a>
+    <nav class="pagination">
+        <a href="/api/v1/view/article/paging?page=1">처음</a>
+        <!-- 이전 페이지 링크 -->
+        <c:choose>
+            <c:when test="${articlePage.number eq 0}">
+                <span>이전</span>
+            </c:when>
+            <c:otherwise>
+                <a href="/api/v1/view/article/paging?page=${articlePage.number}">이전</a>
+            </c:otherwise>
+        </c:choose>
 
-<!-- 이전 페이지 링크 -->
-<c:choose>
-    <c:when test="${articlePage.number eq 0}">
-        <a href="#">이전</a>
-    </c:when>
-    <c:otherwise>
-        <a href="/api/v1/view/article/paging?page=${articlePage.number}">이전</a>
-    </c:otherwise>
-</c:choose>
+        <!-- 페이지 번호 링크 -->
+        <c:forEach begin="${startPage}" end="${endPage}" var="page">
+            <c:choose>
+                <c:when test="${page eq articlePage.number + 1}">
+                    <span class="active">${page}</span>
+                </c:when>
+                <c:otherwise>
+                    <a href="/api/v1/view/article/paging?page=${page}">${page}</a>
+                </c:otherwise>
+            </c:choose>
+        </c:forEach>
 
+        <!-- 다음 페이지 링크 -->
+        <c:choose>
+            <c:when test="${articlePage.number + 1 eq articlePage.totalPages}">
+                <span>다음</span>
+            </c:when>
+            <c:otherwise>
+                <a href="/api/v1/view/article/paging?page=${articlePage.number + 2}">다음</a>
+            </c:otherwise>
+        </c:choose>
 
-<!-- 페이지 번호 링크 -->
-<c:forEach begin="${startPage}" end="${endPage}" var="page">
-    <c:choose>
-        <c:when test="${page eq articlePage.number + 1}">
-            <span>${page}</span>
-        </c:when>
-        <c:otherwise>
-            <a href="/api/v1/view/article/paging?page=${page}">${page}</a>
-        </c:otherwise>
-    </c:choose>
-</c:forEach>
-
-
-<!-- 다음 페이지 링크 -->
-<c:choose>
-    <c:when test="${articlePage.number + 1 eq articlePage.totalPages}">
-        <a href="#">다음</a>
-    </c:when>
-    <c:otherwise>
-        <a href="/api/v1/view/article/paging?page=${articlePage.number + 2}">다음</a>
-    </c:otherwise>
-</c:choose>
-
-
-<!-- 마지막 페이지 링크 -->
-<a href="/api/v1/view/article/paging?page=${articlePage.totalPages}">마지막 페이지</a>
-
+        <!-- 마지막 페이지 링크 -->
+        <a href="/api/v1/view/article/paging?page=${articlePage.totalPages}">마지막</a>
+    </nav>
+</div>
 </body>
-</html>
