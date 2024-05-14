@@ -5,8 +5,11 @@ import dev.linkcentral.database.entity.ArticleComment;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.dto.article.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
+import dev.linkcentral.service.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -86,29 +89,35 @@ public class ArticleMapper {
     }
 
     public ArticleViewDTO toArticleDTO(Article article) {
-        ArticleViewDTO articleViewDTO = ArticleViewDTO.builder()
-                .id(article.getId())
-                .title(article.getTitle())
-                .content(article.getContent())
-                .writer(article.getWriter())
-                .createdAt(article.getCreatedAt())
-                .modifiedAt(article.getModifiedAt())
-                .build();
+        String localDateTime = DateUtils.formatLocalDateTime(article.getCreatedAt());
+        Long writerId = Optional.ofNullable(article.getMember())
+                .map(Member::getId)
+                .orElse(null);
 
-        // Member 객체가 존재하는 경우에만 writerId 설정
-        if (article.getMember() != null) {
-            articleViewDTO.setWriterId(article.getMember().getId());
-        }
-        return articleViewDTO;
-    }
-
-    public ArticleViewDTO toDetailedArticleDTO(Article article, int views) {
         return ArticleViewDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
                 .writer(article.getWriter())
-                .createdAt(article.getCreatedAt())
+                .writerId(writerId)
+                .createdAt(localDateTime)
+                .modifiedAt(article.getModifiedAt())
+                .build();
+    }
+
+    public ArticleViewDTO toDetailedArticleDTO(Article article, int views) {
+        String localDateTime = DateUtils.formatLocalDateTime(article.getCreatedAt());
+        Long writerId = Optional.ofNullable(article.getMember())
+                .map(Member::getId)
+                .orElse(null);
+
+        return ArticleViewDTO.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .content(article.getContent())
+                .writer(article.getWriter())
+                .writerId(writerId)
+                .createdAt(localDateTime)
                 .modifiedAt(article.getModifiedAt())
                 .views(views)
                 .build();
@@ -123,7 +132,8 @@ public class ArticleMapper {
         if (comment.getMember() != null) {
             commentDTO.setNickname(comment.getMember().getNickname());
         }
-        commentDTO.setCreatedAt(comment.getCreatedAt());
+        String localDateTime = DateUtils.formatLocalDateTime(comment.getCreatedAt());
+        commentDTO.setCreatedAt(localDateTime);
         return commentDTO;
     }
 
@@ -134,7 +144,20 @@ public class ArticleMapper {
     }
 
     public MemberCurrentDTO toMemberCurrentDTO(Long memberId, String nickname) {
-        return new MemberCurrentDTO(memberId, nickname);
+        return MemberCurrentDTO.builder()
+                .memberId(memberId)
+                .nickname(nickname)
+                .build();
     }
 
+    public static ArticleCreatedAtDTO toArticleCreatedAtDTO(ArticleViewDTO article) {
+        return ArticleCreatedAtDTO.builder()
+                .id(article.getId())
+                .formattedCreatedAt(article.getCreatedAt())
+                .build();
+    }
+
+    public ArticleCurrentMemberDTO toCurrentMemberIdDTO(Long id) {
+        return new ArticleCurrentMemberDTO(id);
+    }
 }

@@ -9,11 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCommentDTO {
+public class ArticleCurrentMemberDTO {
 
-    private Long id;
-    private Long articleId;
-    private String contents;
-    private String writerNickname;
-    private String createdAt;
+    private Long memberId;
 }

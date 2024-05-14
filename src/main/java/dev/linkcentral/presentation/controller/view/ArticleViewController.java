@@ -2,6 +2,7 @@ package dev.linkcentral.presentation.controller.view;
 
 import dev.linkcentral.presentation.response.article.ArticleCommentPageResponse;
 import dev.linkcentral.service.dto.article.ArticleCommentViewDTO;
+import dev.linkcentral.service.dto.article.ArticleCreatedAtDTO;
 import dev.linkcentral.service.dto.article.ArticleDetailsDTO;
 import dev.linkcentral.service.dto.article.ArticleViewDTO;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
@@ -37,13 +38,6 @@ public class ArticleViewController {
         return "articles/save";
     }
 
-    @GetMapping("/")
-    public String showAllArticles(Model model) {
-        List<ArticleViewDTO> articleViewDTOList = articleFacade.findAll();
-        model.addAttribute("articleList", articleViewDTOList);
-        return "/articles/list";
-    }
-
     @GetMapping("/{id}")
     public String showArticleDetails(@PageableDefault(size = 5, sort = "id",
                            direction = Sort.Direction.DESC) Pageable pageable,
@@ -77,9 +71,11 @@ public class ArticleViewController {
         int startPage = (((int) Math.ceil(((double) pageable.getPageNumber() / blockLimit))) - 1) * blockLimit + 1;
         int endPage = Math.min((startPage + blockLimit - 1), articlePage.getTotalPages());
         boolean isAuthenticated = SecurityUtils.isAuthenticated();
+        List<ArticleCreatedAtDTO> formattedCreatedAtList = articleFacade.getFormattedCreatedAtList(articleList);
 
         model.addAttribute("isAuthenticated", isAuthenticated);
         model.addAttribute("articleList", articleList); // List로 전달
+        model.addAttribute("formattedCreatedAtList", formattedCreatedAtList);
         model.addAttribute("articlePage", articlePage); // 페이지 정보 전달
         model.addAttribute("startPage", startPage);     // 시작 페이지
         model.addAttribute("endPage", endPage);         // 마지막 페이지
@@ -88,7 +84,7 @@ public class ArticleViewController {
 
     @GetMapping("/{id}/comments")
     public ResponseEntity<ArticleCommentPageResponse> showCommentsForArticle(@PathVariable Long id,
-             @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+             @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Page<ArticleCommentViewDTO> commentsPage = articleFacade.getCommentsForArticle(id, pageable);
         ArticleCommentPageResponse response = ArticleCommentPageResponse.toArticleCommentPageResponse(commentsPage);

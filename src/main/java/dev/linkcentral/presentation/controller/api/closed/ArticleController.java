@@ -21,6 +21,13 @@ public class ArticleController {
 
     private final ArticleFacade articleFacade;
 
+    @GetMapping("/member-info")
+    public ResponseEntity<ArticleMemberResponse> info() {
+        ArticleCurrentMemberDTO currentMemberId = articleFacade.getCurrentMemberId();
+        ArticleMemberResponse response = ArticleMemberResponse.toArticleMemberResponse(currentMemberId.getMemberId());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<ArticleCreateResponse> createArticle(@Validated @RequestBody ArticleCreateRequest articleCreateRequest) {
         ArticleCreateRequestDTO createRequestDTO = ArticleCreateRequest.toArticleCreateCommand(articleCreateRequest);
@@ -85,5 +92,4 @@ public class ArticleController {
         articleFacade.deleteComment(commentId);
         return ResponseEntity.ok().build();
     }
-
 }

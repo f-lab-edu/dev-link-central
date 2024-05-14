@@ -19,6 +19,7 @@ public class ProfileMapper {
     public MemberCurrentDTO toMemberCurrentDTO(Member currentMember) {
         return MemberCurrentDTO.builder()
                 .memberId(currentMember.getId())
+                .name(currentMember.getName())
                 .build();
     }
 
