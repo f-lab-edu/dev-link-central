@@ -3,8 +3,10 @@ package dev.linkcentral.service.mapper;
 import dev.linkcentral.database.entity.Friend;
 import dev.linkcentral.database.entity.FriendStatus;
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.service.dto.friend.FriendMemberInfoDTO;
 import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;
+import dev.linkcentral.service.dto.member.MemberInfoDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -45,4 +47,7 @@ public class FriendMapper {
                 .collect(Collectors.toList());
     }
 
+    public FriendMemberInfoDTO toFriendMemberInfoDTO(MemberInfoDTO memberInfoDTO) {
+        return new FriendMemberInfoDTO(memberInfoDTO.getUserId());
+    }
 }
