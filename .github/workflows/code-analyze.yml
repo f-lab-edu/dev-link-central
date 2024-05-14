@@ -1,0 +1,26 @@
+name: code analyze
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+env:
+  CACHED_DEPENDENCIES_PATHS: '**/node_modules'
+
+jobs:
+  CodeReview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: AI Code Reviewer
+        uses: f-lab-dev/ai-codereviewer@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_BOT }}
+          OPENAI_API_KEY: ${{ secrets.SECRET_GPT }}
+          OPENAI_API_MODEL: "gpt-4"
+          exclude: "**/*.json, **/*.md"

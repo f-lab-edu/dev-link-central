@@ -5,13 +5,17 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- jQuery library -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
-
-    <!-- Bootstrap JS 및 jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <!-- SweetAlert2 JS -->
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- SweetAlert2 CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 
@@ -21,65 +25,60 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .container {
-            max-width: 400px;
-            margin: 50px auto;
-            background-color: #fff;
+            background-color: #ffffff;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .page-header {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 8px 8px 50px 50px;
+            text-align: center;
+            font-size: 24px;
+            box-shadow: 0 2px 5px rgba(0, 0, 255, 0.2);
+            margin-bottom: 20px;
         }
 
         form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .form-floating {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        input {
             width: 100%;
+        }
+
+        input[type="password"], .btn {
+            width: 50%;
             padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
+            margin-bottom: 20px;
             border-radius: 4px;
         }
 
-        button {
+        input[type="password"] {
             width: 100%;
-            padding: 10px;
-            color: #fff;
+            border: 1px solid #ced4da;
+        }
+
+        .btn-primary {
             background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            border-color: #007bff;
+            float: right;
         }
 
-        button:hover {
+        .btn-primary:hover {
             background-color: #0056b3;
-        }
-
-        .has-danger input {
-            border-color: #dc3545;
         }
 
         .invalid-feedback {
             color: #dc3545;
-            margin-top: 5px;
         }
     </style>
 
@@ -113,15 +112,16 @@
 
 </head>
 <body>
+
 <div class="container">
     <form id="deleteForm" onsubmit="deleteMember(event)">
-        <label class="form-label mt-4">회원 탈퇴</label>
-
+        <div class="page-header">회원 탈퇴</div>
+        <label for="password">비밀번호</label>
         <c:choose>
             <c:when test="${empty message}">
                 <div class="form-floating mb-3">
                     <input type="password" name="password" class="form-control" id="password" required>
-                    <label for="password">비밀번호</label>
+
                 </div>
             </c:when>
             <c:otherwise>

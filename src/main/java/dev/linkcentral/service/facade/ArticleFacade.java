@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -75,13 +76,9 @@ public class ArticleFacade {
         return articleMapper.toMemberCurrentDTO(currentMember.getId(), currentMember.getNickname());
     }
 
-    public List<ArticleViewDTO> findAll() {
-        return articleService.findAllArticles();
-    }
-
-    public ArticleViewDTO findById(Long id) {
+    public ArticleViewDTO findById(Long articleId) {
         Member currentMember = memberService.getAuthenticatedMember();
-        return articleService.findArticleById(id, currentMember);
+        return articleService.findArticleById(articleId, currentMember);
     }
 
     public ArticleDetailsDTO updateForm(Long id) {
@@ -98,5 +95,16 @@ public class ArticleFacade {
 
     public Page<ArticleCommentViewDTO> getCommentsForArticle(Long id, Pageable pageable) {
          return articleService.findCommentsForScrolling(id, pageable);
+    }
+
+    public List<ArticleCreatedAtDTO> getFormattedCreatedAtList(List<ArticleViewDTO> articleList) {
+        return articleList.stream()
+                .map(ArticleMapper::toArticleCreatedAtDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ArticleCurrentMemberDTO getCurrentMemberId() {
+        Member member = memberService.getCurrentMember();
+        return articleMapper.toCurrentMemberIdDTO(member.getId());
     }
 }

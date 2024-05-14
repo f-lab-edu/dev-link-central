@@ -7,13 +7,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCommentDTO {
+@AllArgsConstructor
+public class ArticleCreatedAtDTO {
 
     private Long id;
-    private Long articleId;
-    private String contents;
-    private String writerNickname;
-    private String createdAt;
+    private String formattedCreatedAt;
 }

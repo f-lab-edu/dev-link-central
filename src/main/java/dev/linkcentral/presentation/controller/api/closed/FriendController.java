@@ -1,10 +1,8 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.presentation.request.friend.FriendshipRequest;
-import dev.linkcentral.presentation.response.friend.FriendReceivedResponse;
-import dev.linkcentral.presentation.response.friend.FriendRequestResponse;
-import dev.linkcentral.presentation.response.friend.FriendshipDetailResponse;
-import dev.linkcentral.presentation.response.friend.FriendshipResponse;
+import dev.linkcentral.presentation.response.friend.*;
+import dev.linkcentral.service.dto.friend.FriendMemberInfoDTO;
 import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;
 import dev.linkcentral.service.facade.FriendFacade;
@@ -23,6 +21,13 @@ import java.util.List;
 public class FriendController {
 
     private final FriendFacade friendFacade;
+
+    @GetMapping("/auth/member-info")
+    public ResponseEntity<FriendMemberInfoResponse> getMemberInfo() {
+        FriendMemberInfoDTO memberInfoDTO = friendFacade.getMemberInfo();
+        FriendMemberInfoResponse response = FriendMemberInfoResponse.toFriendMemberInfoResponse(memberInfoDTO);
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/request")
     public ResponseEntity<FriendRequestResponse> sendFriendRequest(@Validated @RequestBody FriendshipRequest friendshipRequest) {

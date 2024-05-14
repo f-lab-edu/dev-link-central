@@ -18,7 +18,7 @@ public class ArticleViewDTO {
     private String content;
     private String writer;
     private Long writerId;
-    private LocalDateTime createdAt;
+    private String createdAt;
     private LocalDateTime modifiedAt;
     private int views;
 

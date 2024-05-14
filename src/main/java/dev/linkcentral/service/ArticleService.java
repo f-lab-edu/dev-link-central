@@ -1,6 +1,7 @@
 package dev.linkcentral.service;
 
 import dev.linkcentral.common.exception.CustomOptimisticLockException;
+import dev.linkcentral.common.exception.MemberNotFoundException;
 import dev.linkcentral.database.entity.*;
 import dev.linkcentral.database.repository.*;
 import dev.linkcentral.service.dto.article.*;
@@ -17,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,7 +26,7 @@ import java.util.Optional;
 public class ArticleService {
 
     private static int RETRY_COUNT = 0;
-    private static final int MAX_RETRIES = 3; // 최대 재시도 횟수를 정의
+    private static final int MAX_RETRIES = 3; // 최대 재시도 횟수
 
     private final MemberRepository memberRepository;
     private final ArticleRepository articleRepository;
@@ -52,19 +51,11 @@ public class ArticleService {
     public ArticleDetailsDTO getArticleById(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
-        return articleMapper.toArticleDetailsDTO(article);
-    }
 
-    @Transactional(readOnly = true)
-    public List<ArticleViewDTO> findAllArticles() {
-        List<Article> articleEntityList = articleRepository.findAll();
-        List<ArticleViewDTO> articleDTOList = new ArrayList<>();
-
-        for (Article articleEntity : articleEntityList) {
-            ArticleViewDTO articleDTO = articleMapper.toArticleDTO(articleEntity);
-            articleDTOList.add(articleDTO);
+        if (article.getMember() == null) {
+            throw new MemberNotFoundException("게시글에 연결된 멤버 정보가 없습니다.");
         }
-        return articleDTOList;
+        return articleMapper.toArticleDetailsDTO(article);
     }
 
     @Transactional
@@ -134,7 +125,7 @@ public class ArticleService {
     @Transactional(readOnly = true)
     public Page<ArticleViewDTO> paginateArticles(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
-        int pageLimit = 3;                       // 한 페이지에 보여줄 글 갯수
+        int pageLimit = 7;                       // 한 페이지에 보여줄 글 갯수
 
         // 한페이지당 3개씩 글을 보여주고 정렬 기준은 id 기준으로 내림차순 정렬
         Page<Article> articleEntity = articleRepository.findAll(PageRequest
