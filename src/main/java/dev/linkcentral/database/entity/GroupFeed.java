@@ -4,9 +4,9 @@ import lombok.Getter;
 
 import javax.persistence.*;
 
-@Getter
 @Entity
-public class MemberFeed extends AuditingFields {
+@Getter
+public class GroupFeed extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,13 +16,13 @@ public class MemberFeed extends AuditingFields {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(length = 100, nullable = false)
+    @Column(name = "title", length = 100, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    protected MemberFeed() {
+    protected GroupFeed() {
     }
 
 

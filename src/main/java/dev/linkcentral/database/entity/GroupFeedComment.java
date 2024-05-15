@@ -6,20 +6,20 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-public class MemberFeedComment extends AuditingFields {
+public class GroupFeedComment extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_feed_id")
-    private MemberFeed memberFeed;
+    @JoinColumn(name = "group_feed_id")
+    private GroupFeed groupFeed;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    protected MemberFeedComment() {
+    protected GroupFeedComment() {
     }
 
 

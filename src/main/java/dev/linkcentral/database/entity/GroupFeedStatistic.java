@@ -6,21 +6,23 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-public class MemberFeedStatistic extends AuditingFields {
+public class GroupFeedStatistic extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_feed_id")
-    private MemberFeed memberFeed;
+    @JoinColumn(name = "group_feed_id")
+    private GroupFeed groupFeed;
 
+    @Column(name = "likes")
     private int likes;
 
+    @Column(name = "views")
     private int views;
 
-    protected MemberFeedStatistic() {
+    protected GroupFeedStatistic() {
     }
 
 
