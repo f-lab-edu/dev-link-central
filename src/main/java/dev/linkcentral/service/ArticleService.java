@@ -65,7 +65,7 @@ public class ArticleService {
 
         viewCountUpdate(member, article);
         ArticleStatistic statistic = articleStatisticRepository.findByArticle(article)
-                .orElse(new ArticleStatistic());
+                .orElse(ArticleStatistic.createEmptyStatistic());
 
         return articleMapper.toDetailedArticleDTO(article, statistic.getViews());
     }

@@ -2,8 +2,8 @@ package dev.linkcentral.database.entity;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,13 +11,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
 @Builder
-@ToString(of = {"id", "name", "passwordHash", "email", "nickname"})
 @EqualsAndHashCode(of = "id")
 @AllArgsConstructor
 public class Member extends AuditingFields implements Serializable, UserDetails {
@@ -26,23 +23,24 @@ public class Member extends AuditingFields implements Serializable, UserDetails 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "password_hash", nullable = false, length = 100)
     private String passwordHash;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "nickname", nullable = false, length = 100)
     private String nickname;
+
+    @Column(name = "deleted")
+    private boolean deleted = Boolean.FALSE;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
-
-    private boolean deleted = Boolean.FALSE;
 
     protected Member() {
     }

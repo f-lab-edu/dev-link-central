@@ -6,8 +6,8 @@ import lombok.Getter;
 
 import javax.persistence.*;
 
-@Getter
 @Entity
+@Getter
 @Builder
 @AllArgsConstructor
 public class Article extends AuditingFields {
@@ -20,13 +20,13 @@ public class Article extends AuditingFields {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(length = 100, nullable = false)
+    @Column(name = "title", length = 100, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(length = 50, nullable = false)
+    @Column(name = "writer", length = 50, nullable = false)
     private String writer;
 
     protected Article() {

@@ -1,5 +1,6 @@
 package dev.linkcentral.database.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,6 +8,8 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 public class ArticleComment extends AuditingFields {
 
     @Id
@@ -21,10 +24,10 @@ public class ArticleComment extends AuditingFields {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "writer_nickname", nullable = false)
     private String writerNickname;
 
     protected ArticleComment() {
@@ -44,15 +47,6 @@ public class ArticleComment extends AuditingFields {
     }
 
     public void updateWriterNickname(String writerNickname) {
-        this.writerNickname = writerNickname;
-    }
-
-    @Builder
-    public ArticleComment(Long id, Article article, Member member, String content, String writerNickname) {
-        this.id = id;
-        this.article = article;
-        this.member = member;
-        this.content = content;
         this.writerNickname = writerNickname;
     }
 }

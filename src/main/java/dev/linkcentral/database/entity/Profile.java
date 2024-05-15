@@ -16,14 +16,15 @@ public class Profile extends AuditingFields {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(length = 250, nullable = false)
+    @Column(name = "bio", length = 250, nullable = false)
     private String bio;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
     protected Profile() {
     }
+
 
     public Profile(Member member, String bio, String imageUrl) {
         this.member = member;

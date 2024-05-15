@@ -25,10 +25,12 @@ public class StudyMember extends AuditingFields {
     private StudyGroup studyGroup;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private StudyGroupStatus status;
 
     protected StudyMember() {
     }
+
 
     public void updateStudyGroupStatus(StudyGroupStatus status) {
         this.status = status;
