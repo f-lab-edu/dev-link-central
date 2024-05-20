@@ -51,6 +51,7 @@
             color: #666;
             margin-bottom: 5px;
             display: block;
+            font-weight: bold;
         }
 
         input[type="text"],
@@ -63,8 +64,36 @@
             border-radius: 4px;
         }
 
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
         .form-actions {
             text-align: right;
+        }
+
+        .file-input {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+
+        .file-input-button {
+            background-color: #4A90E2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
         }
 
         input[type="submit"] {
@@ -81,6 +110,17 @@
 
         input[type="submit"]:hover {
             background-color: #357ABD;
+        }
+
+        #imagePreview {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: none;
         }
     </style>
 
@@ -116,6 +156,17 @@
                     }
                 });
             });
+
+            $('#image').change(function(event) {
+                var input = event.target;
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#imagePreview').attr('src', e.target.result).show();
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            });
         });
     </script>
 </head>
@@ -126,7 +177,11 @@
         <input type="hidden" name="memberId" value="${profile.memberId}">
 
         <label for="image">프로필 사진:</label>
-        <input type="file" id="image" name="image">
+        <div class="file-input-wrapper">
+            <button type="button" class="file-input-button">파일 선택</button>
+            <input type="file" id="image" name="image" class="file-input">
+        </div>
+        <img id="imagePreview" src="#" alt="Image Preview" />
 
         <label for="bio">짧은 소개:</label>
         <input type="text" id="bio" name="bio" value="${profile.bio}">
@@ -136,5 +191,4 @@
         </div>
     </form>
 </div>
-</body>
 </html>
