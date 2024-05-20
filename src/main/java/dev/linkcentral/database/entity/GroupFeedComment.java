@@ -16,8 +16,15 @@ public class GroupFeedComment extends AuditingFields {
     @JoinColumn(name = "group_feed_id")
     private GroupFeed groupFeed;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
+
+    @Column(name = "writer_nickname", nullable = false)
+    private String writerNickname;
 
     protected GroupFeedComment() {
     }

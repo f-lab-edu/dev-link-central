@@ -14,5 +14,4 @@ public class MemberCurrentDTO {
     private Long memberId;
     private String name;
     private String nickname;
-
 }
