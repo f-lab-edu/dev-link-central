@@ -22,7 +22,7 @@ public class ArticleController {
     private final ArticleFacade articleFacade;
 
     @GetMapping("/member-info")
-    public ResponseEntity<ArticleMemberResponse> info() {
+    public ResponseEntity<ArticleMemberResponse> getMemberInfo() {
         ArticleCurrentMemberDTO currentMemberId = articleFacade.getCurrentMemberId();
         ArticleMemberResponse response = ArticleMemberResponse.toArticleMemberResponse(currentMemberId.getMemberId());
         return ResponseEntity.ok(response);
