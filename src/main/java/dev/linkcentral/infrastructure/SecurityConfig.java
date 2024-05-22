@@ -18,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-//    private final JwtTokenProvider jwtTokenProvider;
     private final TokenProvider tokenProvider;
 
     @Bean
@@ -47,11 +46,11 @@ public class SecurityConfig {
                         "/api/v1/article/**",
                         "/api/v1/profile/**",
                         "/api/v1/friends/**",
-                        "/api/v1/study-group/**"
+                        "/api/v1/study-group/**",
+                        "/api/v1/group-feed/**"
                 ).hasAuthority("USER") // `USER` 권한을 가진 사용자만 접근 가능하도록 설정
                 .anyRequest().authenticated()
                 .and()
-//                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                 .addFilterBefore(new JwtAuthenticationFilter(tokenProvider),
                         UsernamePasswordAuthenticationFilter.class);
 
