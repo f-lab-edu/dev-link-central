@@ -7,14 +7,14 @@ import dev.linkcentral.common.exception.MemberRegistrationException;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.MemberStatus;
 import dev.linkcentral.database.repository.MemberRepository;
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
+import dev.linkcentral.infrastructure.jwt.TokenProvider;
 import dev.linkcentral.service.dto.member.MemberEditDTO;
 import dev.linkcentral.service.dto.member.MemberInfoDTO;
 import dev.linkcentral.service.dto.member.MemberMailDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
-import dev.linkcentral.infrastructure.jwt.TokenDTO;
 import dev.linkcentral.service.mapper.MemberMapper;
 import dev.linkcentral.service.security.SecurityUtils;
-import dev.linkcentral.infrastructure.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
@@ -88,7 +88,7 @@ public class MemberService {
     }
 
     @Transactional
-    public TokenDTO authenticateAndGenerateJwtToken(String username, String password) {
+    public JwtTokenDTO authenticateAndGenerateJwtToken(String username, String password) {
         Member member = memberRepository.findByEmailAndDeletedFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
 

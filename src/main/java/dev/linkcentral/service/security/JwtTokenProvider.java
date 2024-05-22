@@ -1,6 +1,6 @@
 package dev.linkcentral.service.security;
 
-import dev.linkcentral.infrastructure.jwt.TokenDTO;
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.TokenProvider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -34,7 +34,7 @@ public class JwtTokenProvider implements TokenProvider {
 
     // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
     @Override
-    public TokenDTO generateToken(Authentication authentication) {
+    public JwtTokenDTO generateToken(Authentication authentication) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -57,7 +57,7 @@ public class JwtTokenProvider implements TokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return TokenDTO.builder()
+        return JwtTokenDTO.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
