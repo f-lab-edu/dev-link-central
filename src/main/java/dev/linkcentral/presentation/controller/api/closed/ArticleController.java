@@ -8,6 +8,10 @@ import dev.linkcentral.service.dto.article.*;
 import dev.linkcentral.service.facade.ArticleFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -91,5 +95,14 @@ public class ArticleController {
     public ResponseEntity<Void> deleteArticleComment(@PathVariable Long commentId) {
         articleFacade.deleteComment(commentId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<ArticleCommentPageResponse> showCommentsForArticle(@PathVariable Long id,
+               @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<ArticleCommentViewDTO> commentsPage = articleFacade.getCommentsForArticle(id, pageable);
+        ArticleCommentPageResponse response = ArticleCommentPageResponse.toArticleCommentPageResponse(commentsPage);
+        return ResponseEntity.ok(response);
     }
 }

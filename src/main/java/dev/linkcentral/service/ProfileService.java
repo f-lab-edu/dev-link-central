@@ -56,4 +56,10 @@ public class ProfileService {
         }
         profileRepository.save(profile);
     }
+
+    @Transactional(readOnly = true)
+    public Profile getProfileByMemberId(Long memberId) {
+        return profileRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("프로필을 찾을 수 없습니다."));
+    }
 }

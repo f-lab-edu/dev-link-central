@@ -221,7 +221,28 @@
         function groupFeedView() {
             $.ajax({
                 type: "GET",
-                url: "/api/v1/profile/auth/member-info",
+                url: "/api/v1/group-feed/auth/member-info",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function (response) {
+                    var memberId = response.memberId;
+                    if (!memberId) {
+                        alert('회원 ID가 존재하지 않습니다.');
+                        return;
+                    }
+                    window.location.href = "/api/v1/view/group-feed/list?memberId=" + memberId;
+                },
+                error: function (xhr) {
+                    alert("회원 정보를 가져올 수 없습니다: " + xhr.responseText);
+                }
+            });
+        }
+
+        function groupFeedSave() {
+            $.ajax({
+                type: "GET",
+                url: "/api/v1/group-feed/auth/member-info",
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
@@ -238,6 +259,8 @@
                 }
             });
         }
+
+
     </script>
 </head>
 <body>
@@ -249,7 +272,12 @@
     <button onclick="profileView()">프로필 & 친구 목록</button>
     <button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판</button>
     <button onclick="StudyGroupView()">스터디 그룹</button>
-    <button onclick="groupFeedView()">그룹 피드 생성</button>
+
+
+    <button onclick="groupFeedView()">그룹 피드 목록</button>
+    <button onclick="groupFeedSave()">그룹 피드 작성</button>
+
+
 </div>
 </body>
 </html>

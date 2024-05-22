@@ -94,7 +94,8 @@ public class ArticleFacade {
     }
 
     public Page<ArticleCommentViewDTO> getCommentsForArticle(Long id, Pageable pageable) {
-         return articleService.findCommentsForScrolling(id, pageable);
+        Member member = memberService.getCurrentMember();
+        return articleService.findCommentsForScrolling(id, pageable);
     }
 
     public List<ArticleCreatedAtDTO> getFormattedCreatedAtList(List<ArticleViewDTO> articleList) {

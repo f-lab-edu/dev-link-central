@@ -1,10 +1,10 @@
 package dev.linkcentral.service.facade;
 
 import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.member.*;
 import dev.linkcentral.service.dto.token.MemberDetailsDTO;
-import dev.linkcentral.infrastructure.jwt.TokenDTO;
 import dev.linkcentral.service.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,7 @@ public class MemberFacade {
         return memberMapper.toMemberRegistrationResultDTO(member.getId());
     }
 
-    public TokenDTO loginMember(MemberLoginRequestDTO memberLoginRequestDTO) {
+    public JwtTokenDTO loginMember(MemberLoginRequestDTO memberLoginRequestDTO) {
         return memberService.authenticateAndGenerateJwtToken(
                 memberLoginRequestDTO.getEmail(),
                 memberLoginRequestDTO.getPassword());
