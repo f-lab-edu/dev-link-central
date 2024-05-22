@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.controller.view;
 
+import dev.linkcentral.service.facade.GroupFeedFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -15,5 +16,10 @@ public class GroupFeedViewController {
     @GetMapping("/create")
     public String showCreateFeedForm() {
         return "groupfeed/save";
+    }
+
+    @GetMapping("/list")
+    public String showGroupFeedListPage() {
+        return "groupfeed/view";
     }
 }
