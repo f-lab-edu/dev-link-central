@@ -31,6 +31,7 @@ public class StudyGroup extends AuditingFields {
     protected StudyGroup() {
     }
 
+
     public void updateStudyLeaderId(Long studyLeaderId) {
         this.studyLeaderId = studyLeaderId;
     }

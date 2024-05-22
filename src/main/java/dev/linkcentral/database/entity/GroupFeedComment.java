@@ -6,29 +6,29 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-public class MemberFeed extends AuditingFields {
+public class GroupFeedComment extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_feed_id")
+    private GroupFeed groupFeed;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(length = 100, nullable = false)
-    private String title;
-
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    protected MemberFeed() {
+    @Column(name = "writer_nickname", nullable = false)
+    private String writerNickname;
+
+    protected GroupFeedComment() {
     }
 
-
-    public void updateTitle(String title) {
-        this.title = title;
-    }
 
     public void updateContent(String content) {
         this.content = content;

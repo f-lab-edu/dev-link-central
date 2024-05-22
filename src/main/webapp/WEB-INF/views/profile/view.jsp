@@ -81,10 +81,13 @@
             text-align: center;
             font-size: 16px;
             cursor: pointer;
+            text-decoration: none;
         }
 
         .profile-button:hover {
             background-color: #0056b3;
+            color: white;
+            text-decoration: none;
         }
 
         .friend-requests-container, .friends-list-container {

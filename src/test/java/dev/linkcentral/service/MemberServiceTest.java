@@ -48,12 +48,15 @@ public class MemberServiceTest {
     }
 
     private Member createTestMember() {
-        return new Member(1L,
-                "John Doe",
-                "hashed_password",
-                "john.doe@example.com",
-                "johndoe",
-                Collections.singletonList(String.valueOf(MemberStatus.USER)), false);
+        return Member.builder()
+                .id(1L)
+                .name("John Doe")
+                .passwordHash("hashed_password")
+                .email("john.doe@example.com")
+                .nickname("johndoe")
+                .roles(Collections.singletonList(MemberStatus.USER.toString()))
+                .deleted(false)
+                .build();
     }
 
     @DisplayName("회원 가입시 데이터베이스 저장 검증")

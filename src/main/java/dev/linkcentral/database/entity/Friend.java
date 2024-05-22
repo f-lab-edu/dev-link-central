@@ -24,12 +24,13 @@ public class Friend extends AuditingFields {
     @JoinColumn(name = "receiver_id")
     private Member receiver;
 
-    // 친구 요청 상태
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private FriendStatus status;
 
     protected Friend() {
     }
+
 
     public void updateFriendStatus(FriendStatus status) {
         this.status = status;

@@ -16,8 +16,8 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/friends")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/friends")
 public class FriendController {
 
     private final FriendFacade friendFacade;

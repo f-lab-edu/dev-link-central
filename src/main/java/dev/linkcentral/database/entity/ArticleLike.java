@@ -5,8 +5,8 @@ import lombok.Getter;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Getter
 @Entity
+@Getter
 public class ArticleLike extends AuditingFields {
 
     @Id
@@ -21,7 +21,9 @@ public class ArticleLike extends AuditingFields {
     @JoinColumn(name = "article_id")
     private Article article;
 
-    protected ArticleLike() {}
+    protected ArticleLike() {
+    }
+
 
     public ArticleLike(Member member, Article article) {
         this.member = member;
@@ -41,5 +43,4 @@ public class ArticleLike extends AuditingFields {
     public int hashCode() {
         return Objects.hash(member.getId(), article.getId());
     }
-
 }
