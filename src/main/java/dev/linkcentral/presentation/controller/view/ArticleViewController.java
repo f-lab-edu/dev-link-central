@@ -1,7 +1,5 @@
 package dev.linkcentral.presentation.controller.view;
 
-import dev.linkcentral.presentation.response.article.ArticleCommentPageResponse;
-import dev.linkcentral.service.dto.article.ArticleCommentViewDTO;
 import dev.linkcentral.service.dto.article.ArticleCreatedAtDTO;
 import dev.linkcentral.service.dto.article.ArticleDetailsDTO;
 import dev.linkcentral.service.dto.article.ArticleViewDTO;
@@ -14,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -81,14 +78,4 @@ public class ArticleViewController {
         model.addAttribute("endPage", endPage);         // 마지막 페이지
         return "/articles/paging";
     }
-
-    @GetMapping("/{id}/comments")
-    public ResponseEntity<ArticleCommentPageResponse> showCommentsForArticle(@PathVariable Long id,
-             @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        Page<ArticleCommentViewDTO> commentsPage = articleFacade.getCommentsForArticle(id, pageable);
-        ArticleCommentPageResponse response = ArticleCommentPageResponse.toArticleCommentPageResponse(commentsPage);
-        return ResponseEntity.ok(response);
-    }
-
 }

@@ -465,8 +465,9 @@
 
             isFetchingComments = true;
             $.ajax({
-                url: "/api/v1/view/article/" + articleId + "/comments?page=" + currentPage,
+                url: "/api/v1/article/" + articleId + "/comments?page=" + currentPage,
                 type: "GET",
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
                 success: function(response) {
                     if(response.comments.length > 0){
                         var commentsHtml = response.comments.map(function(comment) {
