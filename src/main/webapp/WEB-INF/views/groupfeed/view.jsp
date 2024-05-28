@@ -27,7 +27,7 @@
         }
 
         .feed-container {
-            max-width: 700px; /* 가로 크기를 줄임 */
+            max-width: 700px;
             margin: 0 auto;
         }
 
@@ -37,36 +37,36 @@
             margin-bottom: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 680px; /* 가로 길이를 조금 줄임 */
-            margin: 0 auto 20px; /* 가운데 정렬 및 아래 여백 추가 */
+            max-width: 680px;
+            margin: 0 auto 20px;
         }
 
         .feed-item img.feed-image {
-            width: 90%; /* 원하는 너비를 설정 */
-            height: 260px; /* 원하는 높이를 설정 */
-            object-fit: cover; /* 이미지가 비율을 유지하면서 공간을 채우도록 설정 */
+            width: 90%;
+            height: 260px;
+            object-fit: cover;
             border-radius: 20px;
             display: block;
-            margin: 20px auto; /* 위아래 간격 조정 */
+            margin: 20px auto;
         }
 
         .profile-image {
-            width: 50px; /* 프로필 이미지 크기를 조금 더 키움 */
+            width: 50px;
             height: 50px;
             border-radius: 50%;
             margin-right: 10px;
-            cursor: pointer; /* 클릭 가능한 커서 모양 */
+            cursor: pointer;
         }
 
         .writer-info {
             display: flex;
             align-items: center;
-            margin-bottom: 10px; /* 프로필 이미지와 작성자 이름 아래 공간 추가 */
-            justify-content: space-between; /* 작성자 이름과 제목 사이 공간을 조정 */
+            margin-bottom: 10px;
+            justify-content: space-between;
         }
 
         .feed-content {
-            margin-right: 20px; /* feed.content만 오른쪽으로 이동 */
+            margin-right: 20px;
         }
 
         .writer-details {
@@ -76,22 +76,22 @@
 
         .writer-name {
             font-size: 1.3em;
-            margin-top: 15px; /* 작성자 이름을 조금 더 아래로 내림 */
-            font-weight: normal; /* 글자 굵기 조정 */
-            cursor: pointer; /* 클릭 가능한 커서 모양 */
-            transition: color 0.3s; /* 색상 변경 시 애니메이션 추가 */
+            margin-top: 15px;
+            font-weight: normal;
+            cursor: pointer;
+            transition: color 0.3s;
         }
 
         .writer-name:hover {
-            color: #007bff; /* 마우스를 대면 색상이 변함 */
+            color: #007bff;
         }
 
         .feed-title {
             font-size: 1.5em;
-            margin-left: 150px; /* 왼쪽으로 이동 */
-            text-align: left; /* 왼쪽 정렬 */
+            margin-left: 150px;
+            text-align: left;
             flex-grow: 1;
-            font-weight: bold; /* 글자 굵기를 진하게 변경 */
+            font-weight: bold;
         }
 
         .loading-spinner {
@@ -108,13 +108,13 @@
         }
 
         .feed-content {
-            margin-top: 20px; /* feed.content 위 간격 추가 */
-            padding-left: 35px; /* feed.content만 왼쪽으로 이동 */
+            margin-top: 20px;
+            padding-left: 35px;
         }
 
         .feed-created {
-            text-align: right; /* createdAt을 오른쪽 정렬 */
-            margin-top: 10px; /* 위쪽 간격 추가 */
+            text-align: right;
+            margin-top: 10px;
         }
     </style>
 

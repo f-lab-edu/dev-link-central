@@ -3,15 +3,15 @@ package dev.linkcentral.service.facade;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.service.GroupFeedService;
 import dev.linkcentral.service.MemberService;
-import dev.linkcentral.service.dto.groupfeed.GroupFeedCreateDTO;
-import dev.linkcentral.service.dto.groupfeed.GroupFeedSavedDTO;
-import dev.linkcentral.service.dto.groupfeed.GroupFeedWithProfileDTO;
+import dev.linkcentral.service.dto.groupfeed.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.mapper.GroupFeedMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -33,5 +33,23 @@ public class GroupFeedFacade {
 
     public Page<GroupFeedWithProfileDTO> getGroupFeeds(Pageable pageable) {
         return groupFeedService.getGroupFeeds(pageable);
+    }
+
+    public List<MyGroupFeedDetailsDTO> getAllFeedsByMemberId() {
+        Member currentMember = memberService.getCurrentMember();
+        return groupFeedService.getAllFeedsByMemberId(currentMember.getId());
+    }
+
+    public GroupFeedWithProfileDTO getFeedById(Long feedId) {
+        return groupFeedService.getFeedById(feedId);
+    }
+
+    public void deleteFeed(Long feedId) {
+        groupFeedService.deleteFeed(feedId);
+    }
+
+    public void updateGroupFeed(GroupFeedUpdateDTO groupFeedUpdateDTO) {
+        Member currentMember = memberService.getCurrentMember();
+        groupFeedService.updateGroupFeed(currentMember.getId(), groupFeedUpdateDTO);
     }
 }

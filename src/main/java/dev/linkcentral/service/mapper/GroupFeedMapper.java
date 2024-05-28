@@ -5,6 +5,7 @@ import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.Profile;
 import dev.linkcentral.service.dto.groupfeed.GroupFeedSavedDTO;
 import dev.linkcentral.service.dto.groupfeed.GroupFeedWithProfileDTO;
+import dev.linkcentral.service.dto.groupfeed.MyGroupFeedDetailsDTO;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,18 @@ public class GroupFeedMapper {
 
     public GroupFeedWithProfileDTO toGroupFeedWithProfileDTO(GroupFeed groupFeed, Profile profile) {
         return GroupFeedWithProfileDTO.builder()
+                .id(groupFeed.getId())
+                .title(groupFeed.getTitle())
+                .content(groupFeed.getContent())
+                .writer(groupFeed.getWriter())
+                .imageUrl(groupFeed.getImageUrl())
+                .createdAt(groupFeed.getCreatedAt())
+                .profileImageUrl(profile != null ? profile.getImageUrl() : null)
+                .build();
+    }
+
+    public MyGroupFeedDetailsDTO toMyFeedDTO(GroupFeed groupFeed, Profile profile) {
+        return MyGroupFeedDetailsDTO.builder()
                 .id(groupFeed.getId())
                 .title(groupFeed.getTitle())
                 .content(groupFeed.getContent())

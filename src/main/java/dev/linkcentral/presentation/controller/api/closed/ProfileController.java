@@ -30,8 +30,8 @@ public class ProfileController {
 
     @PostMapping("/update")
     public ResponseEntity<ProfileUpdateResponse> updateProfile(
-                                                    @Validated @ModelAttribute ProfileDetailsRequest profileDetailsRequest,
-                                                    @RequestParam(value = "image", required = false) MultipartFile image) {
+                                 @Validated @ModelAttribute ProfileDetailsRequest profileDetailsRequest,
+                                 @RequestParam(value = "image", required = false) MultipartFile image) {
 
         ProfileUpdateDTO profileUpdateDTO = ProfileDetailsRequest.toUpdateProfileCommand(profileDetailsRequest);
         profileFacade.updateProfile(profileUpdateDTO, image);

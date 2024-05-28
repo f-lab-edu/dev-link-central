@@ -61,7 +61,7 @@ public class StudyGroupController {
     @PostMapping("/{studyGroupId}/join-requests")
     public ResponseEntity<Void> createJoinRequest(@PathVariable Long studyGroupId) {
         studyGroupFacade.requestJoinStudyGroup(studyGroupId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{studyGroupId}/received-requests")
@@ -74,13 +74,13 @@ public class StudyGroupController {
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/accept")
     public ResponseEntity<Void> acceptJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
         studyGroupFacade.acceptStudyGroupJoinRequest(studyGroupId, requestId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/reject")
     public ResponseEntity<Void> rejectJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
         studyGroupFacade.rejectStudyGroupJoinRequest(studyGroupId, requestId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/exists")
@@ -109,5 +109,4 @@ public class StudyGroupController {
         studyGroupFacade.expelStudyGroupMember(groupId, memberId);
         return ResponseEntity.ok().build();
     }
-
 }
