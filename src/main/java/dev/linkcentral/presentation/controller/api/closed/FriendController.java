@@ -47,7 +47,7 @@ public class FriendController {
     @PostMapping("/accept/{requestId}")
     public ResponseEntity<Void> acceptFriendRequest(@PathVariable Long requestId) {
         friendFacade.acceptFriendRequest(requestId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/friendship-ids")
@@ -60,19 +60,19 @@ public class FriendController {
     @DeleteMapping("/reject/{requestId}")
     public ResponseEntity<Void> rejectFriendRequest(@PathVariable Long requestId) {
         friendFacade.rejectFriendRequest(requestId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{friendId}")
     public ResponseEntity<Void> unfriend(@PathVariable Long friendId) {
         friendFacade.unfriend(friendId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/unfriend")
     public ResponseEntity<Void> unfriendSelected(@RequestBody List<Long> friendIds) {
         friendFacade.unfriendSelected(friendIds);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{memberId}/friendships")
@@ -81,5 +81,4 @@ public class FriendController {
         List<FriendshipDetailResponse> responses = FriendshipDetailResponse.toFriendshipDetailResponseList(friendships);
         return ResponseEntity.ok(responses);
     }
-
 }

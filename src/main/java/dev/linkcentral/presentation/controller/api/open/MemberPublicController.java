@@ -43,6 +43,7 @@ public class MemberPublicController {
     @PostMapping("/login")
     public ResponseEntity<LoginSuccessResponse> login(@Validated @RequestBody MemberLoginRequest memberLoginRequest,
                                                       HttpServletRequest request) {
+
         MemberLoginRequestDTO loginRequestDTO = MemberLoginRequest.toMemberLoginRequestCommand(memberLoginRequest);
         JwtTokenDTO jwtTokenDTO = memberFacade.loginMember(loginRequestDTO);
 
@@ -73,5 +74,4 @@ public class MemberPublicController {
         MemberPasswordResponse response = MemberPasswordResponse.toMemberPasswordResponse(isPasswordValid);
         return ResponseEntity.ok(response);
     }
-
 }

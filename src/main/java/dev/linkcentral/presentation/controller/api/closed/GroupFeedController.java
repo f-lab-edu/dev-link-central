@@ -34,7 +34,9 @@ public class GroupFeedController {
     }
 
     @PostMapping
-    public ResponseEntity<GroupFeedCreateResponse> createGroupFeed(@Validated @ModelAttribute GroupFeedCreateRequest groupFeedCreateRequest) {
+    public ResponseEntity<GroupFeedCreateResponse> createGroupFeed(
+            @Validated @ModelAttribute GroupFeedCreateRequest groupFeedCreateRequest) {
+
         GroupFeedCreateDTO groupFeedCreateDTO = GroupFeedCreateRequest.toGroupFeedCreateCommand(groupFeedCreateRequest);
         GroupFeedSavedDTO groupFeedSavedDTO = groupFeedFacade.createGroupFeed(groupFeedCreateDTO);
         GroupFeedCreateResponse response = GroupFeedCreateResponse.toGroupFeedCreateResponse(groupFeedSavedDTO);

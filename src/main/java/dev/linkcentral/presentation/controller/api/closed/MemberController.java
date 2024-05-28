@@ -45,5 +45,4 @@ public class MemberController {
         MemberDeleteResponse response = MemberDeleteResponse.toSoftDeleteMemberResponse(softDeleteMember);
         return ResponseEntity.ok(response);
     }
-
 }
