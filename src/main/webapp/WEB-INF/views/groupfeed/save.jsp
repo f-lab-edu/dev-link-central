@@ -27,7 +27,7 @@
         #feedForm h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: #333;
+            color: #007bff;
         }
 
         #feedForm {
