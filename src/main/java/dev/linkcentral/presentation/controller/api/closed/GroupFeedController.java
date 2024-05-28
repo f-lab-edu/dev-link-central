@@ -1,12 +1,12 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.presentation.request.groupfeed.GroupFeedCreateRequest;
+import dev.linkcentral.presentation.request.groupfeed.GroupFeedUpdateRequest;
 import dev.linkcentral.presentation.response.groupfeed.GroupFeedCreateResponse;
 import dev.linkcentral.presentation.response.groupfeed.GroupFeedInfoResponse;
 import dev.linkcentral.presentation.response.groupfeed.GroupFeedListResponse;
-import dev.linkcentral.service.dto.groupfeed.GroupFeedCreateDTO;
-import dev.linkcentral.service.dto.groupfeed.GroupFeedSavedDTO;
-import dev.linkcentral.service.dto.groupfeed.GroupFeedWithProfileDTO;
+import dev.linkcentral.presentation.response.groupfeed.MyFeedListResponse;
+import dev.linkcentral.service.dto.groupfeed.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.facade.GroupFeedFacade;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -48,5 +51,35 @@ public class GroupFeedController {
         Page<GroupFeedWithProfileDTO> groupFeeds = groupFeedFacade.getGroupFeeds(pageable);
         GroupFeedListResponse response = GroupFeedListResponse.toGroupFeedListResponse(groupFeeds);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/my-feeds")
+    public ResponseEntity<MyFeedListResponse> getMyFeeds() {
+        List<MyGroupFeedDetailsDTO> myFeeds = groupFeedFacade.getAllFeedsByMemberId();
+        MyFeedListResponse response = MyFeedListResponse.toMyFeedListResponse(myFeeds);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{feedId}")
+    public ResponseEntity<GroupFeedWithProfileDTO> getFeedDetail(@PathVariable Long feedId) {
+        GroupFeedWithProfileDTO feed = groupFeedFacade.getFeedById(feedId);
+        return ResponseEntity.ok(feed);
+    }
+
+    @DeleteMapping("/{feedId}")
+    public ResponseEntity<Void> deleteFeed(@PathVariable Long feedId) {
+        groupFeedFacade.deleteFeed(feedId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{feedId}")
+    public ResponseEntity<Void> updateGroupFeed(@PathVariable Long feedId,
+                     @Validated @RequestPart("groupFeedUpdateRequest") GroupFeedUpdateRequest groupFeedUpdateRequest,
+                     @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        groupFeedUpdateRequest.setImage(image);
+        GroupFeedUpdateDTO feedUpdateDTO = GroupFeedUpdateRequest.toGroupFeedUpdateCommand(feedId, groupFeedUpdateRequest);
+        groupFeedFacade.updateGroupFeed(feedUpdateDTO);
+        return ResponseEntity.noContent().build();
     }
 }
