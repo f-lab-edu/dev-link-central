@@ -1,11 +1,9 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
+import dev.linkcentral.presentation.request.groupfeed.GroupFeedCommentRequest;
 import dev.linkcentral.presentation.request.groupfeed.GroupFeedCreateRequest;
 import dev.linkcentral.presentation.request.groupfeed.GroupFeedUpdateRequest;
-import dev.linkcentral.presentation.response.groupfeed.GroupFeedCreateResponse;
-import dev.linkcentral.presentation.response.groupfeed.GroupFeedInfoResponse;
-import dev.linkcentral.presentation.response.groupfeed.GroupFeedListResponse;
-import dev.linkcentral.presentation.response.groupfeed.MyFeedListResponse;
+import dev.linkcentral.presentation.response.groupfeed.*;
 import dev.linkcentral.service.dto.groupfeed.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.facade.GroupFeedFacade;
@@ -81,5 +79,20 @@ public class GroupFeedController {
         GroupFeedUpdateDTO feedUpdateDTO = GroupFeedUpdateRequest.toGroupFeedUpdateCommand(feedId, groupFeedUpdateRequest);
         groupFeedFacade.updateGroupFeed(feedUpdateDTO);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{feedId}/comments")
+    public ResponseEntity<Void> createGroupFeedComment(@PathVariable Long feedId,
+                                                       @Validated @RequestBody GroupFeedCommentRequest commentRequest) {
+        GroupFeedCommentDTO feedCommentDTO = GroupFeedCommentRequest.toGroupFeedCommentCommand(commentRequest);
+        groupFeedFacade.addComment(feedId, feedCommentDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{feedId}/comments")
+    public ResponseEntity<GroupFeedCommentResponse> getComments(@PathVariable Long feedId) {
+        List<GroupFeedCommentDTO> comments = groupFeedFacade.getComments(feedId);
+        GroupFeedCommentResponse response = GroupFeedCommentResponse.toGroupFeedCommentResponse(comments);
+        return ResponseEntity.ok(response);
     }
 }
