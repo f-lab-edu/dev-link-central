@@ -52,4 +52,13 @@ public class GroupFeedFacade {
         Member currentMember = memberService.getCurrentMember();
         groupFeedService.updateGroupFeed(currentMember.getId(), groupFeedUpdateDTO);
     }
+
+    public void addComment(Long feedId, GroupFeedCommentDTO feedCommentDTO) {
+        Member member = memberService.getCurrentMember();
+        groupFeedService.addComment(feedId, feedCommentDTO, member);
+    }
+
+    public List<GroupFeedCommentDTO> getComments(Long feedId) {
+        return groupFeedService.getComments(feedId);
+    }
 }
