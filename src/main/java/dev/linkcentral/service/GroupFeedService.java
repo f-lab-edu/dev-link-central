@@ -1,8 +1,10 @@
 package dev.linkcentral.service;
 
 import dev.linkcentral.database.entity.GroupFeed;
+import dev.linkcentral.database.entity.GroupFeedComment;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.Profile;
+import dev.linkcentral.database.repository.GroupFeedCommentRepository;
 import dev.linkcentral.database.repository.GroupFeedRepository;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.infrastructure.s3.FileUploader;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class GroupFeedService {
 
     private final GroupFeedRepository groupFeedRepository;
+    private final GroupFeedCommentRepository groupFeedCommentRepository;
     private final MemberRepository memberRepository;
     private final ProfileService profileService;
     private final GroupFeedMapper groupFeedMapper;
@@ -100,5 +103,22 @@ public class GroupFeedService {
 
         GroupFeed updatedGroupFeed = groupFeedRepository.save(groupFeed);
         return groupFeedMapper.toGroupFeedMapper(updatedGroupFeed);
+    }
+
+    @Transactional
+    public void addComment(Long feedId, GroupFeedCommentDTO commentRequestDTO, Member member) {
+        GroupFeed groupFeed = groupFeedRepository.findById(feedId)
+                .orElseThrow(() -> new IllegalArgumentException("피드를 찾을 수 없습니다."));
+
+        GroupFeedComment newComment = GroupFeedComment.createComment(groupFeed, member, commentRequestDTO);
+        groupFeedCommentRepository.save(newComment);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GroupFeedCommentDTO> getComments(Long feedId) {
+        List<GroupFeedComment> comments = groupFeedCommentRepository.findByGroupFeedId(feedId);
+        return comments.stream()
+                .map(groupFeedMapper::toGroupFeedCommentDTO)
+                .collect(Collectors.toList());
     }
 }

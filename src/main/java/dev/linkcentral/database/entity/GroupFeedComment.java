@@ -1,5 +1,6 @@
 package dev.linkcentral.database.entity;
 
+import dev.linkcentral.service.dto.groupfeed.GroupFeedCommentDTO;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -32,5 +33,14 @@ public class GroupFeedComment extends AuditingFields {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public static GroupFeedComment createComment(GroupFeed groupFeed, Member member, GroupFeedCommentDTO commentDTO) {
+        GroupFeedComment comment = new GroupFeedComment();
+        comment.groupFeed = groupFeed;
+        comment.member = member;
+        comment.content = commentDTO.getContent();
+        comment.writerNickname = member.getNickname();
+        return comment;
     }
 }

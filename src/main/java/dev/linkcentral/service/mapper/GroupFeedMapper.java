@@ -1,8 +1,10 @@
 package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.GroupFeed;
+import dev.linkcentral.database.entity.GroupFeedComment;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.Profile;
+import dev.linkcentral.service.dto.groupfeed.GroupFeedCommentDTO;
 import dev.linkcentral.service.dto.groupfeed.GroupFeedSavedDTO;
 import dev.linkcentral.service.dto.groupfeed.GroupFeedWithProfileDTO;
 import dev.linkcentral.service.dto.groupfeed.MyGroupFeedDetailsDTO;
@@ -52,5 +54,14 @@ public class GroupFeedMapper {
                 .createdAt(groupFeed.getCreatedAt())
                 .profileImageUrl(profile != null ? profile.getImageUrl() : null)
                 .build();
+    }
+
+    public GroupFeedCommentDTO toGroupFeedCommentDTO(GroupFeedComment comment) {
+        return new GroupFeedCommentDTO(
+                comment.getId(),
+                comment.getWriterNickname(),
+                comment.getContent(),
+                comment.getCreatedAt().toString()
+        );
     }
 }
