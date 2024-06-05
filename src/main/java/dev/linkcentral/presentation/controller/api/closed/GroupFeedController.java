@@ -1,6 +1,7 @@
 package dev.linkcentral.presentation.controller.api.closed;
 
 import dev.linkcentral.presentation.request.groupfeed.GroupFeedCommentRequest;
+import dev.linkcentral.presentation.request.groupfeed.GroupFeedCommentUpdateRequest;
 import dev.linkcentral.presentation.request.groupfeed.GroupFeedCreateRequest;
 import dev.linkcentral.presentation.request.groupfeed.GroupFeedUpdateRequest;
 import dev.linkcentral.presentation.response.groupfeed.*;
@@ -83,7 +84,8 @@ public class GroupFeedController {
 
     @PostMapping("/{feedId}/comments")
     public ResponseEntity<Void> createGroupFeedComment(@PathVariable Long feedId,
-                                                       @Validated @RequestBody GroupFeedCommentRequest commentRequest) {
+                                @Validated @RequestBody GroupFeedCommentRequest commentRequest) {
+
         GroupFeedCommentDTO feedCommentDTO = GroupFeedCommentRequest.toGroupFeedCommentCommand(commentRequest);
         groupFeedFacade.addComment(feedId, feedCommentDTO);
         return ResponseEntity.ok().build();
@@ -94,5 +96,21 @@ public class GroupFeedController {
         List<GroupFeedCommentDTO> comments = groupFeedFacade.getComments(feedId);
         GroupFeedCommentResponse response = GroupFeedCommentResponse.toGroupFeedCommentResponse(comments);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{feedId}/comments/{commentId}")
+    public ResponseEntity<Void> updateComment(@PathVariable Long feedId, @PathVariable Long commentId,
+                                              @Validated @RequestBody GroupFeedCommentUpdateRequest commentUpdateRequest) {
+
+        GroupFeedCommentUpdateDTO commentUpdateDTO = GroupFeedCommentUpdateRequest
+                .toGroupFeedCommentUpdateCommand(feedId, commentId, commentUpdateRequest);
+        groupFeedFacade.updateComment(commentUpdateDTO);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{feedId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long feedId, @PathVariable Long commentId) {
+        groupFeedFacade.deleteComment(feedId, commentId);
+        return ResponseEntity.noContent().build();
     }
 }
