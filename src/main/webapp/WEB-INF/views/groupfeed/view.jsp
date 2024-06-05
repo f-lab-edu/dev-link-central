@@ -125,9 +125,14 @@
 
         .comment-inline {
             display: flex;
+            flex-wrap: wrap;
             justify-content: flex-start;
-            align-items: center;
+            align-items: baseline;
             margin-bottom: -24px;
+        }
+
+        .comment-actions a:hover {
+            text-decoration: underline;
         }
 
         h4, .h4 {
@@ -154,6 +159,48 @@
             width: 11%;
             display: flex;
             flex-direction: column;
+            align-items: center;
+        }
+
+        .comment-content {
+            flex-grow: 1;
+            word-wrap: break-word;
+        }
+
+        .comment-actions {
+            margin-left: 10px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .comment-actions a {
+            margin-left: 5px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .comment-actions button {
+            border: none;
+            background: none;
+            color: #007bff;
+            cursor: pointer;
+            padding: 0;
+            font-size: 0.9em;
+        }
+
+        textarea.edit-comment-textarea {
+            height: 38px;
+            width: 80%;
+            resize: none;
+        }
+
+        .input-group {
+            width: 225%;
+        }
+
+        .input-group-append .btn {
+            height: 38px;
+            display: flex;
             align-items: center;
         }
     </style>
@@ -260,11 +307,15 @@
                     commentsContainer.empty();
                     comments.forEach(comment => {
                         const commentHtml =
-                            '<div class="comment-item">' +
+                            '<div class="comment-item" id="comment-' + comment.id + '">' +
                             '<div class="comment-inline">' +
                             '<p class="comment-writer">' + comment.writerNickname + ':&nbsp;</p>' +
-                            '<p class="comment-content">' + comment.content + '</p>' +
-                            '<p class="comment-created" style="margin-left: auto;"><small>' + new Date(comment.createdAt).toLocaleString() + '</small></p>' +
+                            '<p class="comment-content" id="comment-content-' + comment.id + '">' + comment.content + '</p>' +
+                            '<p class="comment-created" id="comment-created-' + comment.id + '" style="margin-left: auto;"><small>' + new Date(comment.createdAt).toLocaleString() + '</small></p>' +
+                            '<div class="comment-actions" id="comment-actions-' + comment.id + '">' +
+                            '<a href="#" onclick="editComment(event, ' + comment.id + ', ' + feedId + ')">수정</a>' +
+                            '<a href="#" onclick="deleteComment(event, ' + comment.id + ', ' + feedId + ')">삭제</a>' +
+                            '</div>' +
                             '</div>' +
                             '</div>';
                         commentsContainer.append(commentHtml);
@@ -274,6 +325,68 @@
                     console.error('Failed to load comments:', xhr.responseText);
                 }
             });
+        }
+
+        function editComment(event, commentId, feedId) {
+            event.preventDefault();
+
+            var commentContentElement = $('#comment-content-' + commentId);
+            var commentCreatedElement = $('#comment-created-' + commentId);
+            var commentActionsElement = $('#comment-actions-' + commentId);
+
+            commentCreatedElement.hide();
+            commentActionsElement.hide();
+
+            var currentContent = commentContentElement.text();
+            var editHtml =
+                '<div class="input-group">' +
+                '<textarea id="edit-comment-input-' + commentId + '" class="form-control edit-comment-textarea">' + currentContent + '</textarea>' +
+                '<div class="input-group-append">' +
+                '<button class="btn btn-primary" onclick="saveComment(' + commentId + ', ' + feedId + ')">저장</button>' +
+                '</div>' +
+                '</div>';
+            commentContentElement.replaceWith('<div id="edit-comment-' + commentId + '">' + editHtml + '</div>');
+        }
+
+        function saveComment(commentId, feedId) {
+            var newContent = $('#edit-comment-input-' + commentId).val();
+            if (newContent) {
+                $.ajax({
+                    url: '/api/v1/group-feed/' + feedId + '/comments/' + commentId,
+                    method: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ content: newContent }),
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                    },
+                    success: function() {
+                        loadComments(feedId);
+                    },
+                    error: function(xhr) {
+                        console.error('Failed to edit comment:', xhr.responseText);
+                    }
+                });
+            }
+        }
+
+        function deleteComment(event, commentId, feedId) {
+            event.preventDefault();
+
+            if (confirm('댓글을 삭제하시겠습니까?')) {
+                $.ajax({
+                    url: '/api/v1/group-feed/' + feedId + '/comments/' + commentId,
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                    },
+                    success: function() {
+                        loadComments(feedId);
+                    },
+                    error: function(xhr) {
+                        console.error('Failed to delete comment:', xhr.responseText);
+                    }
+                });
+            }
         }
 
         function postComment(feedId) {

@@ -61,4 +61,14 @@ public class GroupFeedFacade {
     public List<GroupFeedCommentDTO> getComments(Long feedId) {
         return groupFeedService.getComments(feedId);
     }
+
+    public void updateComment(GroupFeedCommentUpdateDTO commentUpdateDTO) {
+        Member member = memberService.getCurrentMember();
+        groupFeedService.updateComment(member, commentUpdateDTO);
+    }
+
+    public void deleteComment(Long feedId, Long commentId) {
+        Member member = memberService.getCurrentMember();
+        groupFeedService.deleteComment(feedId, commentId, member);
+    }
 }

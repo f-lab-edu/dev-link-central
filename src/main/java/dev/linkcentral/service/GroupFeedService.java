@@ -121,4 +121,21 @@ public class GroupFeedService {
                 .map(groupFeedMapper::toGroupFeedCommentDTO)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void updateComment(Member member, GroupFeedCommentUpdateDTO commentUpdateDTO) {
+        GroupFeedComment comment = groupFeedCommentRepository.findByIdAndGroupFeedIdAndMemberId(
+                        commentUpdateDTO.getCommentId(), commentUpdateDTO.getFeedId(), member.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없거나 수정할 권한이 없습니다."));
+        comment.updateContent(commentUpdateDTO.getContent());
+        groupFeedCommentRepository.save(comment);
+    }
+
+    @Transactional
+    public void deleteComment(Long feedId, Long commentId, Member member) {
+        GroupFeedComment comment = groupFeedCommentRepository
+                .findByIdAndGroupFeedIdAndMemberId(commentId, feedId, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없거나 삭제할 권한이 없습니다."));
+        groupFeedCommentRepository.delete(comment);
+    }
 }
