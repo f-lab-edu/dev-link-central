@@ -11,4 +11,6 @@ public interface GroupFeedCommentRepository extends JpaRepository<GroupFeedComme
     List<GroupFeedComment> findByGroupFeedId(Long groupFeedId);
 
     Optional<GroupFeedComment> findByIdAndGroupFeedIdAndMemberId(Long id, Long groupFeedId, Long memberId);
+
+    void deleteByGroupFeedId(Long groupFeedId);
 }
