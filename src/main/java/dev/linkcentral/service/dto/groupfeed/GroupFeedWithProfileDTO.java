@@ -18,4 +18,5 @@ public class GroupFeedWithProfileDTO {
     private String imageUrl;
     private LocalDateTime createdAt;
     private String profileImageUrl;
+    private int likeCount;
 }

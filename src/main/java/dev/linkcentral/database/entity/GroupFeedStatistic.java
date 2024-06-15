@@ -19,18 +19,16 @@ public class GroupFeedStatistic extends AuditingFields {
     @Column(name = "likes")
     private int likes;
 
-    @Column(name = "views")
-    private int views;
-
     protected GroupFeedStatistic() {
     }
 
+    public static GroupFeedStatistic createStatistic(GroupFeed groupFeed) {
+        GroupFeedStatistic statistic = new GroupFeedStatistic();
+        statistic.groupFeed = groupFeed;
+        return statistic;
+    }
 
     public void updateLikes(int like) {
         this.likes = like;
-    }
-
-    public void updateViews(int view) {
-        this.views = view;
     }
 }

@@ -113,4 +113,11 @@ public class GroupFeedController {
         groupFeedFacade.deleteComment(feedId, commentId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{feedId}/like")
+    public ResponseEntity<GroupFeedLikeResponse> toggleLike(@PathVariable Long feedId) {
+        GroupFeedLikeDTO groupFeedLikeDTO = groupFeedFacade.toggleLike(feedId);
+        GroupFeedLikeResponse response = GroupFeedLikeResponse.toGroupFeedLikeResponse(groupFeedLikeDTO);
+        return ResponseEntity.ok(response);
+    }
 }

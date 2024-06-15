@@ -58,6 +58,8 @@
         .feed-content {
             font-size: 1.2em;
             margin-bottom: 20px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
         .feed-image {

@@ -71,4 +71,9 @@ public class GroupFeedFacade {
         Member member = memberService.getCurrentMember();
         groupFeedService.deleteComment(feedId, commentId, member);
     }
+
+    public GroupFeedLikeDTO toggleLike(Long feedId) {
+        Long memberId = memberService.getCurrentMember().getId();
+        return groupFeedService.toggleLike(feedId, memberId);
+    }
 }
