@@ -37,6 +37,7 @@
             margin-bottom: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .feed-item img.feed-image {
@@ -104,11 +105,14 @@
         .feed-content {
             margin-top: 20px;
             padding-left: 35px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
         .feed-created {
             text-align: right;
             margin-top: 10px;
+            font-size: 1.2em;
         }
 
         .comments-section {
@@ -203,6 +207,27 @@
             display: flex;
             align-items: center;
         }
+
+        .feed-created {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .like-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 7px 10px;
+            border-radius: 4px;
+        }
+
+        .like-button:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 
     <script>
@@ -263,7 +288,10 @@
                                 '</div>' +
                                 (feed.imageUrl ? '<img src="' + feed.imageUrl + '" alt="Feed Image" class="feed-image">' : '') +
                                 '<p class="feed-content">' + feed.content + '</p>' +
-                                '<p class="feed-created"><small>' + new Date(feed.createdAt).toLocaleString() + '</small></p>' +
+                                '<div class="feed-created">' +
+                                '<button id="like-button-' + feed.id + '" class="btn btn-secondary like-button" onclick="toggleLike(' + feed.id + ')">좋아요 <span id="like-count-' + feed.id + '">' + (feed.likeCount || 0) + '</span></button>' +
+                                '<small>' + new Date(feed.createdAt).toLocaleString() + '</small>' +
+                                '</div>' +
                                 '<div class="comments-section" id="comments-section-' + feed.id + '">' +
                                 '<h4>댓글</h4>' +
                                 '<div id="comments-' + feed.id + '"></div>' +
@@ -414,6 +442,22 @@
             });
         }
 
+        function toggleLike(feedId) {
+            $.ajax({
+                url: '/api/v1/group-feed/' + feedId + '/like',
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function(response) {
+                    $('#like-count-' + feedId).text(response.likeCount);
+                },
+                error: function(xhr) {
+                    console.error('Failed to toggle like:', xhr.responseText);
+                }
+            });
+        }
+
         $(window).on('scroll', function() {
             if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
                 loadFeeds();
@@ -432,9 +476,14 @@
         <div class="feed-item">
             <div class="writer-info">
                 <div class="writer-details">
-                    <c:if test="${not empty feed.profileImageUrl}">
-                        <img src="${feed.profileImageUrl}" alt="Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
-                    </c:if>
+                    <c:choose>
+                        <c:when test="${not empty feed.profileImageUrl}">
+                            <img src="${feed.profileImageUrl}" alt="Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
+                        </c:when>
+                        <c:otherwise>
+                            <img src="/images/default.png" alt="Default Profile Image" class="profile-image" onclick="profileView(${feed.writerId})"> <!-- 기본 프로필 이미지 경로 -->
+                        </c:otherwise>
+                    </c:choose>
                     <p class="writer-name" onclick="profileView(${feed.writerId})">${feed.writer}</p>
                 </div>
                 <h2 class="feed-title">${feed.title}</h2>
@@ -448,7 +497,12 @@
                     <!-- No image available -->
                 </c:otherwise>
             </c:choose>
-            <p class="feed-created"><small>작성자: ${feed.writer}</small></p>
+            <p class="feed-created">
+                <small>작성자: ${feed.writer}</small>
+                <button id="like-button-${feed.id}" class="btn btn-secondary like-button" onclick="toggleLike(${feed.id})">
+                    좋아요 <span id="like-count-${feed.id}">${feed.likeCount || 0}</span>
+                </button>
+            </p>
             <div class="comments-section" id="comments-section-${feed.id}">
                 <h4>댓글</h4>
                 <div id="comments-${feed.id}"></div>
