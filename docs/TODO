@@ -21,3 +21,4 @@
 - GroupFeedService가 ProfileRepository에 직접 의존하게 되므로, 서비스 클래스의 결합도가 높아져 있는 상태이다.
     - GroupFeedService가 ProfileService를 의존하도록 하자. (생성자 주입 관련)
     - 다른 코드도 이런식으로 결합도가 높아져 있는 상황
+- 나의 피드에 대해서 수정/삭제를 진행하는데, 다른 유저로 로그인 하여도 수정/삭제 기능이 가능하다.

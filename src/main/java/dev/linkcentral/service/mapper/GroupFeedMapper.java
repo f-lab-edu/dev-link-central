@@ -4,10 +4,7 @@ import dev.linkcentral.database.entity.GroupFeed;
 import dev.linkcentral.database.entity.GroupFeedComment;
 import dev.linkcentral.database.entity.Member;
 import dev.linkcentral.database.entity.Profile;
-import dev.linkcentral.service.dto.groupfeed.GroupFeedCommentDTO;
-import dev.linkcentral.service.dto.groupfeed.GroupFeedSavedDTO;
-import dev.linkcentral.service.dto.groupfeed.GroupFeedWithProfileDTO;
-import dev.linkcentral.service.dto.groupfeed.MyGroupFeedDetailsDTO;
+import dev.linkcentral.service.dto.groupfeed.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +29,7 @@ public class GroupFeedMapper {
                 .build();
     }
 
-    public GroupFeedWithProfileDTO toGroupFeedWithProfileDTO(GroupFeed groupFeed, Profile profile) {
+    public GroupFeedWithProfileDTO toGroupFeedWithProfileDTO(GroupFeed groupFeed, Profile profile, int likeCount) {
         return GroupFeedWithProfileDTO.builder()
                 .id(groupFeed.getId())
                 .title(groupFeed.getTitle())
@@ -41,6 +38,7 @@ public class GroupFeedMapper {
                 .imageUrl(groupFeed.getImageUrl())
                 .createdAt(groupFeed.getCreatedAt())
                 .profileImageUrl(profile != null ? profile.getImageUrl() : null)
+                .likeCount(likeCount)
                 .build();
     }
 
@@ -63,5 +61,12 @@ public class GroupFeedMapper {
                 comment.getContent(),
                 comment.getCreatedAt().toString()
         );
+    }
+
+    public GroupFeedLikeDTO toGroupFeedLikeDTO(int likes, boolean liked) {
+        return GroupFeedLikeDTO.builder()
+                .likeCount(likes)
+                .liked(liked)
+                .build();
     }
 }
