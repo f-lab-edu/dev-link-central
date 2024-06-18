@@ -137,8 +137,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public boolean validateUserEmail(String userEmail, String userName) {
-        Optional<Member> member = memberRepository.findByEmailAndNameAndDeletedFalse(userEmail, userName);
+    public boolean validateUserEmail(String userEmail) {
+        Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
 
         if (member.isEmpty()) {
             throw new MemberEmailNotFoundException("유저의 이메일을 찾을 수 없습니다.");
@@ -147,14 +147,14 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberMailDTO createMailForPasswordReset(String userEmail, String userName) {
+    public MemberMailDTO createMailForPasswordReset(String userEmail) {
         String generatedPassword = createTemporaryPassword();
 
         MemberMailDTO memberMailDTO = MemberMailDTO.builder()
                 .address(userEmail)
-                .title(userName + "님의 HOTTHINK 임시비밀번호 안내 이메일 입니다.")
-                .message("안녕하세요. HOTTHINK 임시비밀번호 안내 관련 이메일 입니다." +
-                        "[" + userName + "]" + "님의 임시 비밀번호는 " + generatedPassword + " 입니다.")
+                .title("임시비밀번호 안내 이메일 입니다.")
+                .message("안녕하세요. 회원님의 임시비밀번호 안내 관련 이메일 입니다. " +
+                        "임시 비밀번호는 " + generatedPassword + " 입니다.")
                 .build();
 
         resetPassword(generatedPassword, userEmail);
@@ -163,7 +163,7 @@ public class MemberService {
 
     @Transactional
     public void resetPassword(String generatedPassword, String userEmail) {
-        String passwordHash = passwordEncoder.encode(generatedPassword);
+        String passwordHash = passwordEncoder.encode(generatedPassword); // 비밀번호 해싱
         Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
 
         if (member.isPresent()) {

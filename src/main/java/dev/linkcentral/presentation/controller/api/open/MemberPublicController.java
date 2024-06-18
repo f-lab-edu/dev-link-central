@@ -54,15 +54,15 @@ public class MemberPublicController {
 
     @GetMapping("/forgot-password")
     @ResponseBody
-    public ResponseEntity<MemberPasswordResponse> validatePassword(String userEmail, String userName) {
-        boolean pwFindCheck = memberFacade.isPasswordValid(userEmail, userName);
+    public ResponseEntity<MemberPasswordResponse> validatePassword(String userEmail) {
+        boolean pwFindCheck = memberFacade.isPasswordValid(userEmail);
         MemberPasswordResponse response = MemberPasswordResponse.toMemberPasswordResponse(pwFindCheck);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/send-email/update-password")
-    public ResponseEntity<MailPasswordResetResponse> sendPasswordResetEmail(String userEmail, String userName) {
-        memberFacade.sendPasswordResetEmail(userEmail, userName);
+    public ResponseEntity<MailPasswordResetResponse> sendPasswordResetEmail(String userEmail) {
+        memberFacade.sendPasswordResetEmail(userEmail);
         MailPasswordResetResponse response = MailPasswordResetResponse.toMailPasswordResetResponse();
         return ResponseEntity.ok(response);
     }
