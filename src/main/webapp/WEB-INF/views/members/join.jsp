@@ -109,6 +109,10 @@
                 validateForm();
             });
 
+            $('#checkPassword').on('input', function() {
+                validatePassword();
+            });
+
             function validateForm() {
                 var isFormValid = checkFormValidity();
                 $("#signupButton").prop("disabled", !isFormValid); // 조건에 따라 회원가입 버튼 활성화/비활성화
@@ -160,20 +164,18 @@
                 var password = $("#password").val();
                 var confirmPassword = $("#checkPassword").val();
 
-                var matchMessage = $("#passwordMatchMessage");
-                var mismatchMessage = $("#passwordMismatchMessage");
+                var passwordMessage = $("#passwordMessage");
 
                 var passwordRegex = /^(?=.*[a-z])(?=.*\d).{8,20}$/;
 
                 if (!passwordRegex.test(password)) {
-                    mismatchMessage.text("비밀번호는 최소 8~20자리, 하나의 소문자와 숫자를 포함해야 합니다.");
+                    passwordMessage.text("비밀번호는 최소 8~20자리, 하나의 소문자와 숫자를 포함해야 합니다.").css("color", "red");
                     return false;
                 } else if (password !== confirmPassword) {
-                    mismatchMessage.text("비밀번호가 일치하지 않습니다.");
+                    passwordMessage.text("비밀번호가 일치하지 않습니다.").css("color", "red");
                     return false;
                 } else {
-                    matchMessage.text("비밀번호가 일치합니다.");
-                    mismatchMessage.text("");
+                    passwordMessage.text("비밀번호가 일치합니다.").css("color", "green");
                     return true;
                 }
             }
@@ -216,13 +218,12 @@
 
             <label for="checkPassword">비밀번호 확인</label>
             <input type="password" id="checkPassword" name="confirmPassword" placeholder="비밀번호를 다시 입력하세요.">
-            <div id="passwordMatchMessage"></div>
-            <div id="passwordMismatchMessage"></div>
+            <div id="passwordMessage"></div>
 
             <label for="nickname">닉네임</label>
             <input type="text" id="nickname" name="nickname" placeholder="닉네임을 입력하세요.">
-            <span id="nicknameError" style="color: red;"></span>
-            <span id="nicknameStatus" style="color: green;"></span>
+            <span id="nicknameError" class="error-message"></span>
+            <span id="nicknameStatus" class="success-message"></span>
 
             <div class="buttons">
                 <button type="button" class="btn btn-danger" onclick="cancelButtonClicked()">Cancel</button>
