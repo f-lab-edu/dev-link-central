@@ -215,10 +215,11 @@ public class ArticleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ArticleCommentViewDTO> findCommentsForScrolling(Long articleId, Pageable pageable) {
+    public Page<ArticleCommentViewDTO> findCommentsForScrolling(Long articleId, int offset, int limit) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new EntityNotFoundException("ID로 게시판을 찾을 수 없습니다."));
 
+        Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by("id").descending());
         return articleCommentRepository.findAllByArticleOrderByIdDesc(article, pageable)
                 .map(articleMapper::toCommentDTO);
     }
@@ -246,5 +247,4 @@ public class ArticleService {
         }
         articleCommentRepository.delete(comment);
     }
-
 }

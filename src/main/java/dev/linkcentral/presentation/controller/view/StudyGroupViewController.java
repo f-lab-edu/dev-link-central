@@ -39,5 +39,4 @@ public class StudyGroupViewController {
     public String showCreateStudyGroupForm() {
         return "/studys/create";
     }
-
 }

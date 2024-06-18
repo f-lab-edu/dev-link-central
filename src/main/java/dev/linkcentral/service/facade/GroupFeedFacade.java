@@ -8,7 +8,6 @@ import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.mapper.GroupFeedMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,8 +30,8 @@ public class GroupFeedFacade {
         return groupFeedService.createGroupFeed(groupFeedCreateDTO);
     }
 
-    public Page<GroupFeedWithProfileDTO> getGroupFeeds(Pageable pageable) {
-        return groupFeedService.getGroupFeeds(pageable);
+    public Page<GroupFeedWithProfileDTO> getGroupFeeds(int offset, int limit) {
+        return groupFeedService.getGroupFeeds(offset, limit);
     }
 
     public List<MyGroupFeedDetailsDTO> getAllFeedsByMemberId() {

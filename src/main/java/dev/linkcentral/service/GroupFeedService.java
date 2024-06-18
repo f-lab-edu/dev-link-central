@@ -8,7 +8,9 @@ import dev.linkcentral.service.mapper.GroupFeedMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,7 +58,8 @@ public class GroupFeedService {
     }
 
     @Transactional(readOnly = true)
-    public Page<GroupFeedWithProfileDTO> getGroupFeeds(Pageable pageable) {
+    public Page<GroupFeedWithProfileDTO> getGroupFeeds(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by("id").descending());
         Page<GroupFeed> groupFeeds = groupFeedRepository.findAll(pageable);
         return groupFeeds.map(this::mapToGroupFeedWithProfileDTO);
     }

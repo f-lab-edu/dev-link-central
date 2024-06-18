@@ -11,8 +11,6 @@ import dev.linkcentral.service.facade.GroupFeedFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +44,8 @@ public class GroupFeedController {
     }
 
     @GetMapping
-    public ResponseEntity<GroupFeedListResponse> getGroupFeeds(@PageableDefault(size = 3) Pageable pageable) {
-        Page<GroupFeedWithProfileDTO> groupFeeds = groupFeedFacade.getGroupFeeds(pageable);
+    public ResponseEntity<GroupFeedListResponse> getGroupFeeds(@RequestParam int offset, @RequestParam int limit) {
+        Page<GroupFeedWithProfileDTO> groupFeeds = groupFeedFacade.getGroupFeeds(offset, limit);
         GroupFeedListResponse response = GroupFeedListResponse.toGroupFeedListResponse(groupFeeds);
         return ResponseEntity.ok(response);
     }

@@ -457,6 +457,7 @@
 
         // 댓글 목록 로드 AJAX 함수
         var currentPage = 0; // 현재 페이지 번호
+        var pageSize = 3; // 한 페이지에 보여줄 댓글 수
         var isFetchingComments = false; // AJAX 요청 중복 방지
         var hasMoreComments = true; // 더 불러올 댓글이 있는지
 
@@ -465,8 +466,12 @@
 
             isFetchingComments = true;
             $.ajax({
-                url: "/api/v1/article/" + articleId + "/comments?page=" + currentPage,
+                url: "/api/v1/article/" + articleId + "/comments",
                 type: "GET",
+                data: {
+                    offset: currentPage * pageSize,
+                    limit: pageSize
+                },
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
                 success: function(response) {
                     if(response.comments.length > 0){
