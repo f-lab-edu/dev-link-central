@@ -59,6 +59,14 @@
 
     <script>
         $(document).ready(function () {
+
+            // JWT 토큰이 있는지 확인
+            const jwtToken = localStorage.getItem("jwt");
+            if (jwtToken) {
+                // JWT 토큰이 있다면 로그인 후 페이지로 리디렉션
+                window.location.href = "/api/v1/view/member/login";
+            }
+
             $("#loginButton").click(function (e) {
                 e.preventDefault(); // 기본 form 제출을 방지
 
