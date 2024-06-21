@@ -4,8 +4,8 @@ import lombok.Getter;
 
 import javax.persistence.*;
 
-@Getter
 @Entity
+@Getter
 public class ArticleView extends AuditingFields {
 
     @Id
@@ -22,6 +22,7 @@ public class ArticleView extends AuditingFields {
 
     protected ArticleView() {
     }
+
 
     public ArticleView(Member member, Article article) {
         this.member = member;

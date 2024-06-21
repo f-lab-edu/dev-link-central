@@ -122,17 +122,12 @@ public class StudyGroupFacade {
         studyMemberService.requestJoinStudyGroup(studyGroupId);
     }
 
-    public boolean studyGroupPage(Long memberId) {
-        return studyGroupService.isStudyGroupCreatedForLeader(memberId);
-    }
-
     public StudyGroupMemberDTO getMemberById(Long memberId) {
         Member currentMember = memberService.getMemberById(memberId);
         return studyGroupMapper.toStudyGroupMemberDTO(currentMember);
     }
 
-    public Long findStudyGroupIdByLeaderId(Long memberId) {
-        return studyGroupService.findStudyGroupIdByLeaderId(memberId);
+    public StudyGroupExistsDTO hasUserCreatedStudyGroup(Long userId) {
+        return studyGroupService.userHasStudyGroup(userId);
     }
-
 }

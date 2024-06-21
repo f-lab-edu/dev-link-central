@@ -37,11 +37,14 @@ public class ProfileService {
         updateProfileDetails(profile, profileDTO.getBio(), imageFile);
     }
 
-    private Profile findOrCreateProfile(Long memberId) {
+    public Profile findOrCreateProfile(Long memberId) {
         return profileRepository.findByMemberId(memberId)
-                .orElseGet(() -> { Member member = memberRepository.findById(memberId)
-                        .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
-                    return new Profile(member, "", "");
+                .orElseGet(() -> {
+                    Member member = memberRepository.findById(memberId)
+                            .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
+                    String defaultImageUrl = "/images/default.png"; // 기본 이미지 경로
+                    Profile newProfile = new Profile(member, "자신을 소개해 주세요!", defaultImageUrl);
+                    return profileRepository.save(newProfile);
                 });
     }
 
@@ -55,5 +58,11 @@ public class ProfileService {
             profile.updateImageUrl(imageUrl);
         }
         profileRepository.save(profile);
+    }
+
+    @Transactional(readOnly = true)
+    public Profile getProfileByMemberId(Long memberId) {
+        return profileRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("프로필을 찾을 수 없습니다."));
     }
 }

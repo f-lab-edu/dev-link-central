@@ -149,7 +149,7 @@ public class ArticleServiceTest {
                 .content("내용")
                 .writer("작성자")
                 .build();
-        ArticleStatistic articleStatistic = new ArticleStatistic();
+        ArticleStatistic articleStatistic = ArticleStatistic.createEmptyStatistic();
 
         when(articleViewRepository.existsByMemberAndArticle(member, article)).thenReturn(false);
         when(articleStatisticRepository.findByArticle(article)).thenReturn(Optional.of(articleStatistic));

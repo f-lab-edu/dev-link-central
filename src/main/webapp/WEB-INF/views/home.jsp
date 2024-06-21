@@ -3,80 +3,70 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- jQuery library -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
-
-    <!-- Bootstrap JS 및 jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <!-- SweetAlert2 JS -->
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- SweetAlert2 CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-    <title>프로젝트!</title>
+    <title>dev-link-central</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
             background-color: #f4f4f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
         }
 
-        form {
-            margin-top: 20px;
-            background-color: #fff;
-            padding: 20px;
+        .form-container {
+            background: #ffffff;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            margin: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 400px;
         }
 
-        label {
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .form-label {
             font-weight: bold;
         }
 
-        input {
-            margin-bottom: 10px;
-            padding: 8px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        input[type="submit"], .signup-button, .password-reset-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
+        .link-button {
+            text-decoration: none;
+            color: #007bff;
             cursor: pointer;
-            color: #fff;
-        }
-
-        input[type="submit"] {
-            background-color: #4caf50;
-        }
-
-        .signup-button {
-            background-color: #3498db;
-        }
-
-        .password-reset-button {
-            background-color: #e74c3c;
-        }
-
-        p {
-            color: red;
-            margin-top: 10px;
         }
     </style>
 
     <script>
-        function studyRecruitmentArticlePaging() {
-            window.location.href = "/api/v1/view/article/paging";
-        }
-
         $(document).ready(function () {
+
+            // JWT 토큰이 있는지 확인
+            const jwtToken = localStorage.getItem("jwt");
+            if (jwtToken) {
+                // JWT 토큰이 있다면 로그인 후 페이지로 리디렉션
+                window.location.href = "/api/v1/view/member/login";
+            }
+
             $("#loginButton").click(function (e) {
                 e.preventDefault(); // 기본 form 제출을 방지
 
@@ -111,34 +101,27 @@
         });
     </script>
 
-
 </head>
 <body>
-<h2 style="color: #333;">안녕하세요!</h2>
-<p>로그인을 해주세요 :)</p>
-
-<form id="loginForm">
-    <div>
-        <label for="email">이메일: </label>
-        <input id="email" name="email" type="email" required>
-    </div>
-    <div>
-        <label for="password">패스워드: </label>
-        <input id="password" name="password" type="password" required>
-    </div>
-    <input type="submit" value="로그인하기" id="loginButton">
-</form>
-
-<p>${loginMessage}</p>
-
-<p>처음이신가요? 회원가입은 여기서 해주세요!</p>
-<a class="signup-button" href="/api/v1/view/member/join-form">회원가입하기</a>
-
-<!-- 비밀번호 찾기 버튼 추가 -->
-<a class="password-reset-button" href="/api/v1/view/member/reset-password">비밀번호 찾기</a>
-
-<button onclick="studyRecruitmentArticle()">스터디 모집 게시판 글등록</button>
-
-<button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판 페이징목록</button>
+<div class="form-container">
+    <h2 class="text-center mb-4">Login</h2>
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="email" class="form-label">이메일:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password" class="form-label">패스워드:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="loginButton">로그인하기</button>
+    </form>
+    <p class="text-center mt-4">
+        처음이신가요? <a href="/api/v1/view/member/join-form" class="link-button">회원가입하기</a>
+    </p>
+    <p class="text-center">
+        <a href="/api/v1/view/member/reset-password" class="link-button">비밀번호 찾기</a>
+    </p>
+</div>
 </body>
 </html>

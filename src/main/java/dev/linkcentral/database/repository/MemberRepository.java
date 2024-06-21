@@ -16,8 +16,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByNicknameAndDeletedFalse(String nickname);
 
-    Optional<Member> findByEmailAndNameAndDeletedFalse(String email, String name);
-
     @Query("select count(m) from Member m where m.email = :email and m.deleted = false")
     Long countByEmailIgnoringDeleted(@Param("email") String email);
 

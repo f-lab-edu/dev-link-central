@@ -16,7 +16,4 @@ public interface StudyGroupRepository extends JpaRepository<StudyGroup, Long> {
 
     @Query("SELECT sm.studyGroup FROM StudyMember sm WHERE sm.member.id = :userId")
     List<StudyGroup> findStudyGroupsByUserId(@Param("userId") Long userId);
-
-    boolean existsByStudyLeaderIdAndIsCreatedTrue(Long studyLeaderId);
-
 }

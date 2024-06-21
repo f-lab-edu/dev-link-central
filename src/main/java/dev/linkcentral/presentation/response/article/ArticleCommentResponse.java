@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,7 +14,7 @@ public class ArticleCommentResponse {
     private Long articleId;
     private String contents;
     private String writerNickname;
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     public static ArticleCommentResponse toCommentResponse(ArticleCommentDTO savedCommentDTO) {
         return new ArticleCommentResponse(

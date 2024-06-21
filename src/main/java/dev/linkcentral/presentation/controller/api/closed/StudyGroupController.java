@@ -61,7 +61,7 @@ public class StudyGroupController {
     @PostMapping("/{studyGroupId}/join-requests")
     public ResponseEntity<Void> createJoinRequest(@PathVariable Long studyGroupId) {
         studyGroupFacade.requestJoinStudyGroup(studyGroupId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{studyGroupId}/received-requests")
@@ -74,13 +74,13 @@ public class StudyGroupController {
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/accept")
     public ResponseEntity<Void> acceptJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
         studyGroupFacade.acceptStudyGroupJoinRequest(studyGroupId, requestId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/reject")
     public ResponseEntity<Void> rejectJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
         studyGroupFacade.rejectStudyGroupJoinRequest(studyGroupId, requestId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/exists")
@@ -105,9 +105,15 @@ public class StudyGroupController {
     }
 
     @DeleteMapping("/{groupId}/members/{memberId}/expel")
-    public ResponseEntity<?> expelStudyGroupMember(@PathVariable Long groupId, @PathVariable Long memberId) {
+    public ResponseEntity<Void> expelStudyGroupMember(@PathVariable Long groupId, @PathVariable Long memberId) {
         studyGroupFacade.expelStudyGroupMember(groupId, memberId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/user/{userId}/group-existence")
+    public ResponseEntity<StudyGroupExistsResponse> hasUserCreatedStudyGroup(@PathVariable Long userId) {
+        StudyGroupExistsDTO studyGroupExistsDTO = studyGroupFacade.hasUserCreatedStudyGroup(userId);
+        StudyGroupExistsResponse response = StudyGroupExistsResponse.toStudyGroupExistsResponse(studyGroupExistsDTO);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -8,6 +8,7 @@ import dev.linkcentral.service.dto.article.*;
 import dev.linkcentral.service.facade.ArticleFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,13 @@ import org.springframework.web.bind.annotation.*;
 public class ArticleController {
 
     private final ArticleFacade articleFacade;
+
+    @GetMapping("/member-info")
+    public ResponseEntity<ArticleMemberResponse> getMemberInfo() {
+        ArticleCurrentMemberDTO currentMemberId = articleFacade.getCurrentMemberId();
+        ArticleMemberResponse response = ArticleMemberResponse.toArticleMemberResponse(currentMemberId.getMemberId());
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping
     public ResponseEntity<ArticleCreateResponse> createArticle(@Validated @RequestBody ArticleCreateRequest articleCreateRequest) {
@@ -60,7 +68,8 @@ public class ArticleController {
 
     @PostMapping("/{id}/comments")
     public ResponseEntity<ArticleCommentResponse> saveArticleComment(@PathVariable Long id,
-                                          @Validated @RequestBody ArticleCommentRequest commentRequest) {
+                          @Validated @RequestBody ArticleCommentRequest commentRequest) {
+
         if (commentRequest.getContents() == null) {
             throw new IllegalArgumentException("댓글 내용은 null이 아니어야 합니다.");
         }
@@ -73,7 +82,8 @@ public class ArticleController {
 
     @PutMapping("/comment/{commentId}")
     public ResponseEntity<ArticleCommentUpdateResponse> updateArticleComment(@PathVariable Long commentId,
-                                             @Validated @RequestBody ArticleCommentRequest commentRequest) {
+                          @Validated @RequestBody ArticleCommentRequest commentRequest) {
+
         ArticleCommentRequestDTO commentRequestDTO = ArticleCommentRequest.toArticleCommentRequestCommand(commentRequest);
         ArticleCommentUpdateDTO commentUpdateDTO = articleFacade.updateComment(commentRequestDTO, commentId);
         ArticleCommentUpdateResponse response = ArticleCommentUpdateResponse.toArticleCommentUpdateResponse(commentUpdateDTO);
@@ -83,7 +93,15 @@ public class ArticleController {
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<Void> deleteArticleComment(@PathVariable Long commentId) {
         articleFacade.deleteComment(commentId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<ArticleCommentPageResponse> showCommentsForArticle(@PathVariable Long id,
+            @RequestParam int offset, @RequestParam int limit) {
+
+        Page<ArticleCommentViewDTO> commentsPage = articleFacade.getCommentsForArticle(id, offset, limit);
+        ArticleCommentPageResponse response = ArticleCommentPageResponse.toArticleCommentPageResponse(commentsPage);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -51,4 +51,8 @@ public class StudyGroupMapper {
     public StudyGroupMemberDTO toStudyGroupMemberDTO(Member currentMember) {
         return new StudyGroupMemberDTO(currentMember);
     }
+
+    public static StudyGroupExistsDTO toStudyGroupExistsDTO(boolean exists) {
+        return new StudyGroupExistsDTO(exists);
+    }
 }

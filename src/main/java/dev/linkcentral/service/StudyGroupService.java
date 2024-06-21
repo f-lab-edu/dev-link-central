@@ -7,9 +7,11 @@ import dev.linkcentral.database.entity.StudyMember;
 import dev.linkcentral.database.repository.MemberRepository;
 import dev.linkcentral.database.repository.StudyGroupRepository;
 import dev.linkcentral.database.repository.StudyMemberRepository;
+import dev.linkcentral.service.dto.studygroup.StudyGroupExistsDTO;
 import dev.linkcentral.service.dto.studygroup.StudyGroupMemberBasicInfoDTO;
 import dev.linkcentral.service.dto.studygroup.AcceptedStudyGroupDetailsDTO;
 import dev.linkcentral.service.dto.studygroup.StudyGroupMembersDetailDTO;
+import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StudyGroupService {
 
+    private final StudyGroupMapper studyGroupMapper;
     private final MemberRepository memberRepository;
     private final StudyGroupRepository studyGroupRepository;
     private final StudyMemberRepository studyMemberRepository;
@@ -108,18 +111,6 @@ public class StudyGroupService {
     }
 
     @Transactional(readOnly = true)
-    public boolean isStudyGroupCreatedForLeader(Long studyLeaderId) {
-        return studyGroupRepository.existsByStudyLeaderIdAndIsCreatedTrue(studyLeaderId);
-    }
-
-    @Transactional(readOnly = true)
-    public Long findStudyGroupIdByLeaderId(Long leaderId) {
-        return studyGroupRepository.findByStudyLeaderId(leaderId)
-                .map(StudyGroup::getId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 리더가 관리하는 스터디 그룹이 없습니다."));
-    }
-
-    @Transactional(readOnly = true)
     public List<AcceptedStudyGroupDetailsDTO> getAcceptedGroupsByUser(Long userId) {
         List<StudyGroup> groups = findAcceptedStudyGroupsByMemberId(userId);
         return groups.stream()
@@ -153,7 +144,6 @@ public class StudyGroupService {
                         memberDtos));
             }
         }
-
         return result;
     }
 
@@ -172,4 +162,9 @@ public class StudyGroupService {
         studyMemberRepository.delete(studyMember);
     }
 
+    @Transactional(readOnly = true)
+    public StudyGroupExistsDTO userHasStudyGroup(Long userId) {
+        boolean existsByStudyLeaderId = studyGroupRepository.existsByStudyLeaderId(userId);
+        return studyGroupMapper.toStudyGroupExistsDTO(existsByStudyLeaderId);
+    }
 }

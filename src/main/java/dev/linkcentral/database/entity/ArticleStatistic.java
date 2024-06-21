@@ -4,8 +4,8 @@ import lombok.Getter;
 
 import javax.persistence.*;
 
-@Getter
 @Entity
+@Getter
 public class ArticleStatistic extends AuditingFields {
 
     @Id
@@ -16,25 +16,26 @@ public class ArticleStatistic extends AuditingFields {
     @JoinColumn(name = "article_id")
     private Article article;
 
+    @Column(name = "likes")
     private int likes;
 
+    @Column(name = "views")
     private int views;
 
-    // 동시성 이슈를 방지하기 위해 낙관적 락을 사용
     @Version
-    private Long version;
+    @Column(name = "version")
+    private Long version; // 동시성 이슈를 방지하기 위해 낙관적 락
 
-    public ArticleStatistic() {
+    protected ArticleStatistic() {
+    }
+
+
+    public static ArticleStatistic createEmptyStatistic() {
+        return new ArticleStatistic();
     }
 
     public ArticleStatistic(Article article) {
         this.article = article;
-    }
-
-    public ArticleStatistic(Article article, int likes, int views) {
-        this.article = article;
-        this.likes = likes;
-        this.views = views;
     }
 
     public void incrementViews() {

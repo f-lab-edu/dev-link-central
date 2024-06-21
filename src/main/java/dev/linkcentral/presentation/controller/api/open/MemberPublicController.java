@@ -1,5 +1,6 @@
 package dev.linkcentral.presentation.controller.api.open;
 
+import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.presentation.BaseUrlUtil;
 import dev.linkcentral.presentation.request.member.MemberLoginRequest;
 import dev.linkcentral.presentation.request.member.MemberSaveRequest;
@@ -10,7 +11,6 @@ import dev.linkcentral.presentation.response.member.MemberSaveResponse;
 import dev.linkcentral.service.dto.member.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationResultDTO;
-import dev.linkcentral.infrastructure.jwt.TokenDTO;
 import dev.linkcentral.service.facade.MemberFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,25 +43,26 @@ public class MemberPublicController {
     @PostMapping("/login")
     public ResponseEntity<LoginSuccessResponse> login(@Validated @RequestBody MemberLoginRequest memberLoginRequest,
                                                       HttpServletRequest request) {
+
         MemberLoginRequestDTO loginRequestDTO = MemberLoginRequest.toMemberLoginRequestCommand(memberLoginRequest);
-        TokenDTO tokenDTO = memberFacade.loginMember(loginRequestDTO);
+        JwtTokenDTO jwtTokenDTO = memberFacade.loginMember(loginRequestDTO);
 
         final String redirectUrl = BaseUrlUtil.getBaseUrl(request) + "/api/v1/view/member/login";
-        LoginSuccessResponse response = LoginSuccessResponse.toLoginSuccessResponse(tokenDTO, redirectUrl);
+        LoginSuccessResponse response = LoginSuccessResponse.toLoginSuccessResponse(jwtTokenDTO, redirectUrl);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/forgot-password")
     @ResponseBody
-    public ResponseEntity<MemberPasswordResponse> validatePassword(String userEmail, String userName) {
-        boolean pwFindCheck = memberFacade.isPasswordValid(userEmail, userName);
+    public ResponseEntity<MemberPasswordResponse> validatePassword(String userEmail) {
+        boolean pwFindCheck = memberFacade.isPasswordValid(userEmail);
         MemberPasswordResponse response = MemberPasswordResponse.toMemberPasswordResponse(pwFindCheck);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/send-email/update-password")
-    public ResponseEntity<MailPasswordResetResponse> sendPasswordResetEmail(String userEmail, String userName) {
-        memberFacade.sendPasswordResetEmail(userEmail, userName);
+    public ResponseEntity<MailPasswordResetResponse> sendPasswordResetEmail(String userEmail) {
+        memberFacade.sendPasswordResetEmail(userEmail);
         MailPasswordResetResponse response = MailPasswordResetResponse.toMailPasswordResetResponse();
         return ResponseEntity.ok(response);
     }
@@ -73,5 +74,4 @@ public class MemberPublicController {
         MemberPasswordResponse response = MemberPasswordResponse.toMemberPasswordResponse(isPasswordValid);
         return ResponseEntity.ok(response);
     }
-
 }

@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
-
 @Data
 @ToString
 @AllArgsConstructor
@@ -17,6 +15,6 @@ public class ArticleCommentViewDTO {
     private Long articleId;
     private String contents;
     private String nickname;
-    private LocalDateTime createdAt;
+    private String createdAt;
 
 }
