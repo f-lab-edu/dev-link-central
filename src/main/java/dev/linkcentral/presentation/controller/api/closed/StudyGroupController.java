@@ -109,4 +109,11 @@ public class StudyGroupController {
         studyGroupFacade.expelStudyGroupMember(groupId, memberId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/user/{userId}/group-existence")
+    public ResponseEntity<StudyGroupExistsResponse> hasUserCreatedStudyGroup(@PathVariable Long userId) {
+        StudyGroupExistsDTO studyGroupExistsDTO = studyGroupFacade.hasUserCreatedStudyGroup(userId);
+        StudyGroupExistsResponse response = StudyGroupExistsResponse.toStudyGroupExistsResponse(studyGroupExistsDTO);
+        return ResponseEntity.ok(response);
+    }
 }

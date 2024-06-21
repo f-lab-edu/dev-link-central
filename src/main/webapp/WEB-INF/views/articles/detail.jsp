@@ -514,58 +514,76 @@
     <%-- 스터디 그룹 요청 함수 --%>
     <script>
         $(document).ready(function() {
-            // 게시글 ID를 기반으로 스터디 그룹 상세 정보를 조회하는 AJAX 요청
-            var articleId = $('#articleData').data('articleId');
+            // 페이지 로드 시 버튼과 메시지를 숨김
+            $("#requestJoinStudyGroup").hide();
+            $("#noStudyGroupMessage").hide();
 
+            var articleId = $('#articleData').data('articleId');
+            var authorId = <%= article.getWriterId() %>; // 게시글 작성자의 ID
+
+            console.log("초기 상태에서 버튼 숨김");
+
+            // 그룹 존재 여부 확인
             $.ajax({
-                url: "/api/v1/study-group/details/" + articleId,
+                url: "/api/v1/study-group/user/" + authorId + "/group-existence",
                 type: "GET",
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
                 success: function(response) {
-                    // 서버 응답에서 스터디 그룹의 이름과 주제를 표시
-                    $("#studyGroupName").text(response.groupName);
-                    $("#studyTopic").text(response.studyTopic);
+                    console.log("Group existence check response:", response); // 응답 확인 로그
 
-                    if (!response.leaderStatus) {
-                        $("#requestJoinStudyGroup").data("studyGroupId", response.id).show();
+                    // 응답 구조와 존재 여부 확인
+                    if (response && response.studyGroupExistsDTO) {
+                        console.log("exists property:", response.studyGroupExistsDTO.exists);
+                        if (response.studyGroupExistsDTO.exists) {
+                            // 그룹이 존재하는 경우, 가입 요청 버튼을 활성화
+                            $("#requestJoinStudyGroup").show();
+                            $("#requestJoinStudyGroup").data("studyGroupId", articleId); // 그룹 ID 설정
+                            console.log("스터디 그룹이 존재함, 버튼 활성화");
+                        } else {
+                            // 그룹이 존재하지 않는 경우, 가입 요청 버튼을 숨기고 메시지를 표시
+                            console.log("스터디 그룹이 존재하지 않음, 버튼 숨김");
+                            $("#requestJoinStudyGroup").hide();
+                            $("#noStudyGroupMessage").show();
+                        }
                     } else {
+                        // 예상하지 못한 응답 구조인 경우, 버튼을 숨기고 메시지를 표시
+                        console.warn("Unexpected response structure:", response);
                         $("#requestJoinStudyGroup").hide();
-                        $("#leaderMessage").show(); // 메시지를 표시
+                        $("#noStudyGroupMessage").show();
                     }
                 },
-
                 error: function(xhr, status, error) {
-                    console.error("스터디 그룹 정보 조회 실패:", status, error);
-                    $("#studyGroupSection").hide();
+                    console.error("스터디 그룹 존재 여부 확인 실패:", status, error);
+                    $("#requestJoinStudyGroup").hide(); // 오류 발생 시 버튼 숨김
+                    $("#noStudyGroupMessage").show();
                 }
             });
 
             // 스터디 그룹 가입 요청 버튼 클릭 이벤트 처리
             $("#requestJoinStudyGroup").click(function() {
                 var studyGroupId = $(this).data("studyGroupId");
-                console.log("--> studyGroupId: " + studyGroupId);
-
-                $.ajax({
-                    url: "/api/v1/study-group/" + studyGroupId + "/join-requests",
-                    type: "POST",
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                    },
-                    success: function(response) {
-                        alert("스터디 그룹 가입 요청이 성공적으로 전송되었습니다.");
-                    },
-                    error: function(xhr, status, error) {
-                        alert("해당 게시글 사용자가 스터디 그룹을 생성하지 않았습니다.");
-                    }
-                });
+                console.log("스터디 그룹 ID:", studyGroupId); // 스터디 그룹 ID 확인 로그
+                if (studyGroupId) {
+                    $.ajax({
+                        url: "/api/v1/study-group/" + studyGroupId + "/join-requests",
+                        type: "POST",
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                        },
+                        success: function() {
+                            alert("스터디 그룹 가입 요청이 성공적으로 전송되었습니다.");
+                        },
+                        error: function(xhr, status, error) {
+                            alert("스터디 그룹 가입 요청 실패: " + xhr.responseText);
+                        }
+                    });
+                } else {
+                    alert("현재, 스터디 그룹이 생성되어 있지 않습니다.");
+                }
             });
-        });
-    </script>
 
-    <script>
-        $(document).ready(function() {
             $.ajax({
                 type: "GET",
                 url: "/api/v1/article/member-info",
@@ -602,6 +620,7 @@
     </script>
 </head>
 <body>
+
 <div class="container">
     <div class="header">
         <span class="title">스터디 모집 상세보기</span>
@@ -612,6 +631,10 @@
         </div>
 
         <button id="requestJoinStudyGroup" style="display:none;">스터디 그룹 가입 요청</button>
+    </div>
+    <!-- 스터디 그룹이 없을 경우 출력될 메시지 -->
+    <div id="noStudyGroupMessage" style="display:none; color: red; text-align: right; margin-top: -13px;">
+        작성자님이 아직 스터디 그룹을 생성하지 않았습니다.
     </div>
     <div class="detail-grid">
         <div>
