@@ -292,7 +292,7 @@
                     var listHtml = '<ul class="dynamic-text">';
                     $.each(response.studyGroupIds, function(index, studyGroupId) {
                         GroupId = studyGroupId;
-                        listHtml += '<li class="group-name">스터디 그룹 ID: <span>' + studyGroupId + '</span></li>';
+                        // listHtml += '<li class="group-name">스터디 그룹 ID: <span>' + studyGroupId + '</span></li>';
                         $('#joinRequestsTable .btn-primary, #joinRequestsTable .btn-danger').show();
                     });
                     listHtml += '</ul>';
@@ -413,7 +413,6 @@
     <script>
         $(document).ready(function() {
             loadAcceptedStudyGroups();
-            checkStudyGroupExistenceAndUpdateUI();
         });
 
         function loadAcceptedStudyGroups() {
@@ -425,53 +424,41 @@
                     $("#studyGroupsAndMembers").empty();
                     $("#currentGroupsTable tbody").empty();
                     if (response.acceptedStudyGroupDetails && Array.isArray(response.acceptedStudyGroupDetails)) {
-                        if (response.acceptedStudyGroupDetails.length === 0) {
-                            $("#noGroupsMessage").show();
-                            $("#alreadyCreatedMessage").hide();
-                            $("#createStudyGroupButton").show();
-                        } else {
-                            $("#noGroupsMessage").hide();
-                            response.acceptedStudyGroupDetails.forEach(function(group) {
-                                console.log("Group:", group);
-                                var groupHtml = '<div class="study-group">';
-                                groupHtml += '<h3 class="group-name">' + group.groupName + '</h3>';
-                                groupHtml += '<ul>';
-                                if (group.members && Array.isArray(group.members)) {
-                                    group.members.forEach(function(member) {
-                                        console.log("Member:", member);
-                                        if (member.id === group.leaderId) {
-                                            groupHtml += '<li>' + member.name + ' (리더)</li>';
-                                        } else {
-                                            groupHtml += '<li>' + member.name + '</li>';
-                                        }
-                                    });
-                                }
-                                groupHtml += '</ul>';
-                                groupHtml += '</div>';
-                                $("#studyGroupsAndMembers").append(groupHtml);
+                        response.acceptedStudyGroupDetails.forEach(function(group) {
+                            var groupHtml = '<div class="study-group">';
+                            groupHtml += '<h3 class="group-name">' + group.groupName + '</h3>';
+                            groupHtml += '<ul>';
+                            if (group.members && Array.isArray(group.members)) {
+                                group.members.forEach(function(member) {
+                                    if (member.id === group.leaderId) {
+                                        groupHtml += '<li>' + member.name + ' (리더)</li>';
+                                    } else {
+                                        groupHtml += '<li>' + member.name + '</li>';
+                                    }
+                                });
+                            }
+                            groupHtml += '</ul>';
+                            groupHtml += '</div>';
+                            $("#studyGroupsAndMembers").append(groupHtml);
 
-                                var rowHtml = '<tr class="dynamic-text">' +
-                                    '<td class="group-name">' + group.groupName + '</td>' +
-                                    '<td class="text-right">' +
-                                    '<div class="btn-group">' +
-                                    '<button class="btn-danger leaveGroup" data-studygroupid="' + group.id + '">탈퇴</button>' +
-                                    '</div>' +
-                                    '</td>' +
-                                    '</tr>';
-                                $('#currentGroupsTable tbody').append(rowHtml);
-                            });
-                            $("#alreadyCreatedMessage").show();
-                            $("#createStudyGroupButton").hide();
-                        }
+                            var rowHtml = '<tr class="dynamic-text">' +
+                                '<td class="group-name">' + group.groupName + '</td>' +
+                                '<td class="text-right">' +
+                                '<div class="btn-group">' +
+                                '<button class="btn-danger leaveGroup" data-studygroupid="' + group.id + '">탈퇴</button>' +
+                                '</div>' +
+                                '</td>' +
+                                '</tr>';
+                            $('#currentGroupsTable tbody').append(rowHtml);
+                        });
                     } else {
                         console.error("acceptedStudyGroupDetails가 배열이 아닙니다.");
-                        $("#noGroupsMessage").show();
-                        $("#alreadyCreatedMessage").hide();
-                        $("#createStudyGroupButton").show();
                     }
+                    $("#createStudyGroupButton").show();
                 },
                 error: function(xhr, status, error) {
                     console.error("그룹 목록을 불러오는 데 실패했습니다: ", xhr.responseText);
+                    $("#createStudyGroupButton").show(); // 실패 시에도 버튼 표시
                 }
             });
         }
@@ -583,15 +570,13 @@
     <header>
         <h2>스터디 그룹</h2>
     </header>
-    <% if (Boolean.TRUE.equals(showCreateButton)) { %>
     <div id="createStudyGroupButton">
         <button class="btn-primary" onclick="window.location.href='/api/v1/view/study-group/create'">그룹 생성</button>
     </div>
-    <% } else { %>
-    <div id="alreadyCreatedMessage" class="alert dynamic-text text-red">
-        이미 스터디 그룹을 생성했습니다.
+
+    <div id="studyGroupList">
+        <!-- 스터디 그룹 목록 표시 -->
     </div>
-    <% } %>
 
     <h5>가입 요청 확인</h5>
     <table id="joinRequestsTable">
