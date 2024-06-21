@@ -22,16 +22,6 @@ public class StudyGroupViewController {
     public String showStudyGroupPage(@RequestParam(value = "memberId") Long memberId, Model model) {
         StudyGroupMemberDTO currentMember = studyGroupFacade.getMemberById(memberId);
         model.addAttribute("member", currentMember.getMember());
-
-        boolean isStudyGroupCreated = studyGroupFacade.studyGroupPage(memberId);
-        model.addAttribute("hasStudyGroup", isStudyGroupCreated);
-
-        if (!isStudyGroupCreated) {
-            model.addAttribute("showCreateButton", true);
-        } else {
-            Long studyGroupId = studyGroupFacade.findStudyGroupIdByLeaderId(memberId);
-            model.addAttribute("studyGroupId", studyGroupId);
-        }
         return "studys/study-group";
     }
 
@@ -39,5 +29,4 @@ public class StudyGroupViewController {
     public String showCreateStudyGroupForm() {
         return "/studys/create";
     }
-
 }

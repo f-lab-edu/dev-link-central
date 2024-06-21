@@ -105,8 +105,15 @@ public class StudyGroupController {
     }
 
     @DeleteMapping("/{groupId}/members/{memberId}/expel")
-    public ResponseEntity<?> expelStudyGroupMember(@PathVariable Long groupId, @PathVariable Long memberId) {
+    public ResponseEntity<Void> expelStudyGroupMember(@PathVariable Long groupId, @PathVariable Long memberId) {
         studyGroupFacade.expelStudyGroupMember(groupId, memberId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/user/{userId}/group-existence")
+    public ResponseEntity<StudyGroupExistsResponse> hasUserCreatedStudyGroup(@PathVariable Long userId) {
+        StudyGroupExistsDTO studyGroupExistsDTO = studyGroupFacade.hasUserCreatedStudyGroup(userId);
+        StudyGroupExistsResponse response = StudyGroupExistsResponse.toStudyGroupExistsResponse(studyGroupExistsDTO);
+        return ResponseEntity.ok(response);
     }
 }

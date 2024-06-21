@@ -30,7 +30,7 @@ public class MemberSaveRequest {
     @ApiModelProperty(value = "사용자의 비밀번호", required = true)
     @NotBlank(message = "비밀번호를 입력해주세요.")
     @Size(min = 4, max = 20, message = "비밀번호는 4~20자리로 입력해 주세요.")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d).+$", message = "비밀번호는 최소 하나의 소문자와 숫자를 포함해야 합니다.")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d).+$", message = "비밀번호는 최소 하나의 영문자와 숫자를 포함해야 합니다.")
     private String password;
 
     @ApiModelProperty(value = "사용자의 이메일 주소", required = true)

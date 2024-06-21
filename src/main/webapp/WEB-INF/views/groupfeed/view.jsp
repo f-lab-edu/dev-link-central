@@ -252,8 +252,8 @@
             });
         }
 
-        let currentPage = 0;
-        const pageSize = 3;
+        let offset = 0;
+        const limit = 3;
         let isLoading = false;
         let hasMoreFeeds = true;
 
@@ -267,8 +267,8 @@
                 url: '/api/v1/group-feed',
                 method: 'GET',
                 data: {
-                    page: currentPage,
-                    size: pageSize
+                    offset: offset,
+                    limit: limit
                 },
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
@@ -304,8 +304,8 @@
                             $('#feedContainer').append(feedHtml);
                             loadComments(feed.id);
                         });
-                        currentPage++;
-                        if (feeds.length < pageSize) {
+                        offset += limit;
+                        if (feeds.length < limit) {
                             hasMoreFeeds = false;
                         }
                     } else {

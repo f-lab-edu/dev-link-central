@@ -102,14 +102,13 @@
             });
             $("#checkEmail").click(function () {
                 let userEmail = $("#userEmail").val();
-                let userName = $("#userName").val();
                 $.ajax({
                     type: "GET",
                     url: "/api/v1/public/member/forgot-password",
-                    data: { "userEmail": userEmail, "userName": userName },
+                    data: { "userEmail": userEmail },
                     success: function (response) {
                         if (response.result) {
-                                Swal.fire({
+                            Swal.fire({
                                 title: '발송 완료!',
                                 text: '입력하신 이메일로 임시 비밀번호가 발송되었습니다.',
                                 icon: 'success'
@@ -119,7 +118,7 @@
                                     $.ajax({
                                         type: "POST",
                                         url: "/api/v1/public/member/send-email/update-password",
-                                        data: { "userEmail": userEmail, "userName": userName },
+                                        data: { "userEmail": userEmail },
                                         success: function () {
                                             console.log('임시 비밀번호 발송 성공');
                                         },
@@ -141,6 +140,7 @@
             });
         });
     </script>
+
     <script>
         function cancelButtonClicked() {
             window.location.href = "/api/v1/view/member/";
@@ -162,10 +162,6 @@
                         <div class="form-group">
                             <label for="userEmail">Email</label>
                             <input type="text" class="form-control" id="userEmail" placeholder="가입시 등록한 이메일을 입력하세요.">
-                        </div>
-                        <div class="form-group">
-                            <label for="userName">Name</label>
-                            <input type="text" class="form-control" id="userName" placeholder="가입시 등록한 이름을 입력하세요.">
                         </div>
                     </form>
                     <hr>

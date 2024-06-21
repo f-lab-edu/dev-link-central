@@ -45,12 +45,12 @@ public class MemberFacade {
                 memberLoginRequestDTO.getPassword());
     }
 
-    public boolean isPasswordValid(String userEmail, String userName) {
-        return memberService.validateUserEmail(userEmail, userName);
+    public boolean isPasswordValid(String userEmail) {
+        return memberService.validateUserEmail(userEmail);
     }
 
-    public void sendPasswordResetEmail(String userEmail, String userName) {
-        MemberMailDTO memberMailDTO = memberService.createMailForPasswordReset(userEmail, userName);
+    public void sendPasswordResetEmail(String userEmail) {
+        MemberMailDTO memberMailDTO = memberService.createMailForPasswordReset(userEmail);
         memberService.sendMail(memberMailDTO);
     }
 
