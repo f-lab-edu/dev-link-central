@@ -1,5 +1,6 @@
 package dev.linkcentral.database.entity;
 
+import dev.linkcentral.database.entity.member.Member;
 import lombok.Getter;
 
 import javax.persistence.*;

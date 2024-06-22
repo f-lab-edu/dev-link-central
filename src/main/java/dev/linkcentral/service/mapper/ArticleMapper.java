@@ -1,8 +1,8 @@
 package dev.linkcentral.service.mapper;
 
-import dev.linkcentral.database.entity.Article;
-import dev.linkcentral.database.entity.ArticleComment;
-import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.article.Article;
+import dev.linkcentral.database.entity.article.ArticleComment;
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.service.dto.article.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.utils.DateUtils;

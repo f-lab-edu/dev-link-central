@@ -1,6 +1,6 @@
 package dev.linkcentral.service.mapper;
 
-import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.service.dto.member.*;
 import dev.linkcentral.service.dto.token.MemberDetailsDTO;
 import lombok.RequiredArgsConstructor;
