@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
+/**
+ * 게시글 관련 뷰 컨트롤러
+ */
 @Controller
 @Slf4j
 @RequiredArgsConstructor
@@ -28,6 +31,12 @@ public class ArticleViewController {
 
     private final ArticleFacade articleFacade;
 
+    /**
+     * 게시글 저장 폼을 보여줍니다.
+     *
+     * @param model 뷰에 전달할 데이터 모델
+     * @return "articles/save" 템플릿 이름
+     */
     @GetMapping("/save-form")
     public String showArticleSaveForm(Model model) {
         MemberCurrentDTO memberCurrentDTO = articleFacade.saveForm();
@@ -35,6 +44,14 @@ public class ArticleViewController {
         return "articles/save";
     }
 
+    /**
+     * 특정 ID의 게시글 상세 정보를 보여줍니다.
+     *
+     * @param pageable 페이징 정보
+     * @param id 게시글 ID
+     * @param model 뷰에 전달할 데이터 모델
+     * @return "/articles/detail" 템플릿 이름
+     */
     @GetMapping("/{id}")
     public String showArticleDetails(@PageableDefault(size = 5, sort = "id",
                            direction = Sort.Direction.DESC) Pageable pageable,
@@ -46,6 +63,13 @@ public class ArticleViewController {
         return "/articles/detail";
     }
 
+    /**
+     * 게시글 수정 폼을 보여줍니다.
+     *
+     * @param id 게시글 ID
+     * @param model 뷰에 전달할 데이터 모델
+     * @return "/articles/update" 템플릿 이름
+     */
     @GetMapping("/update-form/{id}")
     public String showArticleUpdateForm(@PathVariable Long id, Model model) {
         ArticleDetailsDTO articleDetailsDTO = articleFacade.updateForm(id);
@@ -53,12 +77,25 @@ public class ArticleViewController {
         return "/articles/update";
     }
 
+    /**
+     * 게시글을 삭제하고 리다이렉트합니다.
+     *
+     * @param id 게시글 ID
+     * @return "redirect:/api/v1/view/article/" 리다이렉트 URL
+     */
     @GetMapping("/delete-form/{id}")
     public String deleteArticleAndRedirect(@PathVariable Long id) {
         articleFacade.deleteForm(id);
         return "redirect:/api/v1/view/article/";
     }
 
+    /**
+     * 페이징된 게시글 목록을 보여줍니다.
+     *
+     * @param pageable 페이징 정보
+     * @param model 뷰에 전달할 데이터 모델
+     * @return "/articles/paging" 템플릿 이름
+     */
     @GetMapping("/paging")
     public String showArticlesWithPagination(@PageableDefault(page = 1) Pageable pageable, Model model) {
         Page<ArticleViewDTO> articlePage = articleFacade.paging(pageable);
