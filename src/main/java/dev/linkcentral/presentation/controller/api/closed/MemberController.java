@@ -23,6 +23,11 @@ public class MemberController {
 
     private final MemberFacade memberFacade;
 
+    /**
+     * 현재 회원의 정보를 반환합니다.
+     *
+     * @return 회원 정보 응답
+     */
     @GetMapping("/info")
     public ResponseEntity<MemberInfoResponse> getMemberInfo() {
         MemberInfoDTO memberInfoDTO = memberFacade.getMemberInfo();
@@ -30,6 +35,12 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 회원 정보를 업데이트합니다.
+     *
+     * @param editRequest 회원 수정 요청
+     * @return 회원 수정 응답
+     */
     @PutMapping
     public ResponseEntity<MemberEditResponse> updateMember(@Validated @RequestBody MemberEditRequest editRequest) {
         MemberEditDTO memberEditDTO = MemberEditRequest.toMemberEditCommand(editRequest);
@@ -38,6 +49,12 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 회원을 소프트 삭제합니다.
+     *
+     * @param deleteRequest 회원 삭제 요청
+     * @return 회원 삭제 응답
+     */
     @DeleteMapping
     public ResponseEntity<MemberDeleteResponse> softDeleteMember(@Validated @RequestBody MemberDeleteRequest deleteRequest) {
         MemberDeleteRequestDTO memberDeleteRequestDTO = MemberDeleteRequest.toMemberDeleteRequestCommand(deleteRequest);

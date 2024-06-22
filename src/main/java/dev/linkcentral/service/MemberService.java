@@ -1,18 +1,18 @@
 package dev.linkcentral.service;
 
-import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
-import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.database.entity.MemberStatus;
-import dev.linkcentral.database.repository.MemberRepository;
+import dev.linkcentral.database.entity.member.Member;
+import dev.linkcentral.database.entity.member.MemberStatus;
+import dev.linkcentral.database.repository.member.MemberRepository;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.infrastructure.jwt.TokenProvider;
 import dev.linkcentral.service.dto.member.MemberEditDTO;
 import dev.linkcentral.service.dto.member.MemberInfoDTO;
 import dev.linkcentral.service.dto.member.MemberMailDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
+import dev.linkcentral.service.helper.MemberServiceHelper;
 import dev.linkcentral.service.mapper.MemberMapper;
 import dev.linkcentral.service.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -48,26 +48,48 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
     private final TokenProvider tokenProvider;
-
     private final MemberMapper memberMapper;
+    private final MemberServiceHelper memberServiceHelper;
 
+    /**
+     * 현재 사용자의 정보를 가져옵니다.
+     *
+     * @return MemberInfoDTO 현재 사용자 정보
+     */
     public MemberInfoDTO getCurrentUserInfo() {
         Member member = getCurrentMember();
         return memberMapper.toMemberInfoDTO(member);
     }
 
+    /**
+     * 이메일로 삭제되지 않은 회원을 찾습니다.
+     *
+     * @param email 이메일 주소
+     * @return Member 회원 정보
+     */
     @Transactional(readOnly = true)
     public Member findByEmailAndDeletedFalse(String email) {
         return memberRepository.findByEmailAndDeletedFalse(email)
                 .orElseThrow(() -> new EntityNotFoundException("해당하는 유저를 찾을 수 없습니다."));
     }
 
+    /**
+     * ID로 회원을 찾습니다.
+     *
+     * @param memberId 회원 ID
+     * @return Member 회원 정보
+     */
     @Transactional(readOnly = true)
     public Member getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("ID가 있는 회원을 찾을 수 없습니다."));
     }
 
+    /**
+     * 현재 로그인한 회원의 정보를 가져옵니다.
+     *
+     * @return Member 회원 정보
+     */
     @Transactional(readOnly = true)
     public Member getCurrentMember() {
         String email = SecurityUtils.getCurrentUserUsername();
@@ -75,6 +97,11 @@ public class MemberService {
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
     }
 
+    /**
+     * 현재 인증된 회원의 정보를 가져옵니다.
+     *
+     * @return Member 회원 정보
+     */
     @Transactional(readOnly = true)
     public Member getAuthenticatedMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -87,10 +114,16 @@ public class MemberService {
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
     }
 
+    /**
+     * 사용자 인증 및 JWT 토큰을 생성합니다.
+     *
+     * @param username 사용자 이름
+     * @param password 비밀번호
+     * @return JwtTokenDTO JWT 토큰 정보
+     */
     @Transactional
     public JwtTokenDTO authenticateAndGenerateJwtToken(String username, String password) {
-        Member member = memberRepository.findByEmailAndDeletedFalse(username)
-                .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
+        Member member = findMemberByEmail(username);
 
         if (!passwordEncoder.matches(password, member.getPasswordHash())) {
             throw new IllegalArgumentException("아이디 혹은 비밀번호가 일치하지 않습니다.");
@@ -101,10 +134,16 @@ public class MemberService {
         return tokenProvider.generateToken(authentication);
     }
 
+    /**
+     * 새로운 회원을 등록합니다.
+     *
+     * @param memberDTO 회원 등록 DTO
+     * @return Member 등록된 회원 정보
+     */
     @Transactional
     public Member registerMember(MemberRegistrationDTO memberDTO) {
         String nickname = memberDTO.getNickname();
-        validateForDuplicates(memberDTO, nickname);
+        memberServiceHelper.validateForDuplicates(memberDTO, nickname);
 
         try {
             List<String> roles = new ArrayList<>();
@@ -116,16 +155,12 @@ public class MemberService {
         }
     }
 
-    private void validateForDuplicates(MemberRegistrationDTO memberDTO, String nickname) {
-        if (memberRepository.existsByNicknameAndDeletedFalse(nickname)) {
-            throw new DuplicateNicknameException("닉네임이 이미 사용 중입니다.");
-        }
-
-        if (memberRepository.countByEmailIgnoringDeleted(memberDTO.getEmail()) > 0) {
-            throw new DuplicateEmailException("중복된 이메일 주소입니다.");
-        }
-    }
-
+    /**
+     * 닉네임 중복을 확인합니다.
+     *
+     * @param nickname 닉네임
+     * @return boolean 중복 여부
+     */
     @Transactional(readOnly = true)
     public boolean validateNicknameDuplication(String nickname) {
         boolean isDuplicated = memberRepository.existsByNicknameAndDeletedFalse(nickname);
@@ -136,6 +171,12 @@ public class MemberService {
         return isDuplicated;
     }
 
+    /**
+     * 사용자 이메일의 유효성을 확인합니다.
+     *
+     * @param userEmail 사용자 이메일
+     * @return boolean 유효 여부
+     */
     @Transactional(readOnly = true)
     public boolean validateUserEmail(String userEmail) {
         Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
@@ -146,9 +187,15 @@ public class MemberService {
         return true;
     }
 
+    /**
+     * 비밀번호 재설정을 위한 이메일을 생성합니다.
+     *
+     * @param userEmail 사용자 이메일
+     * @return MemberMailDTO 비밀번호 재설정 이메일 정보
+     */
     @Transactional
     public MemberMailDTO createMailForPasswordReset(String userEmail) {
-        String generatedPassword = createTemporaryPassword();
+        String generatedPassword = memberServiceHelper.createTemporaryPassword();
 
         MemberMailDTO memberMailDTO = MemberMailDTO.builder()
                 .address(userEmail)
@@ -161,30 +208,23 @@ public class MemberService {
         return memberMailDTO;
     }
 
+    /**
+     * 비밀번호를 재설정합니다.
+     *
+     * @param generatedPassword 임시 비밀번호
+     * @param userEmail         사용자 이메일
+     */
     @Transactional
     public void resetPassword(String generatedPassword, String userEmail) {
         String passwordHash = passwordEncoder.encode(generatedPassword); // 비밀번호 해싱
-        Optional<Member> member = memberRepository.findByEmailAndDeletedFalse(userEmail);
-
-        if (member.isPresent()) {
-            Long id = member.get().getId();
-            memberRepository.updatePasswordById(id, passwordHash);
-        }
+        memberServiceHelper.updateMemberPassword(userEmail, passwordHash);
     }
 
-    public String createTemporaryPassword() {
-        char[] charSet = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-        StringBuilder str = new StringBuilder();
-
-        int idx = 0;
-        for (int i = 0; i < 10; i++) {
-            idx = (int) (charSet.length * Math.random());
-            str.append(charSet[idx]);
-        }
-        return str.toString();
-    }
-
+    /**
+     * 이메일을 전송합니다.
+     *
+     * @param memberMailDTO 이메일 정보 DTO
+     */
     public void sendMail(MemberMailDTO memberMailDTO) {
         SimpleMailMessage message = new SimpleMailMessage();
         try {
@@ -201,9 +241,14 @@ public class MemberService {
         }
     }
 
+    /**
+     * 회원 정보를 수정합니다.
+     *
+     * @param memberEditDTO 회원 수정 DTO
+     */
     @Transactional
     public void editMember(MemberEditDTO memberEditDTO) {
-        validateMemberEditDTO(memberEditDTO);
+        memberServiceHelper.validateMemberEditDTO(memberEditDTO);
 
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
@@ -211,18 +256,13 @@ public class MemberService {
         memberMapper.updateMemberFromEditDTO(memberEntity, memberEditDTO);
     }
 
-    private void validateMemberEditDTO(MemberEditDTO memberEditDTO) {
-        if (memberEditDTO.getId() == null) {
-            throw new IllegalArgumentException("회원 ID가 제공되지 않았습니다.");
-        }
-        if (memberEditDTO.getName() == null || memberEditDTO.getName().isEmpty()) {
-            throw new IllegalArgumentException("회원 이름이 유효하지 않습니다.");
-        }
-        if (memberEditDTO.getNickname() == null || memberEditDTO.getNickname().isEmpty()) {
-            throw new IllegalArgumentException("회원 닉네임이 유효하지 않습니다.");
-        }
-    }
-
+    /**
+     * 닉네임과 비밀번호를 사용하여 비밀번호 유효성을 확인합니다.
+     *
+     * @param nickname 닉네임
+     * @param password 비밀번호
+     * @return boolean 유효 여부
+     */
     @Transactional(readOnly = true)
     public boolean validatePassword(String nickname, String password) {
         Optional<Member> member = memberRepository.findByNicknameAndDeletedFalse(nickname);
@@ -234,6 +274,13 @@ public class MemberService {
         return false;
     }
 
+    /**
+     * 회원을 삭제(소프트 삭제)합니다.
+     *
+     * @param nickname 닉네임
+     * @param password 비밀번호
+     * @return boolean 삭제 성공 여부
+     */
     @Transactional
     public boolean removeMember(String nickname, String password) {
         Member member = memberRepository.findByNicknameAndDeletedFalse(nickname)
@@ -244,5 +291,16 @@ public class MemberService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 이메일로 회원을 찾습니다.
+     *
+     * @param email 이메일 주소
+     * @return Member 회원 정보
+     */
+    private Member findMemberByEmail(String email) {
+        return memberRepository.findByEmailAndDeletedFalse(email)
+                .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
     }
 }

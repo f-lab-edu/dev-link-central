@@ -1,7 +1,7 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.database.entity.StudyGroup;
+import dev.linkcentral.database.entity.member.Member;
+import dev.linkcentral.database.entity.studygroup.StudyGroup;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.StudyGroupService;

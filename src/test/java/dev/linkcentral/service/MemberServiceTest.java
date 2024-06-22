@@ -2,9 +2,9 @@ package dev.linkcentral.service;
 
 import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
-import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.database.entity.MemberStatus;
-import dev.linkcentral.database.repository.MemberRepository;
+import dev.linkcentral.database.entity.member.Member;
+import dev.linkcentral.database.entity.member.MemberStatus;
+import dev.linkcentral.database.repository.member.MemberRepository;
 import dev.linkcentral.service.dto.member.MemberEditDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import org.junit.jupiter.api.DisplayName;

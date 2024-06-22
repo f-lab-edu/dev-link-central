@@ -1,7 +1,7 @@
 package dev.linkcentral.service.mapper;
 
-import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.database.entity.StudyGroup;
+import dev.linkcentral.database.entity.member.Member;
+import dev.linkcentral.database.entity.studygroup.StudyGroup;
 import dev.linkcentral.service.dto.studygroup.*;
 import org.springframework.stereotype.Component;
 

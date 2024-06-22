@@ -1,6 +1,6 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.article.*;

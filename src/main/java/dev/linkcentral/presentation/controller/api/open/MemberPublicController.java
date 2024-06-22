@@ -30,6 +30,12 @@ public class MemberPublicController {
 
     private final MemberFacade memberFacade;
 
+    /**
+     * 새로운 회원을 등록합니다.
+     *
+     * @param memberSaveRequest 회원 등록 요청
+     * @return 회원 저장 응답
+     */
     @PostMapping("/register")
     @ResponseBody
     public ResponseEntity<MemberSaveResponse> register(@Validated @RequestBody MemberSaveRequest memberSaveRequest) {
@@ -40,6 +46,13 @@ public class MemberPublicController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * 회원 로그인을 처리합니다.
+     *
+     * @param memberLoginRequest 회원 로그인 요청
+     * @param request            HttpServletRequest 객체
+     * @return 로그인 성공 응답
+     */
     @PostMapping("/login")
     public ResponseEntity<LoginSuccessResponse> login(@Validated @RequestBody MemberLoginRequest memberLoginRequest,
                                                       HttpServletRequest request) {
@@ -52,6 +65,12 @@ public class MemberPublicController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 비밀번호 유효성을 검사합니다.
+     *
+     * @param userEmail 사용자 이메일
+     * @return 비밀번호 응답
+     */
     @GetMapping("/forgot-password")
     @ResponseBody
     public ResponseEntity<MemberPasswordResponse> validatePassword(String userEmail) {
@@ -60,6 +79,12 @@ public class MemberPublicController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 비밀번호 재설정 이메일을 보냅니다.
+     *
+     * @param userEmail 사용자 이메일
+     * @return 비밀번호 재설정 이메일 응답
+     */
     @PostMapping("/send-email/update-password")
     public ResponseEntity<MailPasswordResetResponse> sendPasswordResetEmail(String userEmail) {
         memberFacade.sendPasswordResetEmail(userEmail);
@@ -67,6 +92,12 @@ public class MemberPublicController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 현재 비밀번호를 확인합니다.
+     *
+     * @param password 현재 비밀번호
+     * @return 비밀번호 응답
+     */
     @PostMapping("/check-current-password")
     @ResponseBody
     public ResponseEntity<MemberPasswordResponse> verifyCurrentPassword(@RequestParam String password) {

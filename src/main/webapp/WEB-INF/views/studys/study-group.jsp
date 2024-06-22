@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="dev.linkcentral.database.entity.StudyGroup" %>
-<%@ page import="dev.linkcentral.database.entity.StudyGroup" %>
+<%@ page import="dev.linkcentral.database.entity.studygroup.StudyGroup" %>
+<%@ page import="dev.linkcentral.database.entity.studygroup.StudyGroup" %>
 <% Boolean showCreateButton = (Boolean) request.getAttribute("showCreateButton"); %>
 <!DOCTYPE html>
 <html>

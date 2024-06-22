@@ -1,9 +1,9 @@
 package dev.linkcentral.service.mapper;
 
-import dev.linkcentral.database.entity.GroupFeed;
-import dev.linkcentral.database.entity.GroupFeedComment;
-import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.database.entity.Profile;
+import dev.linkcentral.database.entity.groupfeed.GroupFeed;
+import dev.linkcentral.database.entity.groupfeed.GroupFeedComment;
+import dev.linkcentral.database.entity.member.Member;
+import dev.linkcentral.database.entity.profile.Profile;
 import dev.linkcentral.service.dto.groupfeed.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import org.springframework.stereotype.Component;
