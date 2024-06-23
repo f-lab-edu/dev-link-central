@@ -2,13 +2,17 @@ package dev.linkcentral.service;
 
 import dev.linkcentral.database.entity.groupfeed.GroupFeed;
 import dev.linkcentral.database.entity.groupfeed.GroupFeedComment;
+import dev.linkcentral.database.entity.groupfeed.GroupFeedLike;
+import dev.linkcentral.database.entity.groupfeed.GroupFeedStatistic;
 import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.database.entity.profile.Profile;
 import dev.linkcentral.database.repository.groupfeed.GroupFeedCommentRepository;
+import dev.linkcentral.database.repository.groupfeed.GroupFeedLikeRepository;
 import dev.linkcentral.database.repository.groupfeed.GroupFeedRepository;
 import dev.linkcentral.database.repository.groupfeed.GroupFeedStatisticRepository;
+import dev.linkcentral.database.repository.member.MemberRepository;
+import dev.linkcentral.infrastructure.s3.FileUploader;
 import dev.linkcentral.service.dto.groupfeed.*;
-import dev.linkcentral.service.helper.GroupFeedServiceHelper;
 import dev.linkcentral.service.mapper.GroupFeedMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +22,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +39,9 @@ public class GroupFeedService {
     private final GroupFeedCommentRepository groupFeedCommentRepository;
     private final ProfileService profileService;
     private final GroupFeedMapper groupFeedMapper;
-    private final GroupFeedServiceHelper groupFeedServiceHelper;
+    private final FileUploader fileUploader;
+    private final MemberRepository memberRepository;
+    private final GroupFeedLikeRepository groupFeedLikeRepository;
 
     /**
      * 그룹 피드를 생성합니다.
@@ -42,14 +51,14 @@ public class GroupFeedService {
      */
     @Transactional
     public GroupFeedSavedDTO createGroupFeed(GroupFeedCreateDTO groupFeedCreateDTO) {
-        Member member = groupFeedServiceHelper.findMemberById(groupFeedCreateDTO.getMemberId());
+        Member member = findMemberById(groupFeedCreateDTO.getMemberId());
         Profile profile = profileService.findOrCreateProfile(member.getId());
-        String imageUrl = groupFeedServiceHelper.uploadImageFile(groupFeedCreateDTO.getImageFile(), member.getId());
+        String imageUrl = uploadImageFile(groupFeedCreateDTO.getImageFile(), member.getId());
 
         GroupFeed groupFeed = GroupFeed.of(member, groupFeedCreateDTO, imageUrl);
         GroupFeed savedGroupFeed = groupFeedRepository.save(groupFeed);
 
-        groupFeedServiceHelper.createGroupFeedStatistic(savedGroupFeed);
+        createGroupFeedStatistic(savedGroupFeed);
 
         return groupFeedMapper.toGroupFeedMapper(savedGroupFeed);
     }
@@ -70,7 +79,7 @@ public class GroupFeedService {
 
     private GroupFeedWithProfileDTO mapToGroupFeedWithProfileDTO(GroupFeed groupFeed) {
         Profile profile = profileService.getProfileByMemberId(groupFeed.getMember().getId());
-        int likeCount = groupFeedServiceHelper.getLikeCount(groupFeed);
+        int likeCount = getLikeCount(groupFeed);
         return groupFeedMapper.toGroupFeedWithProfileDTO(groupFeed, profile, likeCount);
     }
 
@@ -101,10 +110,10 @@ public class GroupFeedService {
      */
     @Transactional(readOnly = true)
     public GroupFeedWithProfileDTO getFeedById(Long feedId) {
-        GroupFeed groupFeed = groupFeedServiceHelper.findGroupFeedById(feedId);
+        GroupFeed groupFeed = findGroupFeedById(feedId);
 
         Profile profile = profileService.getProfileByMemberId(groupFeed.getMember().getId());
-        int likeCount = groupFeedServiceHelper.getLikeCount(groupFeed);
+        int likeCount = getLikeCount(groupFeed);
 
         return groupFeedMapper.toGroupFeedWithProfileDTO(groupFeed, profile, likeCount);
     }
@@ -116,7 +125,7 @@ public class GroupFeedService {
      */
     @Transactional
     public void deleteFeed(Long feedId) {
-        groupFeedServiceHelper.deleteAllAssociatedData(feedId);
+        deleteAllAssociatedData(feedId);
         groupFeedRepository.deleteById(feedId);
     }
 
@@ -129,8 +138,8 @@ public class GroupFeedService {
      */
     @Transactional
     public GroupFeedSavedDTO updateGroupFeed(Long memberId, GroupFeedUpdateDTO groupFeedUpdateDTO) {
-        GroupFeed groupFeed = groupFeedServiceHelper.findGroupFeedByIdAndMemberId(groupFeedUpdateDTO.getFeedId(), memberId);
-        groupFeedServiceHelper.updateGroupFeedDetails(groupFeed, groupFeedUpdateDTO, memberId);
+        GroupFeed groupFeed = findGroupFeedByIdAndMemberId(groupFeedUpdateDTO.getFeedId(), memberId);
+        updateGroupFeedDetails(groupFeed, groupFeedUpdateDTO, memberId);
         GroupFeed updatedGroupFeed = groupFeedRepository.save(groupFeed);
         return groupFeedMapper.toGroupFeedMapper(updatedGroupFeed);
     }
@@ -144,7 +153,7 @@ public class GroupFeedService {
      */
     @Transactional
     public void addComment(Long feedId, GroupFeedCommentDTO commentRequestDTO, Member member) {
-        GroupFeed groupFeed = groupFeedServiceHelper.findGroupFeedById(feedId);
+        GroupFeed groupFeed = findGroupFeedById(feedId);
         GroupFeedComment newComment = GroupFeedComment.createComment(groupFeed, member, commentRequestDTO);
         groupFeedCommentRepository.save(newComment);
     }
@@ -171,7 +180,7 @@ public class GroupFeedService {
      */
     @Transactional
     public void updateComment(Member member, GroupFeedCommentUpdateDTO commentUpdateDTO) {
-        GroupFeedComment comment = groupFeedServiceHelper.findCommentByIdAndGroupFeedIdAndMemberId(
+        GroupFeedComment comment = findCommentByIdAndGroupFeedIdAndMemberId(
                 commentUpdateDTO.getCommentId(), commentUpdateDTO.getFeedId(), member.getId());
         comment.updateContent(commentUpdateDTO.getContent());
         groupFeedCommentRepository.save(comment);
@@ -186,7 +195,7 @@ public class GroupFeedService {
      */
     @Transactional
     public void deleteComment(Long feedId, Long commentId, Member member) {
-        GroupFeedComment comment = groupFeedServiceHelper.findCommentByIdAndGroupFeedIdAndMemberId(commentId, feedId, member.getId());
+        GroupFeedComment comment = findCommentByIdAndGroupFeedIdAndMemberId(commentId, feedId, member.getId());
         groupFeedCommentRepository.delete(comment);
     }
 
@@ -199,11 +208,163 @@ public class GroupFeedService {
      */
     @Transactional
     public GroupFeedLikeDTO toggleLike(Long feedId, Long memberId) {
-        GroupFeed groupFeed = groupFeedServiceHelper.findGroupFeedById(feedId);
-        Member member = groupFeedServiceHelper.findMemberById(memberId);
+        GroupFeed groupFeed = findGroupFeedById(feedId);
+        Member member = findMemberById(memberId);
 
-        GroupFeedLikeDTO groupFeedLikeDTO = groupFeedServiceHelper.processLikeToggle(groupFeed, member);
-        groupFeedStatisticRepository.save(groupFeedServiceHelper.getFeedStatistic(groupFeed));
+        GroupFeedLikeDTO groupFeedLikeDTO = processLikeToggle(groupFeed, member);
+        groupFeedStatisticRepository.save(getFeedStatistic(groupFeed));
         return groupFeedLikeDTO;
+    }
+
+    /**
+     * ID로 멤버를 찾습니다.
+     *
+     * @param memberId 멤버 ID
+     * @return 멤버 객체
+     */
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
+    }
+
+    /**
+     * ID로 그룹 피드를 찾습니다.
+     *
+     * @param feedId 피드 ID
+     * @return 그룹 피드 객체
+     */
+    private GroupFeed findGroupFeedById(Long feedId) {
+        return groupFeedRepository.findById(feedId)
+                .orElseThrow(() -> new IllegalArgumentException("피드를 찾을 수 없습니다."));
+    }
+
+    /**
+     * 멤버 ID와 피드 ID로 그룹 피드를 찾습니다.
+     *
+     * @param feedId 피드 ID
+     * @param memberId 멤버 ID
+     * @return 그룹 피드 객체
+     */
+    private GroupFeed findGroupFeedByIdAndMemberId(Long feedId, Long memberId) {
+        return groupFeedRepository.findByIdAndMemberId(feedId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 피드를 찾을 수 없거나 수정할 권한이 없습니다."));
+    }
+
+    /**
+     * 댓글 ID, 피드 ID, 멤버 ID로 댓글을 찾습니다.
+     *
+     * @param commentId 댓글 ID
+     * @param feedId 피드 ID
+     * @param memberId 멤버 ID
+     * @return 그룹 피드 댓글 객체
+     */
+    private GroupFeedComment findCommentByIdAndGroupFeedIdAndMemberId(Long commentId, Long feedId, Long memberId) {
+        return groupFeedCommentRepository.findByIdAndGroupFeedIdAndMemberId(commentId, feedId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없거나 수정할 권한이 없습니다."));
+    }
+
+    /**
+     * 이미지 파일을 업로드합니다.
+     *
+     * @param imageFile 이미지 파일
+     * @param memberId 멤버 ID
+     * @return 업로드된 파일의 URL
+     */
+    private String uploadImageFile(MultipartFile imageFile, Long memberId) {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            return fileUploader.uploadFile(imageFile, "group-feeds/" + memberId);
+        }
+        return null;
+    }
+
+    /**
+     * 특정 피드의 좋아요 수를 반환합니다.
+     *
+     * @param groupFeed 그룹 피드 객체
+     * @return 좋아요 수
+     */
+    private int getLikeCount(GroupFeed groupFeed) {
+        return groupFeedStatisticRepository.findByGroupFeed(groupFeed)
+                .map(GroupFeedStatistic::getLikes)
+                .orElse(0);
+    }
+
+    /**
+     * 그룹 피드를 업데이트합니다.
+     *
+     * @param groupFeed 그룹 피드 객체
+     * @param updateDTO 그룹 피드 업데이트 DTO
+     * @param memberId 멤버 ID
+     */
+    private void updateGroupFeedDetails(GroupFeed groupFeed, GroupFeedUpdateDTO updateDTO, Long memberId) {
+        groupFeed.updateTitle(updateDTO.getTitle());
+        groupFeed.updateContent(updateDTO.getContent());
+
+        MultipartFile imageFile = updateDTO.getImageFile();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = uploadImageFile(imageFile, memberId);
+            groupFeed.updateImageUrl(imageUrl);
+        }
+    }
+
+    /**
+     * 특정 피드와 관련된 모든 데이터를 삭제합니다.
+     *
+     * @param feedId 피드 ID
+     */
+    private void deleteAllAssociatedData(Long feedId) {
+        List<GroupFeedLike> likes = groupFeedLikeRepository.findByGroupFeedId(feedId);
+        groupFeedLikeRepository.deleteAll(likes);
+        groupFeedStatisticRepository.deleteByGroupFeedId(feedId);
+        groupFeedCommentRepository.deleteByGroupFeedId(feedId);
+    }
+
+    /**
+     * 특정 피드에 대한 좋아요를 토글합니다.
+     *
+     * @param groupFeed 그룹 피드 객체
+     * @param member 멤버 객체
+     * @return 그룹 피드 좋아요 DTO
+     */
+    private GroupFeedLikeDTO processLikeToggle(GroupFeed groupFeed, Member member) {
+        Optional<GroupFeedLike> existingLike = groupFeedLikeRepository.findByGroupFeedAndMember(groupFeed, member);
+        GroupFeedStatistic feedStatistic = groupFeedStatisticRepository.findByGroupFeed(groupFeed)
+                .orElseGet(() -> GroupFeedStatistic.createStatistic(groupFeed));
+
+        boolean liked;
+        if (existingLike.isPresent()) {
+            groupFeedLikeRepository.delete(existingLike.get());
+            feedStatistic.updateLikes(feedStatistic.getLikes() - 1);
+            liked = false;
+        } else {
+            GroupFeedLike newLike = GroupFeedLike.createGroupFeedLike(groupFeed, member);
+            groupFeedLikeRepository.save(newLike);
+            feedStatistic.updateLikes(feedStatistic.getLikes() + 1);
+            liked = true;
+        }
+
+        groupFeedStatisticRepository.save(feedStatistic);
+        return new GroupFeedLikeDTO(feedStatistic.getLikes(), liked);
+    }
+
+    /**
+     * 특정 피드의 통계 정보를 반환합니다.
+     *
+     * @param groupFeed 그룹 피드 객체
+     * @return 그룹 피드 통계 객체
+     */
+    private GroupFeedStatistic getFeedStatistic(GroupFeed groupFeed) {
+        return groupFeedStatisticRepository.findByGroupFeed(groupFeed)
+                .orElseGet(() -> GroupFeedStatistic.createStatistic(groupFeed));
+    }
+
+    /**
+     * 그룹 피드 통계 정보를 생성합니다.
+     *
+     * @param savedGroupFeed 저장된 그룹 피드 객체
+     */
+    private void createGroupFeedStatistic(GroupFeed savedGroupFeed) {
+        GroupFeedStatistic groupFeedStatistic = GroupFeedStatistic.createStatistic(savedGroupFeed);
+        groupFeedStatisticRepository.save(groupFeedStatistic);
     }
 }

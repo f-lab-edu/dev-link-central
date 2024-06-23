@@ -4,17 +4,20 @@ import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.database.entity.studygroup.StudyGroup;
 import dev.linkcentral.database.entity.studygroup.StudyGroupStatus;
 import dev.linkcentral.database.entity.studygroup.StudyMember;
+import dev.linkcentral.database.repository.member.MemberRepository;
+import dev.linkcentral.database.repository.studygroup.StudyGroupRepository;
+import dev.linkcentral.database.repository.studygroup.StudyMemberRepository;
 import dev.linkcentral.service.dto.studygroup.AcceptedStudyGroupDetailsDTO;
 import dev.linkcentral.service.dto.studygroup.StudyGroupExistsDTO;
 import dev.linkcentral.service.dto.studygroup.StudyGroupMemberBasicInfoDTO;
 import dev.linkcentral.service.dto.studygroup.StudyGroupMembersDetailDTO;
-import dev.linkcentral.service.helper.StudyGroupServiceHelper;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +27,9 @@ import java.util.stream.Collectors;
 public class StudyGroupService {
 
     private final StudyGroupMapper studyGroupMapper;
-    private final StudyGroupServiceHelper studyGroupServiceHelper;
+    private final MemberRepository memberRepository;
+    private final StudyGroupRepository studyGroupRepository;
+    private final StudyMemberRepository studyMemberRepository;
 
     /**
      * 특정 ID로 스터디 그룹을 가져옵니다.
@@ -34,7 +39,8 @@ public class StudyGroupService {
      */
     @Transactional(readOnly = true)
     public StudyGroup getStudyGroupById(Long id) {
-        return studyGroupServiceHelper.findStudyGroupById(id);
+        return studyGroupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("스터디 그룹을 찾을 수 없습니다."));
     }
 
     /**
@@ -47,7 +53,7 @@ public class StudyGroupService {
      */
     @Transactional
     public StudyGroup createStudyGroup(String groupName, String studyTopic, Long leaderId) {
-        Member leader = studyGroupServiceHelper.findMemberById(leaderId);
+        Member leader = findMemberById(leaderId);
 
         StudyGroup studyGroup = StudyGroup.builder()
                 .groupName(groupName)
@@ -56,7 +62,7 @@ public class StudyGroupService {
                 .isCreated(true)
                 .build();
 
-        StudyGroup savedStudyGroup = studyGroupServiceHelper.saveStudyGroup(studyGroup);
+        StudyGroup savedStudyGroup = studyGroupRepository.save(studyGroup);
 
         StudyMember studyMember = StudyMember.builder()
                 .member(leader)
@@ -64,7 +70,7 @@ public class StudyGroupService {
                 .status(StudyGroupStatus.ACCEPTED)
                 .build();
 
-        studyGroupServiceHelper.saveStudyMember(studyMember);
+        studyMemberRepository.save(studyMember);
         return savedStudyGroup;
     }
 
@@ -76,7 +82,8 @@ public class StudyGroupService {
      */
     @Transactional(readOnly = true)
     public StudyGroup findStudyGroupByLeaderId(Long leaderId) {
-        return studyGroupServiceHelper.findStudyGroupByLeaderId(leaderId);
+        return studyGroupRepository.findByStudyLeaderId(leaderId)
+                .orElseThrow(() -> new EntityNotFoundException("스터디 그룹을 찾을 수 없습니다."));
     }
 
     /**
@@ -87,12 +94,12 @@ public class StudyGroupService {
      */
     @Transactional
     public void deleteStudyGroup(Long studyGroupId, Long memberId) {
-        StudyGroup studyGroup = studyGroupServiceHelper.findStudyGroupById(studyGroupId);
+        StudyGroup studyGroup = getStudyGroupById(studyGroupId);
 
         if (!studyGroup.getStudyLeaderId().equals(memberId)) {
             throw new IllegalStateException("스터디 그룹 리더만 스터디 그룹을 삭제할 수 있습니다.");
         }
-        studyGroupServiceHelper.deleteStudyGroup(studyGroup);
+        studyGroupRepository.delete(studyGroup);
     }
 
     /**
@@ -104,12 +111,12 @@ public class StudyGroupService {
      */
     @Transactional
     public boolean leaveStudyGroupAsMember(Long studyGroupId, Long memberId) {
-        StudyGroup studyGroup = studyGroupServiceHelper.findStudyGroupById(studyGroupId);
-        Member member = studyGroupServiceHelper.findMemberById(memberId);
+        StudyGroup studyGroup = getStudyGroupById(studyGroupId);
+        Member member = findMemberById(memberId);
 
-        StudyMember studyMember = studyGroupServiceHelper.findStudyMemberByMemberAndStudyGroup(member, studyGroup);
+        StudyMember studyMember = findStudyMemberByMemberAndStudyGroup(member, studyGroup);
         if (studyMember != null) {
-            studyGroupServiceHelper.deleteStudyMember(studyMember);
+            studyMemberRepository.delete(studyMember);
             return true;
         }
         return false;
@@ -123,7 +130,7 @@ public class StudyGroupService {
      */
     @Transactional(readOnly = true)
     public boolean checkIfUserHasStudyGroup(Long studyLeaderId) {
-        return studyGroupServiceHelper.existsByStudyLeaderId(studyLeaderId);
+        return studyGroupRepository.existsByStudyLeaderId(studyLeaderId);
     }
 
     /**
@@ -134,7 +141,10 @@ public class StudyGroupService {
      */
     @Transactional(readOnly = true)
     public List<StudyGroup> findAcceptedStudyGroupsByMemberId(Long memberId) {
-        return studyGroupServiceHelper.findAcceptedStudyGroupsByMemberId(memberId);
+        return studyMemberRepository.findAllByMemberIdAndStatus(memberId, StudyGroupStatus.ACCEPTED)
+                .stream()
+                .map(StudyMember::getStudyGroup)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -162,12 +172,11 @@ public class StudyGroupService {
      */
     @Transactional(readOnly = true)
     public List<StudyGroupMembersDetailDTO> getStudyGroupsAndMembers(Long userId) {
-        List<StudyGroup> studyGroups = studyGroupServiceHelper.findStudyGroupsByUserId(userId);
+        List<StudyGroup> studyGroups = studyGroupRepository.findStudyGroupsByUserId(userId);
         List<StudyGroupMembersDetailDTO> result = new ArrayList<>();
 
         for (StudyGroup group : studyGroups) {
-            List<StudyMember> acceptedMembers = studyGroupServiceHelper
-                    .findAllByStudyGroupAndStatus(group, StudyGroupStatus.ACCEPTED);
+            List<StudyMember> acceptedMembers = studyMemberRepository.findAllByStudyGroupAndStatus(group, StudyGroupStatus.ACCEPTED);
 
             if (!acceptedMembers.isEmpty()) {
                 List<StudyGroupMemberBasicInfoDTO> memberDtos = acceptedMembers.stream()
@@ -195,13 +204,13 @@ public class StudyGroupService {
      */
     @Transactional
     public void expelMember(Long groupId, Long memberId, Long loggedInUserId) {
-        StudyGroup studyGroup = studyGroupServiceHelper.findStudyGroupById(groupId);
+        StudyGroup studyGroup = getStudyGroupById(groupId);
 
         if (!studyGroup.getStudyLeaderId().equals(loggedInUserId)) {
             throw new AccessDeniedException("그룹 리더만 구성원을 추방할 수 있습니다.");
         }
-        StudyMember studyMember = studyGroupServiceHelper.findStudyMemberById(studyGroup, memberId);
-        studyGroupServiceHelper.deleteStudyMember(studyMember);
+        StudyMember studyMember = findStudyMemberById(studyGroup, memberId);
+        studyMemberRepository.delete(studyMember);
     }
 
     /**
@@ -212,7 +221,42 @@ public class StudyGroupService {
      */
     @Transactional(readOnly = true)
     public StudyGroupExistsDTO userHasStudyGroup(Long userId) {
-        boolean existsByStudyLeaderId = studyGroupServiceHelper.existsByStudyLeaderId(userId);
+        boolean existsByStudyLeaderId = studyGroupRepository.existsByStudyLeaderId(userId);
         return studyGroupMapper.toStudyGroupExistsDTO(existsByStudyLeaderId);
+    }
+
+    /**
+     * 특정 ID로 회원을 찾습니다.
+     *
+     * @param memberId 회원 ID
+     * @return Member 회원 엔티티
+     */
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
+    }
+
+    /**
+     * 특정 스터디 그룹과 회원 ID로 스터디 멤버를 찾습니다.
+     *
+     * @param studyGroup 스터디 그룹 엔티티
+     * @param memberId 회원 ID
+     * @return StudyMember 스터디 멤버 엔티티
+     */
+    private StudyMember findStudyMemberById(StudyGroup studyGroup, Long memberId) {
+        return studyMemberRepository.findByStudyGroupAndMemberId(studyGroup, memberId)
+                .orElseThrow(() -> new EntityNotFoundException("이 스터디 그룹에 회원을 찾을 수 없습니다."));
+    }
+
+    /**
+     * 특정 회원과 스터디 그룹으로 스터디 멤버를 찾습니다.
+     *
+     * @param member 회원 엔티티
+     * @param studyGroup 스터디 그룹 엔티티
+     * @return StudyMember 스터디 멤버 엔티티
+     */
+    private StudyMember findStudyMemberByMemberAndStudyGroup(Member member, StudyGroup studyGroup) {
+        return studyMemberRepository.findByMemberAndStudyGroup(member, studyGroup)
+                .orElseThrow(() -> new EntityNotFoundException("스터디 그룹 회원을 찾을 수 없습니다."));
     }
 }

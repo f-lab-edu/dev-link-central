@@ -1,15 +1,11 @@
 package dev.linkcentral.service;
 
 import dev.linkcentral.common.exception.CustomOptimisticLockException;
-import dev.linkcentral.database.entity.article.Article;
-import dev.linkcentral.database.entity.article.ArticleComment;
-import dev.linkcentral.database.entity.article.ArticleStatistic;
+import dev.linkcentral.database.entity.article.*;
 import dev.linkcentral.database.entity.member.Member;
-import dev.linkcentral.database.repository.article.ArticleCommentRepository;
-import dev.linkcentral.database.repository.article.ArticleLikeRepository;
-import dev.linkcentral.database.repository.article.ArticleRepository;
+import dev.linkcentral.database.repository.article.*;
+import dev.linkcentral.database.repository.member.MemberRepository;
 import dev.linkcentral.service.dto.article.*;
-import dev.linkcentral.service.helper.ArticleServiceHelper;
 import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OptimisticLockException;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,9 +29,13 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleCommentRepository articleCommentRepository;
+    private final ArticleStatisticRepository articleStatisticRepository;
+    private final ArticleViewRepository articleViewRepository;
+    private final MemberRepository memberRepository;
     private final ArticleMapper articleMapper;
     private final ArticleCommentMapper articleCommentMapper;
-    private final ArticleServiceHelper articleServiceHelper;
+
+    public static final int MAX_RETRIES = 3;
 
     /**
      * 새로운 게시글을 저장합니다.
@@ -43,7 +45,7 @@ public class ArticleService {
      */
     @Transactional
     public ArticleCreateDTO saveArticle(ArticleCreateDTO articleDTO) {
-        Member member = articleServiceHelper.findMemberById(articleDTO.getWriterId());
+        Member member = findMemberById(articleDTO.getWriterId());
         Article article = articleMapper.toArticleEntity(articleDTO, member);
         Article savedArticle = articleRepository.save(article);
         return articleMapper.toArticleCreateDTO(savedArticle);
@@ -57,7 +59,7 @@ public class ArticleService {
      */
     @Transactional(readOnly = true)
     public ArticleDetailsDTO getArticleById(Long id) {
-        Article article = articleServiceHelper.findArticleById(id);
+        Article article = findArticleById(id);
         return articleMapper.toArticleDetailsDTO(article);
     }
 
@@ -70,9 +72,9 @@ public class ArticleService {
      */
     @Transactional
     public ArticleViewDTO findArticleById(Long id, Member member) {
-        Article article = articleServiceHelper.findArticleById(id);
-        articleServiceHelper.viewCountUpdate(member, article);
-        ArticleStatistic statistic = articleServiceHelper.getArticleStatistic(article);
+        Article article = findArticleById(id);
+        viewCountUpdate(member, article);
+        ArticleStatistic statistic = getArticleStatistic(article);
         return articleMapper.toDetailedArticleDTO(article, statistic.getViews());
     }
 
@@ -86,7 +88,7 @@ public class ArticleService {
     public ArticleUpdatedDTO updateArticle(ArticleUpdateDTO articleDTO) {
         Article articleEntity = articleMapper.toUpdateEntity(articleDTO);
         Article updatedArticle = articleRepository.save(articleEntity);
-        return articleServiceHelper.findUpdatedArticleDTO(updatedArticle.getId());
+        return findUpdatedArticleDTO(updatedArticle.getId());
     }
 
     /**
@@ -96,8 +98,8 @@ public class ArticleService {
      */
     @Transactional
     public void deleteArticle(Long id) {
-        Article article = articleServiceHelper.findArticleById(id);
-        articleServiceHelper.deleteAllRelatedEntities(article);
+        Article article = findArticleById(id);
+        deleteAllRelatedEntities(article);
         articleRepository.delete(article);
     }
 
@@ -109,7 +111,7 @@ public class ArticleService {
      */
     @Transactional(readOnly = true)
     public Page<ArticleViewDTO> paginateArticles(Pageable pageable) {
-        Page<Article> articleEntity = articleRepository.findAll(articleServiceHelper.getPageRequest(pageable));
+        Page<Article> articleEntity = articleRepository.findAll(getPageRequest(pageable));
         return articleEntity.map(articleMapper::toArticleDTO);
     }
 
@@ -122,11 +124,11 @@ public class ArticleService {
      */
     @Transactional
     public ArticleLikeDTO toggleArticleLike(Long articleId, Member member) {
-        for (int attempt = 0; attempt < ArticleServiceHelper.MAX_RETRIES; attempt++) {
+        for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
             try {
-                return articleServiceHelper.processLikeToggle(articleId, member);
+                return processLikeToggle(articleId, member);
             } catch (OptimisticLockException e) {
-                articleServiceHelper.handleRetry(attempt);
+                handleRetry(attempt);
             }
         }
         throw new CustomOptimisticLockException("최대 재시도 횟수 이후 업데이트에 실패했습니다.");
@@ -140,7 +142,7 @@ public class ArticleService {
      */
     @Transactional(readOnly = true)
     public ArticleLikesCountDTO countArticleLikes(Long articleId) {
-        Article article = articleServiceHelper.findArticleById(articleId);
+        Article article = findArticleById(articleId);
         int likesCount = (int) articleLikeRepository.countByArticle(article);
         return new ArticleLikesCountDTO(likesCount);
     }
@@ -154,8 +156,8 @@ public class ArticleService {
      */
     @Transactional
     public ArticleCommentDTO saveComment(ArticleCommentDTO commentDTO, String writerNickname) {
-        Member member = articleServiceHelper.findMemberByNickname(writerNickname);
-        Article article = articleServiceHelper.findArticleById(commentDTO.getArticleId());
+        Member member = findMemberByNickname(writerNickname);
+        Article article = findArticleById(commentDTO.getArticleId());
         ArticleComment commentEntity = articleCommentMapper.toArticleCommentEntity(commentDTO, writerNickname, article, member);
         ArticleComment savedComment = articleCommentRepository.save(commentEntity);
         return articleCommentMapper.toArticleCommentDTO(savedComment);
@@ -171,7 +173,7 @@ public class ArticleService {
      */
     @Transactional(readOnly = true)
     public Page<ArticleCommentViewDTO> findCommentsForScrolling(Long articleId, int offset, int limit) {
-        Article article = articleServiceHelper.findArticleById(articleId);
+        Article article = findArticleById(articleId);
         Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by("id").descending());
         return articleCommentRepository.findAllByArticleOrderByIdDesc(article, pageable)
                 .map(articleMapper::toCommentDTO);
@@ -186,8 +188,8 @@ public class ArticleService {
      */
     @Transactional
     public ArticleCommentUpdateDTO updateComment(ArticleCommentUpdateDTO commentDTO, String currentNickname) {
-        ArticleComment commentEntity = articleServiceHelper.findArticleCommentById(commentDTO.getId());
-        articleServiceHelper.validateCommentOwner(commentEntity, currentNickname);
+        ArticleComment commentEntity = findArticleCommentById(commentDTO.getId());
+        validateCommentOwner(commentEntity, currentNickname);
         commentEntity.updateContent(commentDTO.getContents());
         ArticleComment updatedComment = articleCommentRepository.save(commentEntity);
         return articleCommentMapper.toArticleCommentUpdateDto(updatedComment);
@@ -201,8 +203,217 @@ public class ArticleService {
      */
     @Transactional
     public void deleteComment(Long commentId, String currentNickname) {
-        ArticleComment comment = articleServiceHelper.findArticleCommentById(commentId);
-        articleServiceHelper.validateCommentOwner(comment, currentNickname);
+        ArticleComment comment = findArticleCommentById(commentId);
+        validateCommentOwner(comment, currentNickname);
         articleCommentRepository.delete(comment);
+    }
+
+    /**
+     * ID로 멤버를 찾습니다.
+     *
+     * @param writerId 멤버의 ID
+     * @return 멤버 정보
+     */
+    private Member findMemberById(Long writerId) {
+        return memberRepository.findById(writerId)
+                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
+    }
+
+    /**
+     * ID로 게시글을 찾습니다.
+     *
+     * @param articleId 게시글의 ID
+     * @return 게시글 정보
+     */
+    private Article findArticleById(Long articleId) {
+        return articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+    }
+
+    /**
+     * ID로 댓글을 찾습니다.
+     *
+     * @param commentId 댓글의 ID
+     * @return 댓글 정보
+     */
+    private ArticleComment findArticleCommentById(Long commentId) {
+        return articleCommentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("댓글을 찾을 수 없습니다."));
+    }
+
+    /**
+     * 닉네임으로 멤버를 찾습니다.
+     *
+     * @param nickname 멤버의 닉네임
+     * @return 멤버 정보
+     */
+    private Member findMemberByNickname(String nickname) {
+        return memberRepository.findByNicknameAndDeletedFalse(nickname)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    /**
+     * 게시글의 통계 정보를 가져옵니다.
+     *
+     * @param article 게시글 정보
+     * @return 통계 정보
+     */
+    private ArticleStatistic getArticleStatistic(Article article) {
+        return articleStatisticRepository.findByArticle(article)
+                .orElse(ArticleStatistic.createEmptyStatistic());
+    }
+
+    /**
+     * 페이지네이션을 위한 PageRequest 객체를 생성합니다.
+     *
+     * @param pageable 페이지 정보
+     * @return PageRequest 객체
+     */
+    private PageRequest getPageRequest(Pageable pageable) {
+        int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
+        int pageLimit = 7;                       // 한 페이지에 보여줄 글 갯수
+        return PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id"));
+    }
+
+    /**
+     * 업데이트된 게시글의 DTO를 찾습니다.
+     *
+     * @param updatedArticleId 업데이트된 게시글의 ID
+     * @return 업데이트된 게시글의 DTO
+     */
+    private ArticleUpdatedDTO findUpdatedArticleDTO(Long updatedArticleId) {
+        return articleRepository.findById(updatedArticleId)
+                .map(articleMapper::updateArticleAndReturnDTO)
+                .orElseThrow(() -> new EntityNotFoundException("업데이트 된 게시글을 찾을 수 없습니다"));
+    }
+
+    /**
+     * 게시글과 관련된 모든 엔티티를 삭제합니다.
+     *
+     * @param article 게시글 정보
+     */
+    private void deleteAllRelatedEntities(Article article) {
+        articleLikeRepository.deleteByArticle(article);
+        articleStatisticRepository.deleteByArticle(article);
+        articleViewRepository.deleteByArticle(article);
+        articleCommentRepository.deleteByArticle(article);
+    }
+
+    /**
+     * 댓글 작성자를 검증합니다.
+     *
+     * @param comment 댓글 정보
+     * @param currentNickname 현재 사용자의 닉네임
+     */
+    private void validateCommentOwner(ArticleComment comment, String currentNickname) {
+        if (!comment.getWriterNickname().equals(currentNickname)) {
+            throw new IllegalArgumentException("댓글 수정 권한이 없습니다.");
+        }
+    }
+
+    /**
+     * 게시글의 조회 수를 업데이트합니다.
+     *
+     * @param member 조회한 회원의 정보
+     * @param article 조회한 게시글 정보
+     */
+    private void viewCountUpdate(Member member, Article article) {
+        for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
+            try {
+                if (isFirstView(member, article)) {
+                    ArticleStatistic articleStatistic = articleStatisticRepository.findByArticle(article)
+                            .orElseGet(() -> new ArticleStatistic(article));
+                    articleStatistic.incrementViews();
+                    articleStatisticRepository.save(articleStatistic);
+                }
+                break;
+            } catch (OptimisticLockException e) {
+                handleRetry(attempt);
+            }
+        }
+    }
+
+    /**
+     * 게시글의 좋아요 상태를 토글합니다.
+     *
+     * @param articleId 게시글의 ID
+     * @param member 좋아요를 토글한 회원의 정보
+     * @return 토글된 좋아요 상태와 좋아요 수
+     */
+    private ArticleLikeDTO processLikeToggle(Long articleId, Member member) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        ArticleStatistic statistic = getOrCreateStatistic(article);
+        boolean isLiked = updateLikes(member, article, statistic);
+
+        articleStatisticRepository.saveAndFlush(statistic);
+        return new ArticleLikeDTO(isLiked, statistic.getLikes());
+    }
+
+    /**
+     * 첫 번째 조회인지 확인합니다.
+     *
+     * @param member 조회한 회원의 정보
+     * @param article 조회한 게시글 정보
+     * @return 첫 번째 조회 여부
+     */
+    private boolean isFirstView(Member member, Article article) {
+        boolean alreadyViewed = articleViewRepository.existsByMemberAndArticle(member, article);
+        if (alreadyViewed) {
+            return false;
+        }
+        ArticleView articleView = new ArticleView(member, article);
+        articleViewRepository.save(articleView);
+        return true;
+    }
+
+    /**
+     * 게시글의 통계 정보를 생성하거나 가져옵니다.
+     *
+     * @param article 게시글 정보
+     * @return 통계 정보
+     */
+    private ArticleStatistic getOrCreateStatistic(Article article) {
+        return articleStatisticRepository.findByArticle(article)
+                .orElseGet(() -> new ArticleStatistic(article));
+    }
+
+    /**
+     * 게시글의 좋아요 상태를 업데이트합니다.
+     *
+     * @param member 좋아요를 토글한 회원의 정보
+     * @param article 게시글 정보
+     * @param statistic 통계 정보
+     * @return 좋아요 상태
+     */
+    private boolean updateLikes(Member member, Article article, ArticleStatistic statistic) {
+        Optional<ArticleLike> existingLike = articleLikeRepository.findByMemberAndArticle(member, article);
+        if (existingLike.isPresent()) {
+            articleLikeRepository.delete(existingLike.get());
+            statistic.decrementLikes();
+            return false;
+        } else {
+            articleLikeRepository.save(new ArticleLike(member, article));
+            statistic.incrementLikes();
+            return true;
+        }
+    }
+
+    /**
+     * 재시도 시도 중 예외를 처리합니다.
+     *
+     * @param attempt 재시도 횟수
+     */
+    private void handleRetry(int attempt) {
+        if (attempt >= MAX_RETRIES - 1) {
+            throw new CustomOptimisticLockException("최대 재시도 횟수 이후 업데이트에 실패했습니다.");
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("재시도 중 스레드가 중단되었습니다.", ie);
+        }
     }
 }

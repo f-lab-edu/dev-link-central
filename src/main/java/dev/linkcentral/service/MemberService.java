@@ -1,5 +1,6 @@
 package dev.linkcentral.service;
 
+import dev.linkcentral.common.exception.DuplicateEmailException;
 import dev.linkcentral.common.exception.DuplicateNicknameException;
 import dev.linkcentral.common.exception.MemberEmailNotFoundException;
 import dev.linkcentral.common.exception.MemberRegistrationException;
@@ -12,7 +13,6 @@ import dev.linkcentral.service.dto.member.MemberEditDTO;
 import dev.linkcentral.service.dto.member.MemberInfoDTO;
 import dev.linkcentral.service.dto.member.MemberMailDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
-import dev.linkcentral.service.helper.MemberServiceHelper;
 import dev.linkcentral.service.mapper.MemberMapper;
 import dev.linkcentral.service.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,6 @@ public class MemberService {
     private final JavaMailSender mailSender;
     private final TokenProvider tokenProvider;
     private final MemberMapper memberMapper;
-    private final MemberServiceHelper memberServiceHelper;
 
     /**
      * 현재 사용자의 정보를 가져옵니다.
@@ -143,7 +142,7 @@ public class MemberService {
     @Transactional
     public Member registerMember(MemberRegistrationDTO memberDTO) {
         String nickname = memberDTO.getNickname();
-        memberServiceHelper.validateForDuplicates(memberDTO, nickname);
+        validateForDuplicates(memberDTO, nickname);
 
         try {
             List<String> roles = new ArrayList<>();
@@ -195,7 +194,7 @@ public class MemberService {
      */
     @Transactional
     public MemberMailDTO createMailForPasswordReset(String userEmail) {
-        String generatedPassword = memberServiceHelper.createTemporaryPassword();
+        String generatedPassword = createTemporaryPassword();
 
         MemberMailDTO memberMailDTO = MemberMailDTO.builder()
                 .address(userEmail)
@@ -217,7 +216,7 @@ public class MemberService {
     @Transactional
     public void resetPassword(String generatedPassword, String userEmail) {
         String passwordHash = passwordEncoder.encode(generatedPassword); // 비밀번호 해싱
-        memberServiceHelper.updateMemberPassword(userEmail, passwordHash);
+        updateMemberPassword(userEmail, passwordHash);
     }
 
     /**
@@ -248,7 +247,7 @@ public class MemberService {
      */
     @Transactional
     public void editMember(MemberEditDTO memberEditDTO) {
-        memberServiceHelper.validateMemberEditDTO(memberEditDTO);
+        validateMemberEditDTO(memberEditDTO);
 
         Member memberEntity = memberRepository.findById(memberEditDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("회원 찾기 실패"));
@@ -302,5 +301,68 @@ public class MemberService {
     private Member findMemberByEmail(String email) {
         return memberRepository.findByEmailAndDeletedFalse(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 회원을 찾을 수 없습니다."));
+    }
+
+    /**
+     * 회원 등록 시 중복된 닉네임과 이메일을 확인합니다.
+     *
+     * @param memberDTO 회원 등록 DTO
+     * @param nickname  닉네임
+     */
+    private void validateForDuplicates(MemberRegistrationDTO memberDTO, String nickname) {
+        if (memberRepository.existsByNicknameAndDeletedFalse(nickname)) {
+            throw new DuplicateNicknameException("닉네임이 이미 사용 중입니다.");
+        }
+
+        if (memberRepository.countByEmailIgnoringDeleted(memberDTO.getEmail()) > 0) {
+            throw new DuplicateEmailException("중복된 이메일 주소입니다.");
+        }
+    }
+
+    /**
+     * 회원 비밀번호를 업데이트합니다.
+     *
+     * @param userEmail    사용자 이메일
+     * @param passwordHash 해싱된 비밀번호
+     */
+    private void updateMemberPassword(String userEmail, String passwordHash) {
+        Member member = memberRepository.findByEmailAndDeletedFalse(userEmail)
+                .orElseThrow(() -> new EntityNotFoundException("유저의 이메일을 찾을 수 없습니다."));
+        memberRepository.updatePasswordById(member.getId(), passwordHash);
+    }
+
+    /**
+     * 회원 수정 DTO의 유효성을 검사합니다.
+     *
+     * @param memberEditDTO 회원 수정 DTO
+     */
+    private void validateMemberEditDTO(MemberEditDTO memberEditDTO) {
+        if (memberEditDTO.getId() == null) {
+            throw new IllegalArgumentException("회원 ID가 제공되지 않았습니다.");
+        }
+        if (memberEditDTO.getName() == null || memberEditDTO.getName().isEmpty()) {
+            throw new IllegalArgumentException("회원 이름이 유효하지 않습니다.");
+        }
+        if (memberEditDTO.getNickname() == null || memberEditDTO.getNickname().isEmpty()) {
+            throw new IllegalArgumentException("회원 닉네임이 유효하지 않습니다.");
+        }
+    }
+
+    /**
+     * 임시 비밀번호를 생성합니다.
+     *
+     * @return String 임시 비밀번호
+     */
+    private String createTemporaryPassword() {
+        char[] charSet = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+        StringBuilder str = new StringBuilder();
+
+        int idx;
+        for (int i = 0; i < 10; i++) {
+            idx = (int) (charSet.length * Math.random());
+            str.append(charSet[idx]);
+        }
+        return str.toString();
     }
 }
