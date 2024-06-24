@@ -11,12 +11,12 @@ import org.springframework.data.domain.Page;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupFeedListResponse {
+public class GroupFeedListedResponse {
 
     private Page<GroupFeedWithProfileDTO> feeds;
 
-    public static GroupFeedListResponse toGroupFeedListResponse(Page<GroupFeedWithProfileDTO> groupFeeds) {
-        return GroupFeedListResponse.builder()
+    public static GroupFeedListedResponse toGroupFeedListResponse(Page<GroupFeedWithProfileDTO> groupFeeds) {
+        return GroupFeedListedResponse.builder()
                 .feeds(groupFeeds)
                 .build();
     }

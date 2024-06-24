@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleLikesCountResponse {
+public class ArticleLikesCountedResponse {
 
     private int likesCount;
 
-    public static ArticleLikesCountResponse toArticleLikesCountResponse(int likesCount) {
-        return new ArticleLikesCountResponse(likesCount);
+    public static ArticleLikesCountedResponse toArticleLikesCountResponse(int likesCount) {
+        return new ArticleLikesCountedResponse(likesCount);
     }
 }

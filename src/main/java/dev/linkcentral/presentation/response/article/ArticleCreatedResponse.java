@@ -8,15 +8,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticleCreateResponse {
+public class ArticleCreatedResponse {
 
     private boolean success;
     private String message;
     private Long articleId;
     private String title;
 
-    public static ArticleCreateResponse toArticleCreateResponse(ArticleCreateDTO articleDTO) {
-        return new ArticleCreateResponse(
+    public static ArticleCreatedResponse toArticleCreateResponse(ArticleCreateDTO articleDTO) {
+        return new ArticleCreatedResponse(
                 true,
                 "글이 성공적으로 작성되었습니다.",
                 articleDTO.getWriterId(),

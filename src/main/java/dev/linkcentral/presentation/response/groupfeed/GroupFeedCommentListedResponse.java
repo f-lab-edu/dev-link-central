@@ -12,12 +12,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupFeedCommentResponse {
+public class GroupFeedCommentListedResponse {
 
     private List<GroupFeedCommentDTO> comments;
 
-    public static GroupFeedCommentResponse toGroupFeedCommentResponse(List<GroupFeedCommentDTO> comments) {
-        return GroupFeedCommentResponse.builder()
+    public static GroupFeedCommentListedResponse toGroupFeedCommentResponse(List<GroupFeedCommentDTO> comments) {
+        return GroupFeedCommentListedResponse.builder()
                 .comments(comments)
                 .build();
     }

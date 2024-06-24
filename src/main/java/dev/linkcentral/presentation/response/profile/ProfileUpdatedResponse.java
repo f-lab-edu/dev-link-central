@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProfileUpdateResponse {
+public class ProfileUpdatedResponse {
 
     private String message;
     private Long memberId;
 
-    public static ProfileUpdateResponse toProfileUpdateResponse(Long memberId) {
-        return ProfileUpdateResponse.builder()
+    public static ProfileUpdatedResponse toProfileUpdateResponse(Long memberId) {
+        return ProfileUpdatedResponse.builder()
                 .message("프로필이 성공적으로 업데이트되었습니다.")
                 .memberId(memberId)
                 .build();

@@ -51,9 +51,9 @@ public class StudyGroupController {
      * @return ResponseEntity<StudyGroupDeletionResponse> 스터디 그룹 삭제 응답
      */
     @DeleteMapping("/{studyGroupId}/leave")
-    public ResponseEntity<StudyGroupDeletionResponse> deleteStudyGroup(@PathVariable Long studyGroupId) {
+    public ResponseEntity<StudyGroupDeletedResponse> deleteStudyGroup(@PathVariable Long studyGroupId) {
         StudyGroupDeleteDTO studyGroupDeleteDTO = studyGroupFacade.removeStudyGroupAsLeader(studyGroupId);
-        StudyGroupDeletionResponse response = StudyGroupDeletionResponse.toStudyGroupDeletionResponse(studyGroupDeleteDTO);
+        StudyGroupDeletedResponse response = StudyGroupDeletedResponse.toStudyGroupDeletionResponse(studyGroupDeleteDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -64,12 +64,12 @@ public class StudyGroupController {
      * @return ResponseEntity<StudyGroupCreateResponse> 스터디 그룹 생성 응답
      */
     @PostMapping
-    public ResponseEntity<StudyGroupCreateResponse> createStudyGroup(
+    public ResponseEntity<StudyGroupCreatedResponse> createStudyGroup(
             @Validated @RequestBody StudyGroupCreateRequest studyGroupCreateRequest) {
 
         StudyGroupCreateDTO studyGroupCreateDTO = StudyGroupCreateRequest.toStudyGroupCreateDTO(studyGroupCreateRequest);
         StudyGroupRegistrationDTO registrationDTO = studyGroupFacade.createStudyGroup(studyGroupCreateDTO);
-        StudyGroupCreateResponse response = StudyGroupCreateResponse.toStudyGroupCreateResponse(registrationDTO);
+        StudyGroupCreatedResponse response = StudyGroupCreatedResponse.toStudyGroupCreateResponse(registrationDTO);
         return ResponseEntity.ok(response);
     }
 

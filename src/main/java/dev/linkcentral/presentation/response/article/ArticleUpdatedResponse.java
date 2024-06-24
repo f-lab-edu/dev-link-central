@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleUpdateResponse {
+public class ArticleUpdatedResponse {
 
     private int status;
     private ArticleUpdatedDTO articleUpdatedDTO;
 
-    public static ArticleUpdateResponse toArticleUpdateResponse(int status, ArticleUpdatedDTO dto) {
-        return ArticleUpdateResponse.builder()
+    public static ArticleUpdatedResponse toArticleUpdateResponse(int status, ArticleUpdatedDTO dto) {
+        return ArticleUpdatedResponse.builder()
                 .status(status)
                 .articleUpdatedDTO(dto)
                 .build();

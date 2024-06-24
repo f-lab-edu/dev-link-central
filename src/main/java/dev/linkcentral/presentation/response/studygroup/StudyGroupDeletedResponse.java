@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudyGroupDeletionResponse {
+public class StudyGroupDeletedResponse {
 
     private boolean success;
     private String message;
 
-    public static StudyGroupDeletionResponse toStudyGroupDeletionResponse(StudyGroupDeleteDTO dto) {
-        return new StudyGroupDeletionResponse(
+    public static StudyGroupDeletedResponse toStudyGroupDeletionResponse(StudyGroupDeleteDTO dto) {
+        return new StudyGroupDeletedResponse(
                 dto.isSuccess(),
                 dto.getMessage());
     }

@@ -8,13 +8,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleLikeResponse {
+public class ArticleLikedResponse {
 
     private boolean isLiked;
     private int totalLikes;
 
-    public static ArticleLikeResponse toArticleLikeResponse(ArticleLikeDTO dto) {
-        return new ArticleLikeResponse(
+    public static ArticleLikedResponse toArticleLikeResponse(ArticleLikeDTO dto) {
+        return new ArticleLikedResponse(
                 dto.isLiked(),
                 dto.getTotalLikes()
         );

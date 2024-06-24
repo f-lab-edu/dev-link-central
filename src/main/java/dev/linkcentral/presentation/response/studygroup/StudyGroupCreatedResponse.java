@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudyGroupCreateResponse {
+public class StudyGroupCreatedResponse {
 
     private Long id;
     private String groupName;
     private String studyTopic;
 
-    public static StudyGroupCreateResponse toStudyGroupCreateResponse(StudyGroupRegistrationDTO registrationDTO) {
-        return new StudyGroupCreateResponse(
+    public static StudyGroupCreatedResponse toStudyGroupCreateResponse(StudyGroupRegistrationDTO registrationDTO) {
+        return new StudyGroupCreatedResponse(
                 registrationDTO.getId(),
                 registrationDTO.getGroupName(),
                 registrationDTO.getStudyTopic());

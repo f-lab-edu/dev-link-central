@@ -13,14 +13,14 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCommentPageResponse {
+public class ArticleCommentPagedResponse {
 
     private List<ArticleCommentViewDTO> comments;
     private int currentPage;
     private int totalPages;
 
-    public static ArticleCommentPageResponse toArticleCommentPageResponse(Page<ArticleCommentViewDTO> commentsPage) {
-        return new ArticleCommentPageResponse(
+    public static ArticleCommentPagedResponse toArticleCommentPageResponse(Page<ArticleCommentViewDTO> commentsPage) {
+        return new ArticleCommentPagedResponse(
                 commentsPage.getContent(),
                 commentsPage.getNumber(),
                 commentsPage.getTotalPages()
