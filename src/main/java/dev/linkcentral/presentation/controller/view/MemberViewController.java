@@ -63,16 +63,10 @@ public class MemberViewController {
     /**
      * 회원 정보 수정 폼을 보여줍니다.
      *
-     * @param model 뷰에 전달할 데이터 모델
-     * @return "/members/edit" 템플릿 이름 또는 "redirect:/login" 리다이렉트 URL
+     * @return "/members/edit" 템플릿 이름
      */
     @GetMapping("/edit-form")
-    public String showMemberEditForm(Model model) {
-        MemberEditFormDTO memberDTO = memberFacade.memberEditForm();
-        if (memberDTO.getMember() == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("member", memberDTO.getMember());
+    public String showMemberEditForm() {
         return "/members/edit";
     }
 

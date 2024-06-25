@@ -24,7 +24,7 @@ public class MemberEditRequest {
 
     @ApiModelProperty(value = "사용자의 이름", required = true)
     @NotBlank(message = "사용자 이름은 필수입니다.")
-    @Size(min = 2, max = 100, message = "사용자 이름은 2자 이상 100자 이하이어야 합니다.")
+    @Size(min = 1, max = 100, message = "사용자 이름은 2자 이상 100자 이하이어야 합니다.")
     private String name;
 
     @ApiModelProperty(value = "사용자의 비밀번호", required = true)
@@ -35,7 +35,7 @@ public class MemberEditRequest {
 
     @ApiModelProperty(value = "사용자의 별명", required = true)
     @NotBlank(message = "사용자은 필수입니다.")
-    @Size(min = 2, max = 50, message = "별명은 2자 이상 50자 이하이어야 합니다.")
+    @Size(min = 1, max = 50, message = "별명은 2자 이상 50자 이하이어야 합니다.")
     private String nickname;
 
     public static MemberEditDTO toMemberEditCommand(MemberEditRequest request) {

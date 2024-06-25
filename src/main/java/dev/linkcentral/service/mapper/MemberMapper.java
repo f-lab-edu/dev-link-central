@@ -28,6 +28,7 @@ public class MemberMapper {
     public MemberInfoDTO toMemberInfoDTO(Member member) {
         return MemberInfoDTO.builder()
                 .userId(member.getId())
+                .name(member.getName())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .build();

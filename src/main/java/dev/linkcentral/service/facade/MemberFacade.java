@@ -56,12 +56,11 @@ public class MemberFacade {
 
     public boolean checkPassword(String password) {
         Member member = memberService.getCurrentMember();
-        return memberService.validatePassword(member.getNickname(),password);
+        return memberService.validatePassword(member.getNickname(), password);
     }
 
     public MemberDetailsDTO findByEmailAndDeletedFalse(String email) {
         Member member = memberService.findByEmailAndDeletedFalse(email);
         return memberMapper.toMemberDetailsDTO(member);
     }
-
 }
