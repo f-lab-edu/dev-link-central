@@ -18,12 +18,14 @@ public class ArticleCommentPagedResponse {
     private List<ArticleCommentViewDTO> comments;
     private int currentPage;
     private int totalPages;
+    private boolean hasMoreComments;
 
-    public static ArticleCommentPagedResponse toArticleCommentPageResponse(Page<ArticleCommentViewDTO> commentsPage) {
+    public static ArticleCommentPagedResponse toArticleCommentPageResponse(Page<ArticleCommentViewDTO> commentsPage, boolean hasMoreComments) {
         return new ArticleCommentPagedResponse(
                 commentsPage.getContent(),
                 commentsPage.getNumber(),
-                commentsPage.getTotalPages()
+                commentsPage.getTotalPages(),
+                hasMoreComments
         );
     }
 }

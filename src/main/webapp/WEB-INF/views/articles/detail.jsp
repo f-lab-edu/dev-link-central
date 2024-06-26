@@ -456,57 +456,63 @@
         }
 
         // 댓글 목록 로드 AJAX 함수
-        var currentPage = 0; // 현재 페이지 번호
-        var pageSize = 3; // 한 페이지에 보여줄 댓글 수
-        var isFetchingComments = false; // AJAX 요청 중복 방지
-        var hasMoreComments = true; // 더 불러올 댓글이 있는지
+        $(document).ready(function() {
+            var currentPage = 0; // 현재 페이지 번호
+            var pageSize = 3; // 한 페이지에 보여줄 댓글 수
+            var isFetchingComments = false; // AJAX 요청 중복 방지
+            var hasMoreComments = true; // 더 불러올 댓글이 있는지
 
-        function loadComments() {
-            if(isFetchingComments || !hasMoreComments) return; // 중복 요청 및 더 이상 불러올 댓글이 없을 때 요청 방지
+            function loadComments() {
+                if (isFetchingComments || !hasMoreComments) return; // 중복 요청 및 더 이상 불러올 댓글이 없을 때 요청 방지
 
-            isFetchingComments = true;
-            $.ajax({
-                url: "/api/v1/article/" + articleId + "/comments",
-                type: "GET",
-                data: {
-                    offset: currentPage * pageSize,
-                    limit: pageSize
-                },
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                success: function(response) {
-                    if(response.comments.length > 0){
-                        var commentsHtml = response.comments.map(function(comment) {
-                            return "<tr id='comment-row-" + comment.id + "'>" +
-                                "<td id='comment-content-" + comment.id + "'><span class='bold'>" + comment.nickname + "</span>: " + comment.contents + "</td>" +
-                                "<td class='right-align'>" + comment.createdAt +
-                                " <button onclick='editComment(" + comment.id + ")'>수정</button>" +
-                                " <button onclick='deleteComment(" + comment.id + ")'>삭제</button></td>" +
-                                "</tr>";
-                        }).join('');
-                        $("#comment-list table tbody").append(commentsHtml);
-                        currentPage++; // 페이지 번호 증가
-                        $("#moreCommentsIndicator").show();
-                    } else {
-                        hasMoreComments = false; // 더 불러올 댓글이 없음
-                        $("#moreCommentsIndicator").hide();
+                isFetchingComments = true;
+                $.ajax({
+                    url: "/api/v1/article/" + articleId + "/comments",
+                    type: "GET",
+                    data: {
+                        offset: currentPage * pageSize,
+                        limit: pageSize
+                    },
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
+                    success: function(response) {
+                        if (response.comments.length > 0) {
+                            var commentsHtml = response.comments.map(function(comment) {
+                                return "<tr id='comment-row-" + comment.id + "'>" +
+                                    "<td id='comment-content-" + comment.id + "'><span class='bold'>" + comment.nickname + "</span>: " + comment.contents + "</td>" +
+                                    "<td class='right-align'>" + comment.createdAt +
+                                    " <button onclick='editComment(" + comment.id + ")'>수정</button>" +
+                                    " <button onclick='deleteComment(" + comment.id + ")'>삭제</button></td>" +
+                                    "</tr>";
+                            }).join('');
+                            $("#comment-list table tbody").append(commentsHtml);
+                            currentPage++; // 페이지 번호 증가
+
+                            // 서버로부터 받은 hasMoreComments 값을 기반으로 메시지 표시 여부 결정
+                            if (response.hasMoreComments) {
+                                $("#moreCommentsIndicator").show();
+                            } else {
+                                $("#moreCommentsIndicator").hide();
+                            }
+                        } else {
+                            hasMoreComments = false; // 더 불러올 댓글이 없음
+                            $("#moreCommentsIndicator").hide();
+                        }
+                        isFetchingComments = false;
+                    },
+                    error: function(xhr, status, error) {
+                        alert('댓글 목록 로딩 실패: ' + xhr.responseText);
+                        isFetchingComments = false;
                     }
-                    isFetchingComments = false;
-                },
-                error: function(xhr, status, error) {
-                    alert('댓글 목록 로딩 실패: ' + xhr.responseText);
-                    isFetchingComments = false;
+                });
+            }
+
+            // 스크롤 이벤트 리스너를 수정하여 스크롤이 페이지 하단에 도달할 때마다 새로운 댓글을 로드
+            $(window).scroll(function() {
+                if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                    loadComments(); // 댓글 로드 함수 호출
                 }
             });
-        }
 
-        // 스크롤 이벤트 리스너를 수정하여 스크롤이 페이지 하단에 도달할 때마다 새로운 댓글을 로드
-        $(window).scroll(function() {
-            if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
-                loadComments(); // 댓글 로드 함수 호출
-            }
-        });
-
-        $(document).ready(function() {
             loadComments(); // 초기 댓글 로드
         });
     </script>

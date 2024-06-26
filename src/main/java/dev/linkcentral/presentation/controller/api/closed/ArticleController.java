@@ -162,9 +162,9 @@ public class ArticleController {
     @GetMapping("/{id}/comments")
     public ResponseEntity<ArticleCommentPagedResponse> showCommentsForArticle(@PathVariable Long id,
                                                                               @RequestParam int offset, @RequestParam int limit) {
-
         Page<ArticleCommentViewDTO> commentsPage = articleFacade.getCommentsForArticle(id, offset, limit);
-        ArticleCommentPagedResponse response = ArticleCommentPagedResponse.toArticleCommentPageResponse(commentsPage);
+        boolean hasMoreComments = commentsPage.getTotalElements() > (offset + commentsPage.getNumberOfElements());
+        ArticleCommentPagedResponse response = ArticleCommentPagedResponse.toArticleCommentPageResponse(commentsPage, hasMoreComments);
         return ResponseEntity.ok(response);
     }
 }
