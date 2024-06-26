@@ -9,7 +9,6 @@ import dev.linkcentral.database.repository.article.ArticleRepository;
 import dev.linkcentral.database.repository.article.ArticleStatisticRepository;
 import dev.linkcentral.database.repository.member.MemberRepository;
 import dev.linkcentral.presentation.request.article.ArticleCreateRequest;
-import dev.linkcentral.presentation.request.article.ArticleUpdateRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -165,11 +164,11 @@ public class ArticleServiceIntegrationTest {
                 .build();
         originalArticle = articleRepository.save(originalArticle);
 
-        ArticleUpdateRequest updateDTO = new ArticleUpdateRequest(
-                originalArticle.getId(),
-                "작성자",
-                "수정된 제목",
-                "수정된 내용");
+//        ArticleUpdateRequest updateDTO = new ArticleUpdateRequest(
+//                originalArticle.getId(),
+//                "작성자",
+//                "수정된 제목",
+//                "수정된 내용");
 
         // when
 //        articleService.updateArticle(updateDTO);

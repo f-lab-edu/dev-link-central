@@ -165,11 +165,11 @@ public class ArticleServiceTest {
     @Test
     void update_article() {
         // given
-        ArticleUpdateRequest updateDTO = new ArticleUpdateRequest(
-                1L,
-                "작성자",
-                "수정된 제목",
-                "수정된 내용");
+//        ArticleUpdateRequest updateDTO = new ArticleUpdateRequest(
+//                1L,
+//                "작성자",
+//                "수정된 제목",
+//                "수정된 내용");
 
         Article originalArticle = Article.builder()
                 .id(1L)

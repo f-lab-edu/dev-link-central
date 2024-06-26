@@ -66,5 +66,4 @@ public class ArticleCommentMapper {
                 comment.getCreatedAt()
         );
     }
-
 }

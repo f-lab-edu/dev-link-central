@@ -33,6 +33,7 @@ public class ArticleFacade {
     public ArticleUpdatedDTO updateArticle(ArticleUpdateRequestDTO updateRequestDTO) {
         Member member = memberService.getCurrentMember();
         ArticleUpdateDTO articleDTO = articleMapper.toArticleUpdateDTO(updateRequestDTO);
+        articleDTO.updateWriterId(member.getId());
         return articleService.updateArticle(articleDTO);
     }
 

@@ -45,6 +45,7 @@ public class ArticleMapper {
     public ArticleUpdateDTO toArticleUpdateDTO(ArticleUpdateRequestDTO updateRequestDTO) {
         return new ArticleUpdateDTO(
                 updateRequestDTO.getId(),
+                updateRequestDTO.getWriterId(),
                 updateRequestDTO.getWriter(),
                 updateRequestDTO.getTitle(),
                 updateRequestDTO.getContent()
@@ -54,6 +55,7 @@ public class ArticleMapper {
     public Article toUpdateEntity(ArticleUpdateDTO articleDTO) {
         return Article.builder()
                 .id(articleDTO.getId())
+                .member(Member.builder().id(articleDTO.getWriterId()).build())
                 .title(articleDTO.getTitle())
                 .content(articleDTO.getContent())
                 .writer(articleDTO.getWriter())

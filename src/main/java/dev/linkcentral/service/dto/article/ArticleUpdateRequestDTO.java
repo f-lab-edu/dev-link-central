@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 public class ArticleUpdateRequestDTO {
 
     private Long id;
+    private Long writerId;
     private String writer;
     private String title;
     private String content;
-
 }
