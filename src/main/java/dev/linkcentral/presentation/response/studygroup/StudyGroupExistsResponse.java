@@ -12,9 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StudyGroupExistsResponse {
 
-    private StudyGroupExistsDTO studyGroupExistsDTO;
+    private boolean exists;
+    private Long groupId;
 
     public static StudyGroupExistsResponse toStudyGroupExistsResponse(StudyGroupExistsDTO studyGroupExistsDTO) {
-        return new StudyGroupExistsResponse(studyGroupExistsDTO);
+        return StudyGroupExistsResponse.builder()
+                .exists(studyGroupExistsDTO.isExists())
+                .groupId(studyGroupExistsDTO.getGroupId())
+                .build();
     }
 }

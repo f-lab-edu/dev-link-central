@@ -221,8 +221,14 @@ public class StudyGroupService {
      */
     @Transactional(readOnly = true)
     public StudyGroupExistsDTO userHasStudyGroup(Long userId) {
-        boolean existsByStudyLeaderId = studyGroupRepository.existsByStudyLeaderId(userId);
-        return studyGroupMapper.toStudyGroupExistsDTO(existsByStudyLeaderId);
+        StudyGroup studyGroup = studyGroupRepository.findByStudyLeaderId(userId).orElse(null);
+        boolean exists = studyGroup != null;
+        Long groupId = null;
+
+        if (exists) {
+            groupId = studyGroup.getId();
+        }
+        return studyGroupMapper.toStudyGroupExistsDTO(exists, groupId);
     }
 
     /**

@@ -52,7 +52,7 @@ public class StudyGroupMapper {
         return new StudyGroupMemberDTO(currentMember);
     }
 
-    public static StudyGroupExistsDTO toStudyGroupExistsDTO(boolean exists) {
-        return new StudyGroupExistsDTO(exists);
+    public StudyGroupExistsDTO toStudyGroupExistsDTO(boolean exists, Long groupId) {
+        return new StudyGroupExistsDTO(exists, groupId);
     }
 }

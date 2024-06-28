@@ -542,13 +542,13 @@
                             console.log("Group existence check response:", response); // 응답 확인 로그
 
                             // 응답 구조와 존재 여부 확인
-                            if (response && response.studyGroupExistsDTO) {
-                                console.log("exists property:", response.studyGroupExistsDTO.exists);
-                                if (response.studyGroupExistsDTO.exists) {
+                            if (response && response.exists) {
+                                console.log("exists property:", response.exists);
+                                if (response.exists) {
                                     // 그룹이 존재하는 경우, 가입 요청 버튼을 활성화
                                     $("#requestJoinStudyGroup").show();
-                                    $("#requestJoinStudyGroup").data("studyGroupId", articleId); // 그룹 ID 설정
-                                    console.log("스터디 그룹이 존재함, 버튼 활성화");
+                                    $("#requestJoinStudyGroup").data("studyGroupId", response.groupId); // 그룹 ID 설정
+                                    console.log("스터디 그룹이 존재함, 버튼 활성화, 스터디 그룹 ID:", response.groupId);
                                 } else {
                                     // 그룹이 존재하지 않는 경우, 가입 요청 버튼을 숨기고 메시지를 표시
                                     console.log("스터디 그룹이 존재하지 않음, 버튼 숨김");
