@@ -29,6 +29,7 @@
         .feed-container {
             max-width: 700px;
             margin: 0 auto;
+            position: relative;
         }
 
         .feed-item {
@@ -94,12 +95,17 @@
             margin-top: 20px;
         }
 
+        .group-feed-create-button:hover {
+            background-color: #0056b3;
+        }
+
         .title {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: -20px;
             font-size: 27px;
             font-weight: bold;
             color: #007bff;
+            position: relative;
         }
 
         .feed-content {
@@ -228,6 +234,31 @@
             background-color: #0056b3;
         }
 
+        .button-container {
+            display: flex;
+            justify-content: end;
+            gap: 10px;
+            position: relative;
+            top: -40px;
+            left: -415px;
+        }
+
+        .group-feed-create-button,
+        .menu-button {
+            width: auto;
+            padding: 10px 16px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .group-feed-create-button:hover,
+        .menu-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 
     <script>
@@ -467,10 +498,41 @@
         $(document).ready(function() {
             loadFeeds();
         });
+
+        function groupFeedSave() {
+            $.ajax({
+                type: "GET",
+                url: "/api/v1/group-feed/auth/member-info",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function (response) {
+                    var memberId = response.memberId;
+                    if (!memberId) {
+                        alert('회원 ID가 존재하지 않습니다.');
+                        return;
+                    }
+                    window.location.href = "/api/v1/view/group-feed/create?memberId=" + memberId;
+                },
+                error: function (xhr) {
+                    alert("회원 정보를 가져올 수 없습니다: " + xhr.responseText);
+                }
+            });
+        }
+
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
     </script>
 </head>
 <body>
-<div class="title">그룹 피드</div>
+<div class="title">
+    그룹 피드
+    <div class="button-container">
+        <button class="menu-button" onclick="home()">나가기</button>
+        <button class="group-feed-create-button" onclick="groupFeedSave()">글작성</button>
+    </div>
+</div>
 <div class="feed-container" id="feedContainer">
     <c:forEach items="${feeds}" var="feed">
         <div class="feed-item">

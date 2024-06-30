@@ -37,12 +37,8 @@
         .feed-header {
             text-align: center;
             color: #007bff;
-            margin-bottom: 20px;
-            font-size: 1.5em;
+            font-size: 1.0em;
             font-weight: bold;
-        }
-
-        .feed-title-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -52,7 +48,6 @@
             font-size: 1.4em;
             font-weight: bold;
             margin-bottom: 20px;
-            flex-grow: 1;
         }
 
         .feed-content {
@@ -60,6 +55,9 @@
             margin-bottom: 20px;
             word-wrap: break-word;
             white-space: pre-wrap;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
         }
 
         .feed-image {
@@ -72,14 +70,20 @@
             margin-bottom: 20px;
         }
 
+        .feed-content strong {
+            display: block;
+            margin-bottom: -8px;
+        }
+
         .action-buttons {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
         .btn {
-            padding: 10px 18px;
-            font-size: 1em;
+            padding: 8px 16px;
+            font-size: 0.9em;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -102,6 +106,24 @@
         .btn-danger:hover {
             background-color: #0056b3;
         }
+
+        .btn-danger:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #0056b3;
+        }
     </style>
 
     <script>
@@ -120,8 +142,8 @@
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
                 success: function(feed) {
-                    $('.feed-title').text(feed.title);
-                    $('.feed-content').text(feed.content);
+                    $('.feed-title').html('<strong>제목:</strong> ' + feed.title);
+                    $('.feed-content').html('<strong>상세 내용:</strong><br><div class="content-text">' + feed.content + '</div>');
                     if (feed.imageUrl) {
                         $('.feed-image').attr('src', feed.imageUrl).show();
                     } else {
@@ -156,19 +178,23 @@
             const feedId = $('#feedDetailContainer').data('feed-id');
             window.location.href = '/api/v1/view/group-feed/update/' + feedId;
         }
-    </script>
 
+        function home() {
+            window.history.back();
+        }
+    </script>
 </head>
 <body>
 <div class="feed-detail-container" id="feedDetailContainer" data-feed-id="${feedId}">
-    <h1 class="feed-header">피드 상세보기</h1>
-    <div class="feed-title-container">
-        <h2 class="feed-title"></h2>
+    <div class="feed-header">
+        <h2>피드 상세보기</h2>
         <div class="action-buttons">
+            <button class="btn btn-secondary" onclick=home()>이전</button>
             <button class="btn btn-primary" onclick="editFeed()">수정</button>
             <button class="btn btn-danger" onclick="deleteFeed()">삭제</button>
         </div>
     </div>
+    <div class="feed-title"></div>
     <img src="" alt="Feed Image" class="feed-image">
     <p class="feed-content"></p>
 </div>

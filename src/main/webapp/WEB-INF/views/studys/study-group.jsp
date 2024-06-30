@@ -251,7 +251,7 @@
             background-color: #42A5F5;
             border: none;
             color: white;
-            padding: 10px 20px;
+            padding: 10px 16px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
@@ -562,15 +562,19 @@
                 });
             }
         }
-    </script>
 
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
+    </script>
 </head>
 <body>
 <div class="container">
     <header>
         <h2>스터디 그룹</h2>
     </header>
-    <div id="createStudyGroupButton">
+    <div id="createStudyGroupButton" class="button-container">
+        <button class="btn-primary" onclick="home()">이전</button>
         <button class="btn-primary" onclick="window.location.href='/api/v1/view/study-group/create'">그룹 생성</button>
     </div>
 
@@ -652,6 +656,5 @@
     </div>
     <p id="noGroupsMessage" class="text-light-red" style="display:none;">가입된 스터디 그룹이 없습니다.</p>
 </div>
-
 </body>
 </html>

@@ -168,8 +168,8 @@
                     <div class="text-center small mt-2" id="checkMsg" style="color: red"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" onclick="cancelButtonClicked()">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="checkEmail">OK</button>
+                    <button type="button" class="btn btn-danger" onclick="cancelButtonClicked()">나가기</button>
+                    <button type="button" class="btn btn-primary" id="checkEmail">보내기</button>
                 </div>
             </div>
         </div>

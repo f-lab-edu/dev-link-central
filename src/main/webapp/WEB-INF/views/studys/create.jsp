@@ -27,16 +27,19 @@
             align-items: center;
             height: 100vh;
         }
+
         header {
             text-align: center;
             margin-bottom: 20px;
         }
+
         h2 {
             color: #4A90E2;
             font-size: 28px;
             font-weight: bold;
             margin: 20px 0;
         }
+
         .container {
             background-color: white;
             padding: 20px;
@@ -45,16 +48,19 @@
             width: 100%;
             max-width: 500px;
         }
+
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
             color: #333;
         }
+
         textarea {
-            height: 150px;
+            height: 260px;
             resize: vertical;
         }
+
         input[type="text"], textarea {
             width: 100%;
             padding: 10px;
@@ -64,6 +70,7 @@
             box-sizing: border-box;
             font-size: 14px;
         }
+
         input[type="submit"] {
             width: 100%;
             background-color: #4A90E2;
@@ -76,7 +83,38 @@
             font-weight: bold;
             transition: background-color 0.3s ease;
         }
+
         input[type="submit"]:hover {
+            background-color: #357ABD;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .button-container input[type="submit"],
+        .button-container button {
+            flex: 0 0 auto;
+            width: auto;
+            padding: 9px 20px;
+            font-size: 17px;
+        }
+
+        button {
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
             background-color: #357ABD;
         }
     </style>
@@ -130,6 +168,10 @@
                 }
             });
         }
+
+        function home() {
+            window.history.back();
+        }
     </script>
 </head>
 <body>
@@ -144,7 +186,10 @@
         <label for="studyTopic">스터디 주제:</label>
         <textarea id="studyTopic" name="studyTopic" required></textarea>
 
-        <input type="submit" value="그룹 생성">
+        <div class="button-container">
+            <button type="button" onclick="home()">이전으로</button>
+            <input type="submit" value="생성하기">
+        </div>
     </form>
 </div>
 </body>

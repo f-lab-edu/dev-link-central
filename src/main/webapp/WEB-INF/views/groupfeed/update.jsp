@@ -104,8 +104,8 @@
         }
 
         button {
-            width: 100%;
-            padding: 10px;
+            width: 16%;
+            padding: 12px;
             border: none;
             border-radius: 4px;
             background-color: #007bff;
@@ -116,6 +116,29 @@
 
         button:hover {
             background-color: #0056b3;
+        }
+
+        .menu-button {
+            width: 16%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            margin-top: 10px;
+            margin-left: 5px;
+        }
+
+        .menu-button:hover {
+            background-color: #0056b3;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
         }
     </style>
 
@@ -182,6 +205,10 @@
                 }
             });
         }
+
+        function home() {
+            window.history.back();
+        }
     </script>
 </head>
 <body>
@@ -205,7 +232,10 @@
                 <span id="fileStatus" class="file-status"></span>
             </div>
         </div>
-        <button type="button" onclick="submitUpdate()">수정하기</button>
+        <div class="form-actions">
+            <button type="button" class="menu-button" onclick="home()">이전으로</button>
+            <button type="button" onclick="submitUpdate()">수정하기</button>
+        </div>
     </form>
 </div>
 </body>

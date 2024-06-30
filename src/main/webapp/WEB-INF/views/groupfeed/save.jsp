@@ -69,9 +69,34 @@
 
         .form-actions {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
             gap: 10px;
+        }
+
+        .file-input-button, .menu-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .menu-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: auto;
+        }
+
+        .file-input-button:hover, .menu-button:hover {
+            background-color: #0056b3;
         }
 
         input[type="submit"], .file-input-button {
@@ -173,6 +198,10 @@
                 });
             });
         });
+
+        function home() {
+            window.history.back();
+        }
     </script>
 </head>
 
@@ -199,7 +228,8 @@
         <img id="imagePreview" src="#" alt="Image Preview" style="display: none;" />
     </div>
     <div class="form-actions">
-        <button type="button" class="file-input-button">이미지 등록</button>
+        <button type="button" class="file-input-button">이미지 추가</button>
+        <button type="button" class="menu-button" onclick="home()">이전으로</button>
         <input type="submit" value="등록하기" />
     </div>
 </form>

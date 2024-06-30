@@ -26,17 +26,22 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            flex-direction: column;
         }
 
         .profile-container {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             background-color: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 800px;
+        }
+
+        .profile-header h3 {
+            margin: -60px;
         }
 
         .left-section, .right-section {
@@ -205,9 +210,30 @@
             display: flex;
             gap: 5px;
         }
+
+        .menu-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 16px;
+            position: absolute;
+            right: 390px;
+            top: 31px;
+        }
+
+        .menu-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 
     <script type="text/javascript">
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
+
         var memberId;
         var userId;
 
@@ -720,6 +746,10 @@
     </script>
 </head>
 <body>
+<div class="profile-header">
+    <h3>프로필 & 친구 목록</h3>
+    <button class="menu-button" onclick="home()">나가기</button>
+</div>
 <div class="profile-container">
     <!-- JSP 또는 HTML 페이지에 userId를 출력하는 부분을 추가 -->
     <input type="hidden" id="profileUserId" value="<c:out value='${profile.memberId}'/>">

@@ -199,8 +199,6 @@
             window.location.href = "/api/v1/view/member/";
         }
     </script>
-
-
 </head>
 <body>
 <div class="container">
@@ -226,7 +224,7 @@
             <span id="nicknameStatus" class="success-message"></span>
 
             <div class="buttons">
-                <button type="button" class="btn btn-danger" onclick="cancelButtonClicked()">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="cancelButtonClicked()">나가기</button>
                 <button type="submit" id="signupButton" disabled>회원가입</button>
             </div>
         </div>

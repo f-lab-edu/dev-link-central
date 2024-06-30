@@ -27,7 +27,7 @@
             max-width: 600px;
             margin: 50px auto;
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
@@ -46,6 +46,7 @@
 
         .form-control {
             border-radius: 5px;
+            line-height: 2.4;
         }
 
         input[type=button] {
@@ -59,6 +60,31 @@
         }
 
         input[type=button]:hover {
+            background-color: #0056b3;
+        }
+
+        input[type=button].update-button {
+            width: auto;
+            padding: 11px 16px;
+            margin-right: 10px;
+        }
+
+        .button-container {
+            text-align: right;
+            margin-top: 30px;
+        }
+
+        .menu-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .menu-button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -116,6 +142,10 @@
                 }
             });
         }
+
+        function home() {
+            window.history.back();
+        }
     </script>
 </head>
 <body>
@@ -136,8 +166,9 @@
             <label for="content">스터디 상세 내용:</label>
             <textarea id="content" class="form-control" rows="5">${articleUpdate.content}</textarea>
         </div>
-        <div class="form-group">
-            <input type="button" value="게시글 업데이트" onclick="updateArticle()">
+        <div class="form-group button-container">
+            <button type="button" class="menu-button" onclick="home()">이전으로</button>
+            <input type="button" class="update-button" value="수정하기" onclick="updateArticle()">
         </div>
     </form>
 </div>

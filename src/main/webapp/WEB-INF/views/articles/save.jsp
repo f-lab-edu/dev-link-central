@@ -80,8 +80,17 @@
             text-align: right;
             margin-top: 10px;
         }
+
+        .button-container button {
+            margin-left: 10px;
+        }
     </style>
 
+    <script>
+        function home() {
+            window.history.back();
+        }
+    </script>
 </head>
 <body>
 <div class="form-container">
@@ -97,6 +106,7 @@
         <textarea id="content" name="content" cols="30" rows="10"></textarea><br>
 
         <div class="button-container">
+            <button type="button" onclick="home()">이전으로</button>
             <button type="button" id="saveArticleBtn">등록하기</button>
         </div>
     </form>
