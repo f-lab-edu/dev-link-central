@@ -574,7 +574,7 @@
         <h2>스터디 그룹</h2>
     </header>
     <div id="createStudyGroupButton" class="button-container">
-        <button class="btn-primary" onclick="home()">이전</button>
+        <button class="btn-primary" onclick="home()">나가기</button>
         <button class="btn-primary" onclick="window.location.href='/api/v1/view/study-group/create'">그룹 생성</button>
     </div>
 

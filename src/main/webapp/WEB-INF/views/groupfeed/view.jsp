@@ -226,12 +226,29 @@
             color: white;
             border: none;
             cursor: pointer;
-            padding: 7px 10px;
-            border-radius: 4px;
+            padding: 8px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            transition: background-color 0.3s, transform 0.3s;
         }
 
         .like-button:hover {
             background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .like-button svg {
+            margin-right: 5px;
+            fill: white;
+            width: 16px;
+            height: 16px;
+        }
+
+        .like-button span {
+            margin-left: 5px;
+            font-weight: bold;
         }
 
         .button-container {
@@ -561,9 +578,19 @@
             </c:choose>
             <p class="feed-created">
                 <small>작성자: ${feed.writer}</small>
+<%--                <button id="like-button-${feed.id}" class="btn btn-secondary like-button" onclick="toggleLike(${feed.id})">--%>
+<%--                    좋아요 <span id="like-count-${feed.id}">${feed.likeCount || 0}</span>--%>
+<%--                </button>--%>
+
+
                 <button id="like-button-${feed.id}" class="btn btn-secondary like-button" onclick="toggleLike(${feed.id})">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
                     좋아요 <span id="like-count-${feed.id}">${feed.likeCount || 0}</span>
                 </button>
+
+
             </p>
             <div class="comments-section" id="comments-section-${feed.id}">
                 <h4>댓글</h4>

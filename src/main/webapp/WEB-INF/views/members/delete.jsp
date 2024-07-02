@@ -127,13 +127,15 @@
                 success: function(memberDeleteResponse) {
                     if (memberDeleteResponse.success) {
                         alert(memberDeleteResponse.message);
+                        localStorage.removeItem('jwt');
+                        // 로그아웃 후 홈페이지로 리디렉션
                         window.location.href = "/";
                     } else {
                         alert(memberDeleteResponse.message);
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('회원 탈퇴에 실패했습니다. 오류 메시지: ' + xhr.responseText);
+                    alert('회원 비밀번호가 일치하지 않습니다.');
                 }
             });
         }

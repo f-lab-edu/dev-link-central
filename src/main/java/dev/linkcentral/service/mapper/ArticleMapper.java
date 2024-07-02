@@ -37,7 +37,7 @@ public class ArticleMapper {
         return Article.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .writer(member.getNickname())
+                .writer(member.getName())
                 .member(member)
                 .build();
     }

@@ -180,7 +180,7 @@
     <button onclick="editProfile()">회원수정</button>
     <button onclick="profileView()">프로필 & 친구 목록</button>
     <button onclick="studyRecruitmentArticlePaging()">스터디 모집 게시판</button>
-    <button onclick="StudyGroupView()">스터디 그룹 관리</button>
+    <button onclick="StudyGroupView()">그룹 관리</button>
     <button onclick="groupFeedView()">그룹 피드</button>
     <button onclick="myFeed()">나의 피드</button>
 </div>
