@@ -256,8 +256,8 @@
             justify-content: end;
             gap: 10px;
             position: relative;
-            top: -40px;
-            left: -415px;
+            top: -47px;
+            left: -400px;
         }
 
         .group-feed-create-button,
@@ -275,6 +275,20 @@
         .group-feed-create-button:hover,
         .menu-button:hover {
             background-color: #0056b3;
+        }
+
+
+        .title-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding-left: 400px;
+        }
+
+        .site-title {
+            font-size: 2.3em;
+            color: #007bff;
+            font-weight: bold;
         }
     </style>
 
@@ -540,13 +554,21 @@
         function home() {
             window.location.href = "/api/v1/view/member/";
         }
+
+        function studyRecruitmentArticlePaging() {
+            window.location.href = "/api/v1/view/article/paging";
+        }
     </script>
 </head>
 <body>
+<div class="title-container">
+    <span class="site-title">dev-link-central</span>
+</div>
+
 <div class="title">
-    그룹 피드
     <div class="button-container">
-        <button class="menu-button" onclick="home()">나가기</button>
+        <button class="menu-button" onclick="home()">메뉴</button>
+        <button class="group-feed-create-button" onclick="studyRecruitmentArticlePaging()">스터디 참여</button>
         <button class="group-feed-create-button" onclick="groupFeedSave()">글작성</button>
     </div>
 </div>
@@ -578,19 +600,12 @@
             </c:choose>
             <p class="feed-created">
                 <small>작성자: ${feed.writer}</small>
-<%--                <button id="like-button-${feed.id}" class="btn btn-secondary like-button" onclick="toggleLike(${feed.id})">--%>
-<%--                    좋아요 <span id="like-count-${feed.id}">${feed.likeCount || 0}</span>--%>
-<%--                </button>--%>
-
-
                 <button id="like-button-${feed.id}" class="btn btn-secondary like-button" onclick="toggleLike(${feed.id})">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
                     좋아요 <span id="like-count-${feed.id}">${feed.likeCount || 0}</span>
                 </button>
-
-
             </p>
             <div class="comments-section" id="comments-section-${feed.id}">
                 <h4>댓글</h4>

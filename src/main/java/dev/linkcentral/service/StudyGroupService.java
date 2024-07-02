@@ -7,10 +7,7 @@ import dev.linkcentral.database.entity.studygroup.StudyMember;
 import dev.linkcentral.database.repository.member.MemberRepository;
 import dev.linkcentral.database.repository.studygroup.StudyGroupRepository;
 import dev.linkcentral.database.repository.studygroup.StudyMemberRepository;
-import dev.linkcentral.service.dto.studygroup.AcceptedStudyGroupDetailsDTO;
-import dev.linkcentral.service.dto.studygroup.StudyGroupExistsDTO;
-import dev.linkcentral.service.dto.studygroup.StudyGroupMemberBasicInfoDTO;
-import dev.linkcentral.service.dto.studygroup.StudyGroupMembersDetailDTO;
+import dev.linkcentral.service.dto.studygroup.*;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -157,11 +154,18 @@ public class StudyGroupService {
     public List<AcceptedStudyGroupDetailsDTO> getAcceptedGroupsByUser(Long userId) {
         List<StudyGroup> groups = findAcceptedStudyGroupsByMemberId(userId);
         return groups.stream()
-                .map(group -> new AcceptedStudyGroupDetailsDTO(
-                        group.getId(),
-                        group.getGroupName(),
-                        group.getStudyTopic()))
+                .map(this::toAcceptedStudyGroupDetailsDTO)
                 .collect(Collectors.toList());
+    }
+
+    private AcceptedStudyGroupDetailsDTO toAcceptedStudyGroupDetailsDTO(StudyGroup studyGroup) {
+        List<StudyGroupUserDTO> members = studyMemberRepository.findAllByStudyGroupIdAndStatus(
+                        studyGroup.getId(), StudyGroupStatus.ACCEPTED).stream()
+                .map(studyMember -> new StudyGroupUserDTO(
+                        studyMember.getMember().getId(),
+                        studyMember.getMember().getName()))
+                .collect(Collectors.toList());
+        return studyGroupMapper.toAcceptedStudyGroupDetailsDTO(studyGroup, members);
     }
 
     /**
