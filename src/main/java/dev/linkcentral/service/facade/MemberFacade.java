@@ -16,11 +16,6 @@ public class MemberFacade {
     private final MemberService memberService;
     private final MemberMapper memberMapper;
 
-    public MemberEditFormDTO memberEditForm() {
-        Member currentMember = memberService.getCurrentMember();
-        return memberMapper.toCurrentMember(currentMember);
-    }
-
     public MemberInfoDTO getMemberInfo() {
         return memberService.getCurrentUserInfo();
     }

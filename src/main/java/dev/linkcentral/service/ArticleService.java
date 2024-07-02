@@ -331,6 +331,10 @@ public class ArticleService {
      * @param article 조회한 게시글 정보
      */
     private void viewCountUpdate(Member member, Article article) {
+        if (member == null || article == null) {
+            return;
+        }
+
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
             try {
                 if (isFirstView(member, article)) {
