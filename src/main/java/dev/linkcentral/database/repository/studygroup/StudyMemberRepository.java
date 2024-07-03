@@ -33,5 +33,8 @@ public interface StudyMemberRepository extends JpaRepository<StudyMember, Long> 
     Optional<StudyMember> findByStudyGroupAndMemberId(StudyGroup studyGroup, Long memberId);
 
     @Query("SELECT sm FROM StudyMember sm JOIN FETCH sm.member WHERE sm.studyGroup.id = :studyGroupId AND sm.status = :status")
-    List<StudyMember> findAllByStudyGroupIdAndStatus(@Param("studyGroupId") Long studyGroupId, @Param("status") StudyGroupStatus status);
+    List<StudyMember> findAllByStudyGroupIdAndStatus(@Param("studyGroupId") Long studyGroupId,
+                                                     @Param("status") StudyGroupStatus status);
+
+    List<StudyMember> findByStudyGroupIdAndStatus(Long studyGroupId, StudyGroupStatus status);
 }

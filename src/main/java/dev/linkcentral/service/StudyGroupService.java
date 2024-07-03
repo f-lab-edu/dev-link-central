@@ -269,4 +269,14 @@ public class StudyGroupService {
         return studyMemberRepository.findByMemberAndStudyGroup(member, studyGroup)
                 .orElseThrow(() -> new EntityNotFoundException("스터디 그룹 회원을 찾을 수 없습니다."));
     }
+
+    @Transactional(readOnly = true)
+    public List<Member> findMembersByUserId(Long userId) {
+        List<StudyGroup> userGroups = studyGroupRepository.findByMemberId(userId);
+        return userGroups.stream()
+                .flatMap(group -> studyMemberRepository.findByStudyGroupIdAndStatus(group.getId(), StudyGroupStatus.ACCEPTED).stream())
+                .map(StudyMember::getMember)
+                .distinct()
+                .collect(Collectors.toList());
+    }
 }

@@ -84,7 +84,7 @@
 
         .feed-title {
             font-size: 1.5em;
-            margin-left: 150px;
+            margin-left: 170px;
             text-align: left;
             flex-grow: 1;
             font-weight: bold;
@@ -290,6 +290,16 @@
             color: #007bff;
             font-weight: bold;
         }
+
+        .no-feeds-message {
+            text-align: center;
+            font-size: 1.3em;
+            color: #888;
+            padding: 130px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
     </style>
 
     <script>
@@ -318,15 +328,28 @@
         const limit = 3;
         let isLoading = false;
         let hasMoreFeeds = true;
+        let userId = null;
+
+        function getUserId() {
+            return $.ajax({
+                type: 'GET',
+                url: '/api/v1/group-feed/auth/member-info',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                }
+            });
+        }
 
         function loadFeeds() {
+            console.log("userId: " + userId);
+
             if (isLoading || !hasMoreFeeds) return;
 
             isLoading = true;
             $('#loadingSpinner').show();
 
             $.ajax({
-                url: '/api/v1/group-feed',
+                url: '/api/v1/group-feed/user/' + userId,
                 method: 'GET',
                 data: {
                     offset: offset,
@@ -336,15 +359,16 @@
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
                 success: function(response) {
-                    const feeds = response.feeds.content;
+                    const { feeds, total } = response;
                     if (feeds.length > 0) {
                         feeds.forEach(feed => {
+                            const profileImageUrl = feed.profileImageUrl ? feed.profileImageUrl : '/images/default.png';
                             const feedHtml =
                                 '<div class="feed-item">' +
                                 '<div class="writer-info">' +
                                 '<div class="writer-details">' +
-                                (feed.profileImageUrl ? '<img src="' + feed.profileImageUrl + '" alt="Profile Image" class="profile-image" onclick="profileView(' + feed.writerId + ')">' : '') +
-                                '<p class="writer-name" onclick="profileView(' + feed.writerId + ')">' + feed.writer + '</p>' +
+                                (profileImageUrl ? '<img src="' + profileImageUrl + '" alt="Profile Image" class="profile-image" onclick="profileView(' + feed.memberId + ')">' : '') +
+                                '<p class="writer-name" onclick="profileView(' + feed.memberId + ')">' + feed.writer + '</p>' +
                                 '</div>' +
                                 '<h3 class="feed-title">' + feed.title + '</h3>' +
                                 '</div>' +
@@ -371,6 +395,9 @@
                             hasMoreFeeds = false;
                         }
                     } else {
+                        if (offset === 0) {
+                            $('#feedContainer').append('<p class="no-feeds-message">작성된 피드 또는 스터디 그룹이 없습니다.</p>');
+                        }
                         hasMoreFeeds = false;
                     }
                 },
@@ -383,6 +410,18 @@
                 }
             });
         }
+
+
+        $(document).ready(function() {
+            getUserId().done(function(response) {
+                userId = response.memberId;
+                loadFeeds();
+            }).fail(function(xhr, status, error) {
+                console.error('사용자 ID를 가져오지 못했습니다.', xhr.responseText);
+            });
+        });
+
+
 
         function loadComments(feedId) {
             $.ajax({
@@ -526,10 +565,6 @@
             }
         });
 
-        $(document).ready(function() {
-            loadFeeds();
-        });
-
         function groupFeedSave() {
             $.ajax({
                 type: "GET",
@@ -582,7 +617,7 @@
                             <img src="${feed.profileImageUrl}" alt="Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
                         </c:when>
                         <c:otherwise>
-                            <img src="/images/default.png" alt="Default Profile Image" class="profile-image" onclick="profileView(${feed.writerId})"> <!-- 기본 프로필 이미지 경로 -->
+                            <img src="/images/default.png" alt="Default Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
                         </c:otherwise>
                     </c:choose>
                     <p class="writer-name" onclick="profileView(${feed.writerId})">${feed.writer}</p>

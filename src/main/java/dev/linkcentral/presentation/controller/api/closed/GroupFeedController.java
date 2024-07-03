@@ -10,7 +10,6 @@ import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.facade.GroupFeedFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -51,20 +50,6 @@ public class GroupFeedController {
         GroupFeedCreateDTO groupFeedCreateDTO = GroupFeedCreateRequest.toGroupFeedCreateCommand(groupFeedCreateRequest);
         GroupFeedSavedDTO groupFeedSavedDTO = groupFeedFacade.createGroupFeed(groupFeedCreateDTO);
         GroupFeedCreatedResponse response = GroupFeedCreatedResponse.toGroupFeedCreateResponse(groupFeedSavedDTO);
-        return ResponseEntity.ok(response);
-    }
-
-    /**
-     * 그룹 피드 목록을 반환합니다.
-     *
-     * @param offset 페이지 시작점
-     * @param limit 페이지 크기
-     * @return 그룹 피드 목록 응답
-     */
-    @GetMapping
-    public ResponseEntity<GroupFeedListedResponse> getGroupFeeds(@RequestParam int offset, @RequestParam int limit) {
-        Page<GroupFeedWithProfileDTO> groupFeeds = groupFeedFacade.getGroupFeeds(offset, limit);
-        GroupFeedListedResponse response = GroupFeedListedResponse.toGroupFeedListResponse(groupFeeds);
         return ResponseEntity.ok(response);
     }
 
@@ -194,6 +179,14 @@ public class GroupFeedController {
     public ResponseEntity<GroupFeedLikedResponse> toggleLike(@PathVariable Long feedId) {
         GroupFeedLikeDTO groupFeedLikeDTO = groupFeedFacade.toggleLike(feedId);
         GroupFeedLikedResponse response = GroupFeedLikedResponse.toGroupFeedLikeResponse(groupFeedLikeDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<GroupFeedPageResponse> getGroupFeeds(@PathVariable Long userId,
+                                               @RequestParam int offset, @RequestParam int limit) {
+        GroupFeedPageDTO groupFeedPageDTO = groupFeedFacade.getGroupFeedsForUser(userId, offset, limit);
+        GroupFeedPageResponse response = GroupFeedPageResponse.toGroupFeedPageResponse(groupFeedPageDTO);
         return ResponseEntity.ok(response);
     }
 }
