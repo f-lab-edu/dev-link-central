@@ -15,5 +15,5 @@ public interface GroupFeedRepository extends JpaRepository<GroupFeed, Long> {
 
     Optional<GroupFeed> findByIdAndMemberId(Long feedId, Long memberId);
 
-    Page<GroupFeed> findAllByMemberInOrMemberId(List<Member> members, Long memberId, Pageable pageable);
+    Page<GroupFeed> findAllByMemberIn(List<Member> members, Pageable pageable);
 }

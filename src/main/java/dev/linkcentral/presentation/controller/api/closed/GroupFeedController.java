@@ -183,8 +183,8 @@ public class GroupFeedController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<GroupFeedPagedResponse> getGroupFeeds(@PathVariable Long userId,
-                                                                @RequestParam int offset, @RequestParam int limit) {
+    public ResponseEntity<GroupFeedPagedResponse> getGroupFeeds(@PathVariable Long userId, @RequestParam int offset,
+                                                                @RequestParam int limit) {
         GroupFeedPageDTO groupFeedPageDTO = groupFeedFacade.getGroupFeedsForUser(userId, offset, limit);
         GroupFeedPagedResponse response = GroupFeedPagedResponse.toGroupFeedPagedResponse(groupFeedPageDTO);
         return ResponseEntity.ok(response);

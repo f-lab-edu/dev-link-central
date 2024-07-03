@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -199,11 +198,19 @@ public class GroupFeedService {
 
     @Transactional(readOnly = true)
     public GroupFeedPageDTO getGroupFeedsForUser(Long userId, int offset, int limit) {
-        List<Member> userMembers = studyGroupService.findMembersByUserId(userId);
+        Member member = findMemberById(userId);
+        List<Member> groupMembers = studyGroupService.findMembersByUserId(userId); // 그룹 멤버들 가져오기
+        groupMembers.add(member); // 본인도 포함
+
         Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by("id").descending());
-        Page<GroupFeed> groupFeeds = groupFeedRepository.findAllByMemberInOrMemberId(userMembers, userId, pageable);
+        Page<GroupFeed> groupFeeds = groupFeedRepository.findAllByMemberIn(groupMembers, pageable); // 그룹 멤버들 기준으로 피드 검색
         List<GroupFeedDTO> feedDTOs = groupFeeds.stream()
-                .map(groupFeedMapper::toGroupFeedDTO)
+                .map(feed -> {
+                    GroupFeedDTO groupFeedDTO = groupFeedMapper.toGroupFeedDTO(feed);
+                    String profileImageUrl = profileService.getProfile(feed.getMember().getId()).getImageUrl();
+                    groupFeedDTO.setProfileImageUrl(profileImageUrl);
+                    return groupFeedDTO;
+                })
                 .collect(Collectors.toList());
         return groupFeedMapper.toGroupFeedPageDTO(feedDTOs, offset, limit, groupFeeds.getTotalElements());
     }
@@ -216,7 +223,7 @@ public class GroupFeedService {
      */
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("ID로 멤버를 찾을 수 없습니다: " + memberId));
     }
 
     /**
