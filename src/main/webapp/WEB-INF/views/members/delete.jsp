@@ -17,100 +17,10 @@
     <!-- SweetAlert2 CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/members/delete.css">
 
     <title>회원 탈퇴</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            min-height: 300px;
-            max-width: 430px;
-        }
-
-        .page-header {
-            background-color: #007bff;
-            color: #ffffff;
-            padding: 20px;
-            border-radius: 8px 8px 50px 50px;
-            text-align: center;
-            font-size: 24px;
-            box-shadow: 0 2px 5px rgba(0, 0, 255, 0.2);
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .menu-button, .btn-primary {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 16px;
-            width: 25%;
-        }
-
-        .menu-button:hover, .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        form {
-            width: 100%;
-        }
-
-        label {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 7px;
-            border: 1px solid #ced4da;
-        }
-
-        .btn-container button {
-            width: 80px;
-            padding: 12px;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-            margin-left: 13px;
-        }
-
-        .invalid-feedback {
-            color: #dc3545;
-        }
-
-        .btn-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 30px;
-        }
-
-        .menu-button:hover, .btn-primary:hover {
-            background-color: #0056b3;
-        }
-    </style>
-
     <script>
         function deleteMember(event) {
             event.preventDefault();
