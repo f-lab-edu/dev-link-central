@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
-public class GroupFeedWithProfileResponse {
+public class GroupFeedWithProfiledResponse {
 
     private Long id;
     private String title;
@@ -21,8 +21,8 @@ public class GroupFeedWithProfileResponse {
     private String profileImageUrl;
     private int likeCount;
 
-    public static GroupFeedWithProfileResponse toGroupFeedWithProfileResponse(GroupFeedWithProfileDTO groupProfileDTO) {
-        return GroupFeedWithProfileResponse.builder()
+    public static GroupFeedWithProfiledResponse toGroupFeedWithProfiledResponse(GroupFeedWithProfileDTO groupProfileDTO) {
+        return GroupFeedWithProfiledResponse.builder()
                 .id(groupProfileDTO.getId())
                 .title(groupProfileDTO.getTitle())
                 .content(groupProfileDTO.getContent())

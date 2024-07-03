@@ -13,15 +13,15 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupFeedPageResponse {
+public class GroupFeedPagedResponse {
 
     private List<GroupFeedDTO> feeds;
     private int offset;
     private int limit;
     private long total;
 
-    public static GroupFeedPageResponse toGroupFeedPageResponse(GroupFeedPageDTO groupFeedPageDTO) {
-        return GroupFeedPageResponse.builder()
+    public static GroupFeedPagedResponse toGroupFeedPagedResponse(GroupFeedPageDTO groupFeedPageDTO) {
+        return GroupFeedPagedResponse.builder()
                 .feeds(groupFeedPageDTO.getFeeds())
                 .offset(groupFeedPageDTO.getOffset())
                 .limit(groupFeedPageDTO.getLimit())

@@ -72,9 +72,9 @@ public class GroupFeedController {
      * @return 피드 세부 정보 응답
      */
     @GetMapping("/{feedId}")
-    public ResponseEntity<GroupFeedWithProfileResponse> getFeedDetail(@PathVariable Long feedId) {
+    public ResponseEntity<GroupFeedWithProfiledResponse> getFeedDetail(@PathVariable Long feedId) {
         GroupFeedWithProfileDTO feed = groupFeedFacade.getFeedById(feedId);
-        GroupFeedWithProfileResponse response = GroupFeedWithProfileResponse.toGroupFeedWithProfileResponse(feed);
+        GroupFeedWithProfiledResponse response = GroupFeedWithProfiledResponse.toGroupFeedWithProfiledResponse(feed);
         return ResponseEntity.ok(response);
     }
 
@@ -183,10 +183,10 @@ public class GroupFeedController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<GroupFeedPageResponse> getGroupFeeds(@PathVariable Long userId,
-                                               @RequestParam int offset, @RequestParam int limit) {
+    public ResponseEntity<GroupFeedPagedResponse> getGroupFeeds(@PathVariable Long userId,
+                                                                @RequestParam int offset, @RequestParam int limit) {
         GroupFeedPageDTO groupFeedPageDTO = groupFeedFacade.getGroupFeedsForUser(userId, offset, limit);
-        GroupFeedPageResponse response = GroupFeedPageResponse.toGroupFeedPageResponse(groupFeedPageDTO);
+        GroupFeedPagedResponse response = GroupFeedPagedResponse.toGroupFeedPagedResponse(groupFeedPageDTO);
         return ResponseEntity.ok(response);
     }
 }
