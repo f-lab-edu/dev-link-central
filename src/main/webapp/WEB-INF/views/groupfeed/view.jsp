@@ -303,23 +303,28 @@
     </style>
 
     <script>
-        function profileView() {
+        function profileView(memberId) {
             $.ajax({
                 type: 'GET',
                 url: '/api/v1/group-feed/auth/member-info',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
-                success: function (response) {
+                success: function(response) {
                     if (!response.memberId) {
                         alert('회원 ID가 존재하지 않습니다.');
                         return;
                     }
-                    const memberId = response.memberId;
-                    window.location.href = "/api/v1/view/profile/view?memberId=" + memberId;
+                    const loggedInUserId = response.memberId;
+                    if (loggedInUserId === memberId) {
+                        const memberId = response.memberId;
+                        window.location.href = "/api/v1/view/profile/view?memberId=" + memberId;
+                    } else {
+                        window.location.href = "/api/v1/view/profile/view?memberId=" + memberId;
+                    }
                 },
-                error: function (xhr, status, error) {
-                    alert('작성자 정보를 가져오는 중 오류가 발생했습니다: ' + xhr.responseText);
+                error: function(xhr, status, error) {
+                    alert('사용자 정보를 가져오는 중 오류가 발생했습니다: ' + xhr.responseText);
                 }
             });
         }
@@ -341,8 +346,6 @@
         }
 
         function loadFeeds() {
-            console.log("userId: " + userId);
-
             if (isLoading || !hasMoreFeeds) return;
 
             isLoading = true;
@@ -359,15 +362,15 @@
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
                 success: function(response) {
-                    const { feeds, total } = response;
+                    const { feeds } = response;
                     if (feeds.length > 0) {
                         feeds.forEach(feed => {
-                            const profileImageUrl = feed.profileImageUrl ? feed.profileImageUrl : '/images/default.png';
+                            const profileImageUrl = feed.profileImageUrl ? feed.profileImageUrl + '?t=' + new Date().getTime() : '/images/default.png';
                             const feedHtml =
                                 '<div class="feed-item">' +
                                 '<div class="writer-info">' +
                                 '<div class="writer-details">' +
-                                (profileImageUrl ? '<img src="' + profileImageUrl + '" alt="Profile Image" class="profile-image" onclick="profileView(' + feed.memberId + ')">' : '') +
+                                '<img src="' + profileImageUrl + '" alt="Profile Image" class="profile-image" onclick="profileView(' + feed.memberId + ')">' +
                                 '<p class="writer-name" onclick="profileView(' + feed.memberId + ')">' + feed.writer + '</p>' +
                                 '</div>' +
                                 '<h3 class="feed-title">' + feed.title + '</h3>' +
@@ -614,7 +617,7 @@
                 <div class="writer-details">
                     <c:choose>
                         <c:when test="${not empty feed.profileImageUrl}">
-                            <img src="${feed.profileImageUrl}" alt="Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
+                            <img src="${feed.profileImageUrl}?t=${System.currentTimeMillis()}" alt="Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
                         </c:when>
                         <c:otherwise>
                             <img src="/images/default.png" alt="Default Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
