@@ -38,6 +38,8 @@ public class SecurityConfig {
                         "/favicon.ico",
                         "/api/v1/public/**",
                         "/api/v1/view/**",
+                        "/static/**",
+                        "/css/**",
                         "/images/**"
                 )
                 .permitAll()
