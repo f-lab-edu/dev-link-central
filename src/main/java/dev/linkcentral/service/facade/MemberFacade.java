@@ -16,11 +16,6 @@ public class MemberFacade {
     private final MemberService memberService;
     private final MemberMapper memberMapper;
 
-    public MemberEditFormDTO memberEditForm() {
-        Member currentMember = memberService.getCurrentMember();
-        return memberMapper.toCurrentMember(currentMember);
-    }
-
     public MemberInfoDTO getMemberInfo() {
         return memberService.getCurrentUserInfo();
     }
@@ -56,12 +51,11 @@ public class MemberFacade {
 
     public boolean checkPassword(String password) {
         Member member = memberService.getCurrentMember();
-        return memberService.validatePassword(member.getNickname(),password);
+        return memberService.validatePassword(member.getNickname(), password);
     }
 
     public MemberDetailsDTO findByEmailAndDeletedFalse(String email) {
         Member member = memberService.findByEmailAndDeletedFalse(email);
         return memberMapper.toMemberDetailsDTO(member);
     }
-
 }

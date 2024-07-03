@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleDeleteResponse {
+public class ArticleDeletedResponse {
 
     private boolean success;
     private String message;
 
-    public static ArticleDeleteResponse toArticleDeleteResponse() {
-        return ArticleDeleteResponse.builder()
+    public static ArticleDeletedResponse toArticleDeleteResponse() {
+        return ArticleDeletedResponse.builder()
                 .success(true)
                 .message("성공적으로 삭제되었습니다.")
                 .build();

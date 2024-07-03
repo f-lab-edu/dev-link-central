@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupFeedCreateResponse {
+public class GroupFeedCreatedResponse {
 
     private Long id;
     private String title;
@@ -18,8 +18,8 @@ public class GroupFeedCreateResponse {
     private String writer;
     private String imageUrl;
 
-    public static GroupFeedCreateResponse toGroupFeedCreateResponse(GroupFeedSavedDTO groupFeedSavedDTO) {
-        return GroupFeedCreateResponse.builder()
+    public static GroupFeedCreatedResponse toGroupFeedCreateResponse(GroupFeedSavedDTO groupFeedSavedDTO) {
+        return GroupFeedCreatedResponse.builder()
                 .id(groupFeedSavedDTO.getId())
                 .title(groupFeedSavedDTO.getTitle())
                 .content(groupFeedSavedDTO.getContent())

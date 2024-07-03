@@ -52,7 +52,18 @@ public class StudyGroupMapper {
         return new StudyGroupMemberDTO(currentMember);
     }
 
-    public static StudyGroupExistsDTO toStudyGroupExistsDTO(boolean exists) {
-        return new StudyGroupExistsDTO(exists);
+    public StudyGroupExistsDTO toStudyGroupExistsDTO(boolean exists, Long groupId) {
+        return new StudyGroupExistsDTO(exists, groupId);
+    }
+
+    public AcceptedStudyGroupDetailsDTO toAcceptedStudyGroupDetailsDTO(StudyGroup studyGroup, List<StudyGroupUserDTO> members) {
+        return new AcceptedStudyGroupDetailsDTO(
+                studyGroup.getId(),
+                studyGroup.getGroupName(),
+                studyGroup.getStudyTopic(),
+                members.size(),
+                studyGroup.getStudyLeaderId(),
+                members
+        );
     }
 }

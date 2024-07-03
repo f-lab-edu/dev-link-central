@@ -21,6 +21,10 @@ public class ArticleUpdateRequest {
     @NotNull(message = "게시글 ID는 필수입니다.")
     private Long id;
 
+    @ApiModelProperty(value = "작성자의 고유 식별자", required = true)
+    @NotNull(message = "작성자 ID는 필수입니다.")
+    private Long writerId;
+
     @ApiModelProperty(value = "게시글 작성자", required = true)
     @NotBlank(message = "게시글 작성자는 필수입니다.")
     private String writer;
@@ -38,6 +42,7 @@ public class ArticleUpdateRequest {
     public static ArticleUpdateRequestDTO toArticleUpdateRequestCommand(ArticleUpdateRequest updateRequest) {
         return ArticleUpdateRequestDTO.builder()
                 .id(updateRequest.getId())
+                .writerId(updateRequest.getWriterId())
                 .writer(updateRequest.getWriter())
                 .title(updateRequest.getTitle())
                 .content(updateRequest.getContent())

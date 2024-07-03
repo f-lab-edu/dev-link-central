@@ -251,7 +251,7 @@
             background-color: #42A5F5;
             border: none;
             color: white;
-            padding: 10px 20px;
+            padding: 10px 16px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
@@ -273,6 +273,10 @@
             background-color: #003f7f;
             box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
             transform: translateY(2px);
+        }
+
+        .dynamic-text ul {
+            padding-left: 0px;
         }
     </style>
 
@@ -430,19 +434,19 @@
                             groupHtml += '<ul>';
                             if (group.members && Array.isArray(group.members)) {
                                 group.members.forEach(function(member) {
+                                    groupHtml += '<li>' + member.name;
                                     if (member.id === group.leaderId) {
-                                        groupHtml += '<li>' + member.name + ' (리더)</li>';
-                                    } else {
-                                        groupHtml += '<li>' + member.name + '</li>';
+                                        groupHtml += ' (리더)';
                                     }
+                                    groupHtml += '</li>';
                                 });
                             }
-                            groupHtml += '</ul>';
-                            groupHtml += '</div>';
+                            groupHtml += '</ul></div>';
                             $("#studyGroupsAndMembers").append(groupHtml);
 
                             var rowHtml = '<tr class="dynamic-text">' +
                                 '<td class="group-name">' + group.groupName + '</td>' +
+                                '<td>' + group.memberCount + '명 (리더 포함)</td>' +
                                 '<td class="text-right">' +
                                 '<div class="btn-group">' +
                                 '<button class="btn-danger leaveGroup" data-studygroupid="' + group.id + '">탈퇴</button>' +
@@ -562,15 +566,19 @@
                 });
             }
         }
-    </script>
 
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
+    </script>
 </head>
 <body>
 <div class="container">
     <header>
         <h2>스터디 그룹</h2>
     </header>
-    <div id="createStudyGroupButton">
+    <div id="createStudyGroupButton" class="button-container">
+        <button class="btn-primary" onclick="home()">나가기</button>
         <button class="btn-primary" onclick="window.location.href='/api/v1/view/study-group/create'">그룹 생성</button>
     </div>
 
@@ -611,6 +619,7 @@
             <thead>
             <tr>
                 <th>그룹 이름</th>
+                <th>현재 인원</th>
                 <th class="text-right">요청 여부</th>
             </tr>
             </thead>
@@ -618,6 +627,7 @@
             <c:forEach var="group" items="${acceptedStudyGroups}">
                 <tr class="dynamic-text">
                     <td class="group-name">${group.groupName}</td>
+                    <td>${group.memberCount}명(자신 포함)</td>
                     <td class="text-right">
                         <div class="btn-group">
                             <button class="btn-danger leaveGroup" data-studygroupid="${group.id}" style="display:none;">탈퇴</button>
@@ -652,6 +662,5 @@
     </div>
     <p id="noGroupsMessage" class="text-light-red" style="display:none;">가입된 스터디 그룹이 없습니다.</p>
 </div>
-
 </body>
 </html>

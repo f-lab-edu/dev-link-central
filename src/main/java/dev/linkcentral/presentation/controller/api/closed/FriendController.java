@@ -41,10 +41,10 @@ public class FriendController {
      * @return 친구 요청 응답
      */
     @PostMapping("/request")
-    public ResponseEntity<FriendRequestResponse> sendFriendRequest(@Validated @RequestBody FriendshipRequest friendshipRequest) {
+    public ResponseEntity<FriendRequestedResponse> sendFriendRequest(@Validated @RequestBody FriendshipRequest friendshipRequest) {
         FriendRequestDTO friendRequestDTO = FriendshipRequest.toFriendRequestCommand(friendshipRequest);
         Long friendRequestId = friendFacade.sendFriendRequest(friendRequestDTO);
-        FriendRequestResponse response = FriendRequestResponse.toFriendRequestResponse(friendRequestId);
+        FriendRequestedResponse response = FriendRequestedResponse.toFriendRequestResponse(friendRequestId);
         return ResponseEntity.ok(response);
     }
 
@@ -55,9 +55,9 @@ public class FriendController {
      * @return 친구 요청 목록 응답
      */
     @GetMapping("/received-requests/{receiverId}")
-    public ResponseEntity<FriendReceivedResponse> getReceivedFriendRequests(@PathVariable Long receiverId) {
+    public ResponseEntity<FriendRequestReceivedResponse> getReceivedFriendRequests(@PathVariable Long receiverId) {
         List<FriendRequestDTO> friendRequests = friendFacade.getReceivedFriendRequests(receiverId);
-        FriendReceivedResponse response = FriendReceivedResponse.toFriendReceivedResponse(friendRequests);
+        FriendRequestReceivedResponse response = FriendRequestReceivedResponse.toFriendReceivedResponse(friendRequests);
         return ResponseEntity.ok(response);
     }
 
@@ -81,9 +81,9 @@ public class FriendController {
      * @return 친구 관계 ID 응답
      */
     @GetMapping("/friendship-ids")
-    public ResponseEntity<FriendshipResponse> findFriendshipId(@RequestParam Long senderId, @RequestParam Long receiverId) {
+    public ResponseEntity<FriendshipIdResponse> findFriendshipId(@RequestParam Long senderId, @RequestParam Long receiverId) {
         Long friendshipId = friendFacade.findFriendshipId(senderId, receiverId);
-        FriendshipResponse response = FriendshipResponse.toFriendshipId(friendshipId);
+        FriendshipIdResponse response = FriendshipIdResponse.toFriendshipId(friendshipId);
         return ResponseEntity.ok(response);
     }
 

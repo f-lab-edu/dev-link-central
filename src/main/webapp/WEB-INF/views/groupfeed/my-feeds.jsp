@@ -75,11 +75,35 @@
         }
 
         .title {
-            text-align: center;
-            margin-bottom: 20px;
             font-size: 27px;
             font-weight: bold;
             color: #007bff;
+            margin: 0;
+        }
+
+        .title-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .menu-button {
+            position: absolute;
+            right: 17px;
+            top: -2px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 17px;
+        }
+
+        .menu-button:hover {
+            background-color: #0056b3;
         }
     </style>
 
@@ -107,7 +131,7 @@
                             $('#feedContainer').append(feedHtml);
                         });
                     } else {
-                        $('#feedContainer').append('<p>No feeds available</p>');
+                        $('#feedContainer').append('<p>피드가 없습니다.</p>');
                     }
                 },
                 error: function(xhr) {
@@ -119,11 +143,18 @@
         function viewFeedDetail(feedId) {
             window.location.href = "/api/v1/view/group-feed/detail/" + feedId;
         }
+
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
     </script>
 </head>
 <body>
 <div class="container">
-    <div class="title">나의 피드</div>
+    <div class="title-container">
+        <div class="title">나의 피드</div>
+        <button class="menu-button" onclick="home()">나가기</button>
+    </div>
     <div class="feed-container" id="feedContainer"></div>
     <div class="loading-spinner" id="loadingSpinner" style="display: none;">
         <div class="spinner-border text-primary" role="status">

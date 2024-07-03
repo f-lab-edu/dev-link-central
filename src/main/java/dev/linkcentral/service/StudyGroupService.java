@@ -7,10 +7,7 @@ import dev.linkcentral.database.entity.studygroup.StudyMember;
 import dev.linkcentral.database.repository.member.MemberRepository;
 import dev.linkcentral.database.repository.studygroup.StudyGroupRepository;
 import dev.linkcentral.database.repository.studygroup.StudyMemberRepository;
-import dev.linkcentral.service.dto.studygroup.AcceptedStudyGroupDetailsDTO;
-import dev.linkcentral.service.dto.studygroup.StudyGroupExistsDTO;
-import dev.linkcentral.service.dto.studygroup.StudyGroupMemberBasicInfoDTO;
-import dev.linkcentral.service.dto.studygroup.StudyGroupMembersDetailDTO;
+import dev.linkcentral.service.dto.studygroup.*;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -157,11 +154,18 @@ public class StudyGroupService {
     public List<AcceptedStudyGroupDetailsDTO> getAcceptedGroupsByUser(Long userId) {
         List<StudyGroup> groups = findAcceptedStudyGroupsByMemberId(userId);
         return groups.stream()
-                .map(group -> new AcceptedStudyGroupDetailsDTO(
-                        group.getId(),
-                        group.getGroupName(),
-                        group.getStudyTopic()))
+                .map(this::toAcceptedStudyGroupDetailsDTO)
                 .collect(Collectors.toList());
+    }
+
+    private AcceptedStudyGroupDetailsDTO toAcceptedStudyGroupDetailsDTO(StudyGroup studyGroup) {
+        List<StudyGroupUserDTO> members = studyMemberRepository.findAllByStudyGroupIdAndStatus(
+                        studyGroup.getId(), StudyGroupStatus.ACCEPTED).stream()
+                .map(studyMember -> new StudyGroupUserDTO(
+                        studyMember.getMember().getId(),
+                        studyMember.getMember().getName()))
+                .collect(Collectors.toList());
+        return studyGroupMapper.toAcceptedStudyGroupDetailsDTO(studyGroup, members);
     }
 
     /**
@@ -221,8 +225,14 @@ public class StudyGroupService {
      */
     @Transactional(readOnly = true)
     public StudyGroupExistsDTO userHasStudyGroup(Long userId) {
-        boolean existsByStudyLeaderId = studyGroupRepository.existsByStudyLeaderId(userId);
-        return studyGroupMapper.toStudyGroupExistsDTO(existsByStudyLeaderId);
+        StudyGroup studyGroup = studyGroupRepository.findByStudyLeaderId(userId).orElse(null);
+        boolean exists = studyGroup != null;
+        Long groupId = null;
+
+        if (exists) {
+            groupId = studyGroup.getId();
+        }
+        return studyGroupMapper.toStudyGroupExistsDTO(exists, groupId);
     }
 
     /**
@@ -258,5 +268,15 @@ public class StudyGroupService {
     private StudyMember findStudyMemberByMemberAndStudyGroup(Member member, StudyGroup studyGroup) {
         return studyMemberRepository.findByMemberAndStudyGroup(member, studyGroup)
                 .orElseThrow(() -> new EntityNotFoundException("스터디 그룹 회원을 찾을 수 없습니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Member> findMembersByUserId(Long userId) {
+        List<StudyGroup> userGroups = studyGroupRepository.findByMemberId(userId);
+        return userGroups.stream()
+                .flatMap(group -> studyMemberRepository.findByStudyGroupIdAndStatus(group.getId(), StudyGroupStatus.ACCEPTED).stream())
+                .map(StudyMember::getMember)
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

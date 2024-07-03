@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberEditResponse {
+public class MemberEditedResponse {
 
     private int statusCode;
     private String message;
 
-    public static MemberEditResponse toUpdateMemberResponse() {
-        return new MemberEditResponse(200, "업데이트 성공되었습니다.");
+    public static MemberEditedResponse toUpdateMemberResponse() {
+        return new MemberEditedResponse(200, "업데이트 성공되었습니다.");
     }
 }

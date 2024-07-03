@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class StudyGroupExistsDTO {
+@AllArgsConstructor
+public class StudyGroupUserDTO {
 
-    private boolean exists;
-    private Long groupId;
+    private Long id;
+    private String name;
 }

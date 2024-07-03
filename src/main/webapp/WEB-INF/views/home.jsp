@@ -85,7 +85,7 @@
                         // 'accessToken' 키를 사용하여 토큰을 로컬 스토리지에 저장
                         if (response && response.accessToken) {
                             localStorage.setItem("jwt", response.accessToken);
-                            window.location.href = response.redirectUrl
+                            groupFeedView();
                         } else {
                             // 응답에서 'accessToken'을 찾을 수 없는 경우
                             console.error("응답에서 accessToken을 찾을 수 없습니다.");
@@ -99,6 +99,27 @@
                 });
             });
         });
+
+        function groupFeedView() {
+            $.ajax({
+                type: "GET",
+                url: "/api/v1/group-feed/auth/member-info",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function (response) {
+                    var memberId = response.memberId;
+                    if (!memberId) {
+                        alert('회원 ID가 존재하지 않습니다.');
+                        return;
+                    }
+                    window.location.href = "/api/v1/view/group-feed/list?memberId=" + memberId;
+                },
+                error: function (xhr) {
+                    alert("회원 정보를 가져올 수 없습니다: " + xhr.responseText);
+                }
+            });
+        }
     </script>
 
 </head>

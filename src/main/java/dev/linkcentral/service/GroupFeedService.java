@@ -38,6 +38,7 @@ public class GroupFeedService {
     private final GroupFeedStatisticRepository groupFeedStatisticRepository;
     private final GroupFeedCommentRepository groupFeedCommentRepository;
     private final ProfileService profileService;
+    private final StudyGroupService studyGroupService;
     private final GroupFeedMapper groupFeedMapper;
     private final FileUploader fileUploader;
     private final MemberRepository memberRepository;
@@ -61,26 +62,6 @@ public class GroupFeedService {
         createGroupFeedStatistic(savedGroupFeed);
 
         return groupFeedMapper.toGroupFeedMapper(savedGroupFeed);
-    }
-
-    /**
-     * 그룹 피드 목록을 페이징 처리하여 반환합니다.
-     *
-     * @param offset 페이지 시작점
-     * @param limit 페이지 크기
-     * @return 그룹 피드 목록 DTO
-     */
-    @Transactional(readOnly = true)
-    public Page<GroupFeedWithProfileDTO> getGroupFeeds(int offset, int limit) {
-        Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by("id").descending());
-        Page<GroupFeed> groupFeeds = groupFeedRepository.findAll(pageable);
-        return groupFeeds.map(this::mapToGroupFeedWithProfileDTO);
-    }
-
-    private GroupFeedWithProfileDTO mapToGroupFeedWithProfileDTO(GroupFeed groupFeed) {
-        Profile profile = profileService.getProfileByMemberId(groupFeed.getMember().getId());
-        int likeCount = getLikeCount(groupFeed);
-        return groupFeedMapper.toGroupFeedWithProfileDTO(groupFeed, profile, likeCount);
     }
 
     /**
@@ -214,6 +195,17 @@ public class GroupFeedService {
         GroupFeedLikeDTO groupFeedLikeDTO = processLikeToggle(groupFeed, member);
         groupFeedStatisticRepository.save(getFeedStatistic(groupFeed));
         return groupFeedLikeDTO;
+    }
+
+    @Transactional(readOnly = true)
+    public GroupFeedPageDTO getGroupFeedsForUser(Long userId, int offset, int limit) {
+        List<Member> userMembers = studyGroupService.findMembersByUserId(userId);
+        Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by("id").descending());
+        Page<GroupFeed> groupFeeds = groupFeedRepository.findAllByMemberInOrMemberId(userMembers, userId, pageable);
+        List<GroupFeedDTO> feedDTOs = groupFeeds.stream()
+                .map(groupFeedMapper::toGroupFeedDTO)
+                .collect(Collectors.toList());
+        return groupFeedMapper.toGroupFeedPageDTO(feedDTOs, offset, limit, groupFeeds.getTotalElements());
     }
 
     /**

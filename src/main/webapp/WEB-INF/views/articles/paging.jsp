@@ -220,6 +220,10 @@
                 });
             });
         });
+
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
     </script>
 </head>
 <body>
@@ -228,9 +232,11 @@
         <div class="title">스터디 모집 게시판</div>
         <div class="header-actions">
             <% if ((Boolean) request.getAttribute("isAuthenticated")) { %>
-            <button onclick="saveReq()">글작성</button>
+            <button onclick="home()" style="margin-left: 10px;">이전</button>
+            <button onclick="saveReq()" style="margin-left: 8px;">글작성</button>
             <% } %>
-            <button id="writeButton" onclick="saveReq()" style="display:none;">글작성</button>
+            <button onclick="home()" style="margin-left: 10px;">나가기</button>
+            <button id="writeButton" onclick="saveReq()" style="margin-left: 8px;">글작성</button>
         </div>
     </div>
 

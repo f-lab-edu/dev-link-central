@@ -1,11 +1,8 @@
 package dev.linkcentral.presentation.controller.view;
 
-import dev.linkcentral.service.dto.member.MemberEditFormDTO;
-import dev.linkcentral.service.facade.MemberFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -17,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/view/member")
 public class MemberViewController {
-
-    private final MemberFacade memberFacade;
 
     /**
      * 홈 페이지를 보여줍니다.
@@ -63,16 +58,10 @@ public class MemberViewController {
     /**
      * 회원 정보 수정 폼을 보여줍니다.
      *
-     * @param model 뷰에 전달할 데이터 모델
-     * @return "/members/edit" 템플릿 이름 또는 "redirect:/login" 리다이렉트 URL
+     * @return "/members/edit" 템플릿 이름
      */
     @GetMapping("/edit-form")
-    public String showMemberEditForm(Model model) {
-        MemberEditFormDTO memberDTO = memberFacade.memberEditForm();
-        if (memberDTO.getMember() == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("member", memberDTO.getMember());
+    public String showMemberEditForm() {
         return "/members/edit";
     }
 

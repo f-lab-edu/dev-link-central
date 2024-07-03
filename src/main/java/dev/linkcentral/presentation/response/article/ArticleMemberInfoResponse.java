@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticleMemberResponse {
+public class ArticleMemberInfoResponse {
 
     private Long memberId;
 
-    public static ArticleMemberResponse toArticleMemberResponse(Long memberId) {
-        return new ArticleMemberResponse(memberId);
+    public static ArticleMemberInfoResponse toArticleMemberResponse(Long memberId) {
+        return new ArticleMemberInfoResponse(memberId);
     }
 }

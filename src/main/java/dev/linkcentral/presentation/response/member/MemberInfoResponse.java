@@ -13,14 +13,16 @@ import lombok.NoArgsConstructor;
 public class MemberInfoResponse {
 
     private Long userId;
+    private String name;
     private String email;
     private String nickname;
 
-    public static MemberInfoResponse toMemberInfoResponse(MemberInfoDTO dto) {
+    public static MemberInfoResponse toMemberInfoResponse(MemberInfoDTO memberInfoDTO) {
         return MemberInfoResponse.builder()
-                .userId(dto.getUserId())
-                .email(dto.getEmail())
-                .nickname(dto.getNickname())
+                .userId(memberInfoDTO.getUserId())
+                .name(memberInfoDTO.getName())
+                .email(memberInfoDTO.getEmail())
+                .nickname(memberInfoDTO.getNickname())
                 .build();
     }
 }

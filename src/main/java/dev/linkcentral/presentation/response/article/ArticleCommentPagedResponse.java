@@ -13,17 +13,19 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCommentPageResponse {
+public class ArticleCommentPagedResponse {
 
     private List<ArticleCommentViewDTO> comments;
     private int currentPage;
     private int totalPages;
+    private boolean hasMoreComments;
 
-    public static ArticleCommentPageResponse toArticleCommentPageResponse(Page<ArticleCommentViewDTO> commentsPage) {
-        return new ArticleCommentPageResponse(
+    public static ArticleCommentPagedResponse toArticleCommentPageResponse(Page<ArticleCommentViewDTO> commentsPage, boolean hasMoreComments) {
+        return new ArticleCommentPagedResponse(
                 commentsPage.getContent(),
                 commentsPage.getNumber(),
-                commentsPage.getTotalPages()
+                commentsPage.getTotalPages(),
+                hasMoreComments
         );
     }
 }

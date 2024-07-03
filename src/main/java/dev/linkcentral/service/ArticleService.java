@@ -1,6 +1,7 @@
 package dev.linkcentral.service;
 
 import dev.linkcentral.common.exception.CustomOptimisticLockException;
+import dev.linkcentral.common.exception.ResourceNotFoundException;
 import dev.linkcentral.database.entity.article.*;
 import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.database.repository.article.*;
@@ -26,6 +27,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ArticleService {
 
+    public static final int MAX_RETRIES = 3;
+
     private final ArticleRepository articleRepository;
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleCommentRepository articleCommentRepository;
@@ -34,8 +37,6 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final ArticleMapper articleMapper;
     private final ArticleCommentMapper articleCommentMapper;
-
-    public static final int MAX_RETRIES = 3;
 
     /**
      * 새로운 게시글을 저장합니다.
@@ -59,7 +60,7 @@ public class ArticleService {
      */
     @Transactional(readOnly = true)
     public ArticleDetailsDTO getArticleById(Long id) {
-        Article article = findArticleById(id);
+        Article article = getArticleDetails(id);
         return articleMapper.toArticleDetailsDTO(article);
     }
 
@@ -242,6 +243,18 @@ public class ArticleService {
     }
 
     /**
+     * ID로 게시글의 상세 정보를 가져옵니다.
+     *
+     * @param id 가져올 게시글의 ID
+     * @return 게시글의 상세 정보가 포함된 Article 객체
+     */
+    @Transactional(readOnly = true)
+    public Article getArticleDetails(Long id) {
+        return articleRepository.findByIdWithMember(id)
+                .orElseThrow(() -> new ResourceNotFoundException("기사를 찾을 수 없습니다."));
+    }
+
+    /**
      * 닉네임으로 멤버를 찾습니다.
      *
      * @param nickname 멤버의 닉네임
@@ -318,6 +331,10 @@ public class ArticleService {
      * @param article 조회한 게시글 정보
      */
     private void viewCountUpdate(Member member, Article article) {
+        if (member == null || article == null) {
+            return;
+        }
+
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
             try {
                 if (isFirstView(member, article)) {

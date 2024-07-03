@@ -8,6 +8,8 @@ import dev.linkcentral.service.dto.groupfeed.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class GroupFeedMapper {
 
@@ -63,10 +65,24 @@ public class GroupFeedMapper {
         );
     }
 
-    public GroupFeedLikeDTO toGroupFeedLikeDTO(int likes, boolean liked) {
-        return GroupFeedLikeDTO.builder()
-                .likeCount(likes)
-                .liked(liked)
+    public GroupFeedDTO toGroupFeedDTO(GroupFeed groupFeed) {
+        return GroupFeedDTO.builder()
+                .id(groupFeed.getId())
+                .memberId(groupFeed.getMember().getId())
+                .writer(groupFeed.getWriter())
+                .title(groupFeed.getTitle())
+                .content(groupFeed.getContent())
+                .imageUrl(groupFeed.getImageUrl())
+                .createdAt(groupFeed.getCreatedAt())
+                .build();
+    }
+
+    public GroupFeedPageDTO toGroupFeedPageDTO(List<GroupFeedDTO> feedDTOs, int offset, int limit, long total) {
+        return GroupFeedPageDTO.builder()
+                .feeds(feedDTOs)
+                .offset(offset)
+                .limit(limit)
+                .total(total)
                 .build();
     }
 }

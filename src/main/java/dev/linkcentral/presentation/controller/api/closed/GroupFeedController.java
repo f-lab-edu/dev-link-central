@@ -10,7 +10,6 @@ import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.facade.GroupFeedFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +31,9 @@ public class GroupFeedController {
      * @return 사용자 정보 응답
      */
     @GetMapping("/auth/member-info")
-    public ResponseEntity<GroupFeedInfoResponse> getGroupFeedInfo() {
+    public ResponseEntity<GroupFeedMemberInfoResponse> getGroupFeedInfo() {
         MemberCurrentDTO memberCurrentDTO = groupFeedFacade.getUserInfo();
-        GroupFeedInfoResponse response = GroupFeedInfoResponse.toGroupFeedInfoResponse(memberCurrentDTO);
+        GroupFeedMemberInfoResponse response = GroupFeedMemberInfoResponse.toGroupFeedInfoResponse(memberCurrentDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -45,26 +44,12 @@ public class GroupFeedController {
      * @return 생성된 그룹 피드 응답
      */
     @PostMapping
-    public ResponseEntity<GroupFeedCreateResponse> createGroupFeed(
+    public ResponseEntity<GroupFeedCreatedResponse> createGroupFeed(
             @Validated @ModelAttribute GroupFeedCreateRequest groupFeedCreateRequest) {
 
         GroupFeedCreateDTO groupFeedCreateDTO = GroupFeedCreateRequest.toGroupFeedCreateCommand(groupFeedCreateRequest);
         GroupFeedSavedDTO groupFeedSavedDTO = groupFeedFacade.createGroupFeed(groupFeedCreateDTO);
-        GroupFeedCreateResponse response = GroupFeedCreateResponse.toGroupFeedCreateResponse(groupFeedSavedDTO);
-        return ResponseEntity.ok(response);
-    }
-
-    /**
-     * 그룹 피드 목록을 반환합니다.
-     *
-     * @param offset 페이지 시작점
-     * @param limit 페이지 크기
-     * @return 그룹 피드 목록 응답
-     */
-    @GetMapping
-    public ResponseEntity<GroupFeedListResponse> getGroupFeeds(@RequestParam int offset, @RequestParam int limit) {
-        Page<GroupFeedWithProfileDTO> groupFeeds = groupFeedFacade.getGroupFeeds(offset, limit);
-        GroupFeedListResponse response = GroupFeedListResponse.toGroupFeedListResponse(groupFeeds);
+        GroupFeedCreatedResponse response = GroupFeedCreatedResponse.toGroupFeedCreateResponse(groupFeedSavedDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -74,9 +59,9 @@ public class GroupFeedController {
      * @return 사용자의 피드 목록 응답
      */
     @GetMapping("/my-feeds")
-    public ResponseEntity<MyFeedListResponse> getMyFeeds() {
+    public ResponseEntity<GroupFeedMyListedResponse> getMyFeeds() {
         List<MyGroupFeedDetailsDTO> myFeeds = groupFeedFacade.getAllFeedsByMemberId();
-        MyFeedListResponse response = MyFeedListResponse.toMyFeedListResponse(myFeeds);
+        GroupFeedMyListedResponse response = GroupFeedMyListedResponse.toMyFeedListResponse(myFeeds);
         return ResponseEntity.ok(response);
     }
 
@@ -87,9 +72,10 @@ public class GroupFeedController {
      * @return 피드 세부 정보 응답
      */
     @GetMapping("/{feedId}")
-    public ResponseEntity<GroupFeedWithProfileDTO> getFeedDetail(@PathVariable Long feedId) {
+    public ResponseEntity<GroupFeedWithProfiledResponse> getFeedDetail(@PathVariable Long feedId) {
         GroupFeedWithProfileDTO feed = groupFeedFacade.getFeedById(feedId);
-        return ResponseEntity.ok(feed);
+        GroupFeedWithProfiledResponse response = GroupFeedWithProfiledResponse.toGroupFeedWithProfiledResponse(feed);
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -146,9 +132,9 @@ public class GroupFeedController {
      * @return 피드 댓글 목록 응답
      */
     @GetMapping("/{feedId}/comments")
-    public ResponseEntity<GroupFeedCommentResponse> getComments(@PathVariable Long feedId) {
+    public ResponseEntity<GroupFeedCommentListedResponse> getComments(@PathVariable Long feedId) {
         List<GroupFeedCommentDTO> comments = groupFeedFacade.getComments(feedId);
-        GroupFeedCommentResponse response = GroupFeedCommentResponse.toGroupFeedCommentResponse(comments);
+        GroupFeedCommentListedResponse response = GroupFeedCommentListedResponse.toGroupFeedCommentResponse(comments);
         return ResponseEntity.ok(response);
     }
 
@@ -190,9 +176,17 @@ public class GroupFeedController {
      * @return 좋아요 상태 응답
      */
     @PostMapping("/{feedId}/like")
-    public ResponseEntity<GroupFeedLikeResponse> toggleLike(@PathVariable Long feedId) {
+    public ResponseEntity<GroupFeedLikedResponse> toggleLike(@PathVariable Long feedId) {
         GroupFeedLikeDTO groupFeedLikeDTO = groupFeedFacade.toggleLike(feedId);
-        GroupFeedLikeResponse response = GroupFeedLikeResponse.toGroupFeedLikeResponse(groupFeedLikeDTO);
+        GroupFeedLikedResponse response = GroupFeedLikedResponse.toGroupFeedLikeResponse(groupFeedLikeDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<GroupFeedPagedResponse> getGroupFeeds(@PathVariable Long userId,
+                                                                @RequestParam int offset, @RequestParam int limit) {
+        GroupFeedPageDTO groupFeedPageDTO = groupFeedFacade.getGroupFeedsForUser(userId, offset, limit);
+        GroupFeedPagedResponse response = GroupFeedPagedResponse.toGroupFeedPagedResponse(groupFeedPageDTO);
         return ResponseEntity.ok(response);
     }
 }

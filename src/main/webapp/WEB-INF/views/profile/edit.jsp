@@ -122,6 +122,23 @@
             border-radius: 4px;
             display: none;
         }
+
+        .menu-button {
+            background-color: #4A90E2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 20px;
+            margin-right: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .menu-button:hover {
+            background-color: #357ABD;
+        }
     </style>
 
     <script>
@@ -169,6 +186,12 @@
             });
         });
     </script>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 </head>
 <body>
 <div class="form-container">
@@ -187,8 +210,10 @@
         <input type="text" id="bio" name="bio" value="${profile.bio}">
 
         <div class="form-actions">
-            <input type="submit" value="저장">
+            <button type="button" class="menu-button" onclick="goBack()">이전으로</button>
+            <input type="submit" value="저장하기">
         </div>
     </form>
 </div>
+</body>
 </html>

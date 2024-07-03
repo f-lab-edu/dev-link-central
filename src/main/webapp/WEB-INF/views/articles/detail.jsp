@@ -456,57 +456,63 @@
         }
 
         // 댓글 목록 로드 AJAX 함수
-        var currentPage = 0; // 현재 페이지 번호
-        var pageSize = 3; // 한 페이지에 보여줄 댓글 수
-        var isFetchingComments = false; // AJAX 요청 중복 방지
-        var hasMoreComments = true; // 더 불러올 댓글이 있는지
+        $(document).ready(function() {
+            var currentPage = 0; // 현재 페이지 번호
+            var pageSize = 3; // 한 페이지에 보여줄 댓글 수
+            var isFetchingComments = false; // AJAX 요청 중복 방지
+            var hasMoreComments = true; // 더 불러올 댓글이 있는지
 
-        function loadComments() {
-            if(isFetchingComments || !hasMoreComments) return; // 중복 요청 및 더 이상 불러올 댓글이 없을 때 요청 방지
+            function loadComments() {
+                if (isFetchingComments || !hasMoreComments) return; // 중복 요청 및 더 이상 불러올 댓글이 없을 때 요청 방지
 
-            isFetchingComments = true;
-            $.ajax({
-                url: "/api/v1/article/" + articleId + "/comments",
-                type: "GET",
-                data: {
-                    offset: currentPage * pageSize,
-                    limit: pageSize
-                },
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
-                success: function(response) {
-                    if(response.comments.length > 0){
-                        var commentsHtml = response.comments.map(function(comment) {
-                            return "<tr id='comment-row-" + comment.id + "'>" +
-                                "<td id='comment-content-" + comment.id + "'><span class='bold'>" + comment.nickname + "</span>: " + comment.contents + "</td>" +
-                                "<td class='right-align'>" + comment.createdAt +
-                                " <button onclick='editComment(" + comment.id + ")'>수정</button>" +
-                                " <button onclick='deleteComment(" + comment.id + ")'>삭제</button></td>" +
-                                "</tr>";
-                        }).join('');
-                        $("#comment-list table tbody").append(commentsHtml);
-                        currentPage++; // 페이지 번호 증가
-                        $("#moreCommentsIndicator").show();
-                    } else {
-                        hasMoreComments = false; // 더 불러올 댓글이 없음
-                        $("#moreCommentsIndicator").hide();
+                isFetchingComments = true;
+                $.ajax({
+                    url: "/api/v1/article/" + articleId + "/comments",
+                    type: "GET",
+                    data: {
+                        offset: currentPage * pageSize,
+                        limit: pageSize
+                    },
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
+                    success: function(response) {
+                        if (response.comments.length > 0) {
+                            var commentsHtml = response.comments.map(function(comment) {
+                                return "<tr id='comment-row-" + comment.id + "'>" +
+                                    "<td id='comment-content-" + comment.id + "'><span class='bold'>" + comment.nickname + "</span>: " + comment.contents + "</td>" +
+                                    "<td class='right-align'>" + comment.createdAt +
+                                    " <button onclick='editComment(" + comment.id + ")'>수정</button>" +
+                                    " <button onclick='deleteComment(" + comment.id + ")'>삭제</button></td>" +
+                                    "</tr>";
+                            }).join('');
+                            $("#comment-list table tbody").append(commentsHtml);
+                            currentPage++; // 페이지 번호 증가
+
+                            // 서버로부터 받은 hasMoreComments 값을 기반으로 메시지 표시 여부 결정
+                            if (response.hasMoreComments) {
+                                $("#moreCommentsIndicator").show();
+                            } else {
+                                $("#moreCommentsIndicator").hide();
+                            }
+                        } else {
+                            hasMoreComments = false; // 더 불러올 댓글이 없음
+                            $("#moreCommentsIndicator").hide();
+                        }
+                        isFetchingComments = false;
+                    },
+                    error: function(xhr, status, error) {
+                        alert('댓글 목록 로딩 실패: ' + xhr.responseText);
+                        isFetchingComments = false;
                     }
-                    isFetchingComments = false;
-                },
-                error: function(xhr, status, error) {
-                    alert('댓글 목록 로딩 실패: ' + xhr.responseText);
-                    isFetchingComments = false;
+                });
+            }
+
+            // 스크롤 이벤트 리스너를 수정하여 스크롤이 페이지 하단에 도달할 때마다 새로운 댓글을 로드
+            $(window).scroll(function() {
+                if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                    loadComments(); // 댓글 로드 함수 호출
                 }
             });
-        }
 
-        // 스크롤 이벤트 리스너를 수정하여 스크롤이 페이지 하단에 도달할 때마다 새로운 댓글을 로드
-        $(window).scroll(function() {
-            if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
-                loadComments(); // 댓글 로드 함수 호출
-            }
-        });
-
-        $(document).ready(function() {
             loadComments(); // 초기 댓글 로드
         });
     </script>
@@ -519,47 +525,53 @@
             $("#noStudyGroupMessage").hide();
 
             var articleId = $('#articleData').data('articleId');
-            var authorId = <%= article.getWriterId() %>; // 게시글 작성자의 ID
+            var authorId = <%= article.getWriterId() != null ? article.getWriterId() : "null" %>; // 게시글 작성자의 ID
 
             console.log("초기 상태에서 버튼 숨김");
 
-            // 그룹 존재 여부 확인
-            $.ajax({
-                url: "/api/v1/study-group/user/" + authorId + "/group-existence",
-                type: "GET",
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
-                },
-                success: function(response) {
-                    console.log("Group existence check response:", response); // 응답 확인 로그
+            // 그룹 존재 여부 확인 함수
+            function checkStudyGroupExists(authorId) {
+                if (authorId !== "null") {
+                    $.ajax({
+                        url: "/api/v1/study-group/user/" + authorId + "/group-existence",
+                        type: "GET",
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                        },
+                        success: function(response) {
+                            console.log("Group existence check response:", response); // 응답 확인 로그
 
-                    // 응답 구조와 존재 여부 확인
-                    if (response && response.studyGroupExistsDTO) {
-                        console.log("exists property:", response.studyGroupExistsDTO.exists);
-                        if (response.studyGroupExistsDTO.exists) {
-                            // 그룹이 존재하는 경우, 가입 요청 버튼을 활성화
-                            $("#requestJoinStudyGroup").show();
-                            $("#requestJoinStudyGroup").data("studyGroupId", articleId); // 그룹 ID 설정
-                            console.log("스터디 그룹이 존재함, 버튼 활성화");
-                        } else {
-                            // 그룹이 존재하지 않는 경우, 가입 요청 버튼을 숨기고 메시지를 표시
-                            console.log("스터디 그룹이 존재하지 않음, 버튼 숨김");
-                            $("#requestJoinStudyGroup").hide();
+                            // 응답 구조와 존재 여부 확인
+                            if (response && response.exists) {
+                                console.log("exists property:", response.exists);
+                                if (response.exists) {
+                                    // 그룹이 존재하는 경우, 가입 요청 버튼을 활성화
+                                    $("#requestJoinStudyGroup").show();
+                                    $("#requestJoinStudyGroup").data("studyGroupId", response.groupId); // 그룹 ID 설정
+                                    console.log("스터디 그룹이 존재함, 버튼 활성화, 스터디 그룹 ID:", response.groupId);
+                                } else {
+                                    // 그룹이 존재하지 않는 경우, 가입 요청 버튼을 숨기고 메시지를 표시
+                                    console.log("스터디 그룹이 존재하지 않음, 버튼 숨김");
+                                    $("#requestJoinStudyGroup").hide();
+                                    $("#noStudyGroupMessage").show();
+                                }
+                            } else {
+                                // 예상하지 못한 응답 구조인 경우, 버튼을 숨기고 메시지를 표시
+                                console.warn("Unexpected response structure:", response);
+                                $("#requestJoinStudyGroup").hide();
+                                $("#noStudyGroupMessage").show();
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("스터디 그룹 존재 여부 확인 실패:", status, error);
+                            $("#requestJoinStudyGroup").hide(); // 오류 발생 시 버튼 숨김
                             $("#noStudyGroupMessage").show();
                         }
-                    } else {
-                        // 예상하지 못한 응답 구조인 경우, 버튼을 숨기고 메시지를 표시
-                        console.warn("Unexpected response structure:", response);
-                        $("#requestJoinStudyGroup").hide();
-                        $("#noStudyGroupMessage").show();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("스터디 그룹 존재 여부 확인 실패:", status, error);
-                    $("#requestJoinStudyGroup").hide(); // 오류 발생 시 버튼 숨김
-                    $("#noStudyGroupMessage").show();
+                    });
+                } else {
+                    console.error("articleAuthorId is null");
                 }
-            });
+            }
 
             // 스터디 그룹 가입 요청 버튼 클릭 이벤트 처리
             $("#requestJoinStudyGroup").click(function() {
@@ -584,6 +596,7 @@
                 }
             });
 
+            // 로그인한 사용자 정보와 게시글 작성자 정보를 비교하여 버튼 표시 제어
             $.ajax({
                 type: "GET",
                 url: "/api/v1/article/member-info",
@@ -594,22 +607,27 @@
                     console.log("memberId: " + response.memberId);
 
                     var loggedInMemberId = response.memberId; // 로그인한 사용자의 ID
-                    var articleAuthorId = <%= article.getWriterId() %>; // 게시글 작성자의 ID
+                    var articleAuthorId = <%= article.getWriterId() != null ? article.getWriterId() : "null" %>; // 게시글 작성자의 ID
 
-                    console.log("값 있어? loggedInMemberId: " + loggedInMemberId);
-                    console.log("값 있어? articleAuthorId: " + articleAuthorId);
+                    console.log("loggedInMemberId: " + loggedInMemberId);
+                    console.log("articleAuthorId: " + articleAuthorId);
 
-                    // 로그인한 사용자 ID와 게시글 작성자 ID 비교
-                    if (loggedInMemberId === articleAuthorId) {
-                        // 게시글 작성자: 목록, 수정, 삭제 버튼 활성화, 가입 요청 버튼 비활성화
-                        $("#updateBtn").show();
-                        $("#deleteBtn").show();
-                        $("#requestJoinStudyGroup").hide();
+                    if (articleAuthorId !== "null") {
+                        // 로그인한 사용자 ID와 게시글 작성자 ID 비교
+                        if (loggedInMemberId == articleAuthorId) {  // 타입 일치를 위해 == 사용
+                            // 게시글 작성자: 목록, 수정, 삭제 버튼 활성화, 가입 요청 버튼 비활성화
+                            $("#updateBtn").show();
+                            $("#deleteBtn").show();
+                            $("#requestJoinStudyGroup").hide();
+                            $("#noStudyGroupMessage").hide(); // 메시지도 숨김
+                        } else {
+                            // 다른 사용자: 목록 버튼만 활성화, 수정, 삭제 버튼 비활성화, 가입 요청 버튼 활성화
+                            $("#updateBtn").hide();
+                            $("#deleteBtn").hide();
+                            checkStudyGroupExists(authorId);
+                        }
                     } else {
-                        // 다른 사용자: 목록 버튼만 활성화, 수정, 삭제 버튼 비활성화, 가입 요청 버튼 활성화
-                        $("#updateBtn").hide();
-                        $("#deleteBtn").hide();
-                        $("#requestJoinStudyGroup").show();
+                        console.error("articleAuthorId is null");
                     }
                 },
                 error: function (xhr) {
@@ -626,15 +644,14 @@
         <span class="title">스터디 모집 상세보기</span>
         <div class="button-group">
             <button id="listBtn" onclick="listReq()">목록</button>
+            <span id="noStudyGroupMessage" style="display:none; color: red; margin-left: 10px;">
+            그룹이 생성되어 있지 않습니다.
+            </span>
             <button id="updateBtn" onclick="updateReq()" style="display:none;">수정</button>
             <button id="deleteBtn" onclick="deleteReq()" style="display:none;">삭제</button>
         </div>
 
         <button id="requestJoinStudyGroup" style="display:none;">스터디 그룹 가입 요청</button>
-    </div>
-    <!-- 스터디 그룹이 없을 경우 출력될 메시지 -->
-    <div id="noStudyGroupMessage" style="display:none; color: red; text-align: right; margin-top: -13px;">
-        작성자님이 아직 스터디 그룹을 생성하지 않았습니다.
     </div>
     <div class="detail-grid">
         <div>
@@ -695,6 +712,5 @@
         <button id="comment-write-btn" onclick="commentWrite()">댓글 작성</button>
     </div>
 </div>
-
 </body>
 </html>

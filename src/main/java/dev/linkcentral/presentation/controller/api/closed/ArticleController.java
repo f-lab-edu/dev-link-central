@@ -28,9 +28,9 @@ public class ArticleController {
      * @return 현재 사용자의 ID를 포함하는 ArticleMemberResponse를 반환합니다.
      */
     @GetMapping("/member-info")
-    public ResponseEntity<ArticleMemberResponse> getMemberInfo() {
+    public ResponseEntity<ArticleMemberInfoResponse> getMemberInfo() {
         ArticleCurrentMemberDTO currentMemberId = articleFacade.getCurrentMemberId();
-        ArticleMemberResponse response = ArticleMemberResponse.toArticleMemberResponse(currentMemberId.getMemberId());
+        ArticleMemberInfoResponse response = ArticleMemberInfoResponse.toArticleMemberResponse(currentMemberId.getMemberId());
         return ResponseEntity.ok(response);
     }
 
@@ -41,10 +41,10 @@ public class ArticleController {
      * @return 생성된 기사의 정보를 포함하는 ArticleCreateResponse를 반환합니다.
      */
     @PostMapping
-    public ResponseEntity<ArticleCreateResponse> createArticle(@Validated @RequestBody ArticleCreateRequest articleCreateRequest) {
+    public ResponseEntity<ArticleCreatedResponse> createArticle(@Validated @RequestBody ArticleCreateRequest articleCreateRequest) {
         ArticleCreateRequestDTO createRequestDTO = ArticleCreateRequest.toArticleCreateCommand(articleCreateRequest);
         ArticleCreateDTO articleCreateDTO = articleFacade.createAndSaveArticle(createRequestDTO);
-        ArticleCreateResponse response = ArticleCreateResponse.toArticleCreateResponse(articleCreateDTO);
+        ArticleCreatedResponse response = ArticleCreatedResponse.toArticleCreateResponse(articleCreateDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -55,10 +55,10 @@ public class ArticleController {
      * @return 업데이트된 기사의 정보를 포함하는 ArticleUpdateResponse를 반환합니다.
      */
     @PutMapping
-    public ResponseEntity<ArticleUpdateResponse> updateArticle(@Validated @RequestBody ArticleUpdateRequest updateRequest) {
+    public ResponseEntity<ArticleUpdatedResponse> updateArticle(@Validated @RequestBody ArticleUpdateRequest updateRequest) {
         ArticleUpdateRequestDTO updateRequestDTO = ArticleUpdateRequest.toArticleUpdateRequestCommand(updateRequest);
         ArticleUpdatedDTO articleUpdatedDTO = articleFacade.updateArticle(updateRequestDTO);
-        ArticleUpdateResponse response = ArticleUpdateResponse.toArticleUpdateResponse(HttpStatus.OK.value(), articleUpdatedDTO);
+        ArticleUpdatedResponse response = ArticleUpdatedResponse.toArticleUpdateResponse(HttpStatus.OK.value(), articleUpdatedDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -69,9 +69,9 @@ public class ArticleController {
      * @return 삭제 성공 여부를 나타내는 ArticleDeleteResponse를 반환합니다.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ArticleDeleteResponse> deleteArticle(@PathVariable("id") Long id) {
+    public ResponseEntity<ArticleDeletedResponse> deleteArticle(@PathVariable("id") Long id) {
         articleFacade.deleteArticle(id);
-        ArticleDeleteResponse response = ArticleDeleteResponse.toArticleDeleteResponse();
+        ArticleDeletedResponse response = ArticleDeletedResponse.toArticleDeleteResponse();
         return ResponseEntity.ok(response);
     }
 
@@ -82,9 +82,9 @@ public class ArticleController {
      * @return 좋아요 상태와 좋아요 수를 포함하는 ArticleLikeResponse를 반환합니다.
      */
     @PostMapping("/{id}/like")
-    public ResponseEntity<ArticleLikeResponse> toggleArticleLike(@PathVariable Long id) {
+    public ResponseEntity<ArticleLikedResponse> toggleArticleLike(@PathVariable Long id) {
         ArticleLikeDTO articleLikeDTO = articleFacade.toggleLike(id);
-        ArticleLikeResponse response = ArticleLikeResponse.toArticleLikeResponse(articleLikeDTO);
+        ArticleLikedResponse response = ArticleLikedResponse.toArticleLikeResponse(articleLikeDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -95,9 +95,9 @@ public class ArticleController {
      * @return 좋아요 수를 포함하는 ArticleLikesCountResponse를 반환합니다.
      */
     @GetMapping("/{id}/likes-count")
-    public ResponseEntity<ArticleLikesCountResponse> getArticleLikesCount(@PathVariable Long id) {
+    public ResponseEntity<ArticleLikesCountedResponse> getArticleLikesCount(@PathVariable Long id) {
         ArticleLikesCountDTO likesCountDTO = articleFacade.getLikesCount(id);
-        ArticleLikesCountResponse response = ArticleLikesCountResponse.toArticleLikesCountResponse(likesCountDTO.getLikesCount());
+        ArticleLikesCountedResponse response = ArticleLikesCountedResponse.toArticleLikesCountResponse(likesCountDTO.getLikesCount());
         return ResponseEntity.ok(response);
     }
 
@@ -109,8 +109,8 @@ public class ArticleController {
      * @return 추가된 댓글의 정보를 포함하는 ArticleCommentResponse를 반환합니다.
      */
     @PostMapping("/{id}/comments")
-    public ResponseEntity<ArticleCommentResponse> saveArticleComment(@PathVariable Long id,
-                          @Validated @RequestBody ArticleCommentRequest commentRequest) {
+    public ResponseEntity<ArticleCommentedResponse> saveArticleComment(@PathVariable Long id,
+                                                                       @Validated @RequestBody ArticleCommentRequest commentRequest) {
 
         if (commentRequest.getContents() == null) {
             throw new IllegalArgumentException("댓글 내용은 null이 아니어야 합니다.");
@@ -118,7 +118,7 @@ public class ArticleController {
         ArticleCommentRequestDTO commentRequestDTO = ArticleCommentRequest.toArticleCommentRequestCommand(commentRequest, id);
         ArticleCommentDTO commentSaveDTO = articleFacade.commentSave(commentRequestDTO);
 
-        ArticleCommentResponse response = ArticleCommentResponse.toCommentResponse(commentSaveDTO);
+        ArticleCommentedResponse response = ArticleCommentedResponse.toCommentResponse(commentSaveDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -130,12 +130,12 @@ public class ArticleController {
      * @return 업데이트된 댓글의 정보를 포함하는 ArticleCommentUpdateResponse를 반환합니다.
      */
     @PutMapping("/comment/{commentId}")
-    public ResponseEntity<ArticleCommentUpdateResponse> updateArticleComment(@PathVariable Long commentId,
-                          @Validated @RequestBody ArticleCommentRequest commentRequest) {
+    public ResponseEntity<ArticleCommentUpdatedResponse> updateArticleComment(@PathVariable Long commentId,
+                                                                              @Validated @RequestBody ArticleCommentRequest commentRequest) {
 
         ArticleCommentRequestDTO commentRequestDTO = ArticleCommentRequest.toArticleCommentRequestCommand(commentRequest);
         ArticleCommentUpdateDTO commentUpdateDTO = articleFacade.updateComment(commentRequestDTO, commentId);
-        ArticleCommentUpdateResponse response = ArticleCommentUpdateResponse.toArticleCommentUpdateResponse(commentUpdateDTO);
+        ArticleCommentUpdatedResponse response = ArticleCommentUpdatedResponse.toArticleCommentUpdateResponse(commentUpdateDTO);
         return ResponseEntity.ok(response);
     }
 
@@ -160,11 +160,11 @@ public class ArticleController {
      * @return 댓글의 페이지를 포함하는 ArticleCommentPageResponse를 반환합니다.
      */
     @GetMapping("/{id}/comments")
-    public ResponseEntity<ArticleCommentPageResponse> showCommentsForArticle(@PathVariable Long id,
-            @RequestParam int offset, @RequestParam int limit) {
-
+    public ResponseEntity<ArticleCommentPagedResponse> showCommentsForArticle(@PathVariable Long id,
+                                                                              @RequestParam int offset, @RequestParam int limit) {
         Page<ArticleCommentViewDTO> commentsPage = articleFacade.getCommentsForArticle(id, offset, limit);
-        ArticleCommentPageResponse response = ArticleCommentPageResponse.toArticleCommentPageResponse(commentsPage);
+        boolean hasMoreComments = commentsPage.getTotalElements() > (offset + commentsPage.getNumberOfElements());
+        ArticleCommentPagedResponse response = ArticleCommentPagedResponse.toArticleCommentPageResponse(commentsPage, hasMoreComments);
         return ResponseEntity.ok(response);
     }
 }

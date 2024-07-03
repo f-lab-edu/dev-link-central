@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCommentResponse {
+public class ArticleCommentedResponse {
 
     private Long id;
     private Long articleId;
@@ -16,8 +16,8 @@ public class ArticleCommentResponse {
     private String writerNickname;
     private String createdAt;
 
-    public static ArticleCommentResponse toCommentResponse(ArticleCommentDTO savedCommentDTO) {
-        return new ArticleCommentResponse(
+    public static ArticleCommentedResponse toCommentResponse(ArticleCommentDTO savedCommentDTO) {
+        return new ArticleCommentedResponse(
                 savedCommentDTO.getId(),
                 savedCommentDTO.getArticleId(),
                 savedCommentDTO.getContents(),

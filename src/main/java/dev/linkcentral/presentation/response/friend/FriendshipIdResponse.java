@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendshipResponse {
+public class FriendshipIdResponse {
 
     private Long friendshipId;
 
-    public static FriendshipResponse toFriendshipId(Long friendshipId) {
-        return new FriendshipResponse(friendshipId);
+    public static FriendshipIdResponse toFriendshipId(Long friendshipId) {
+        return new FriendshipIdResponse(friendshipId);
     }
 }

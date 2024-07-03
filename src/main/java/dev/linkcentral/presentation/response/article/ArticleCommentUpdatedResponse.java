@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleCommentUpdateResponse {
+public class ArticleCommentUpdatedResponse {
 
     private Long id;
     private String contents;
     private String writerNickname;
 
-    public static ArticleCommentUpdateResponse toArticleCommentUpdateResponse(ArticleCommentUpdateDTO commentUpdateDTO) {
-        return new ArticleCommentUpdateResponse(
+    public static ArticleCommentUpdatedResponse toArticleCommentUpdateResponse(ArticleCommentUpdateDTO commentUpdateDTO) {
+        return new ArticleCommentUpdatedResponse(
                 commentUpdateDTO.getId(),
                 commentUpdateDTO.getContents(),
                 commentUpdateDTO.getNickname()

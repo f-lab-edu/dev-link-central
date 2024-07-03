@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupFeedLikeResponse {
+public class GroupFeedLikedResponse {
 
     private int likeCount;
     private boolean liked;
 
-    public static GroupFeedLikeResponse toGroupFeedLikeResponse(GroupFeedLikeDTO groupFeedLikeDTO) {
-        return GroupFeedLikeResponse.builder()
+    public static GroupFeedLikedResponse toGroupFeedLikeResponse(GroupFeedLikeDTO groupFeedLikeDTO) {
+        return GroupFeedLikedResponse.builder()
                 .likeCount(groupFeedLikeDTO.getLikeCount())
                 .liked(groupFeedLikeDTO.isLiked())
                 .build();

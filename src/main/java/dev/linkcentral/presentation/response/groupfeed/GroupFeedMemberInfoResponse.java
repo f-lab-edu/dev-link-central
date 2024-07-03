@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupFeedInfoResponse {
+public class GroupFeedMemberInfoResponse {
 
     private Long memberId;
     private String name;
     private String nickname;
 
-    public static GroupFeedInfoResponse toGroupFeedInfoResponse(MemberCurrentDTO memberCurrentDTO) {
-        return GroupFeedInfoResponse.builder()
+    public static GroupFeedMemberInfoResponse toGroupFeedInfoResponse(MemberCurrentDTO memberCurrentDTO) {
+        return GroupFeedMemberInfoResponse.builder()
                 .memberId(memberCurrentDTO.getMemberId())
                 .name(memberCurrentDTO.getName())
                 .nickname(memberCurrentDTO.getNickname())

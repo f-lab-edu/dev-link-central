@@ -7,7 +7,7 @@ import dev.linkcentral.presentation.request.member.MemberSaveRequest;
 import dev.linkcentral.presentation.response.member.LoginSuccessResponse;
 import dev.linkcentral.presentation.response.member.MailPasswordResetResponse;
 import dev.linkcentral.presentation.response.member.MemberPasswordResponse;
-import dev.linkcentral.presentation.response.member.MemberSaveResponse;
+import dev.linkcentral.presentation.response.member.MemberSavedResponse;
 import dev.linkcentral.service.dto.member.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationResultDTO;
@@ -38,11 +38,11 @@ public class MemberPublicController {
      */
     @PostMapping("/register")
     @ResponseBody
-    public ResponseEntity<MemberSaveResponse> register(@Validated @RequestBody MemberSaveRequest memberSaveRequest) {
+    public ResponseEntity<MemberSavedResponse> register(@Validated @RequestBody MemberSaveRequest memberSaveRequest) {
         MemberRegistrationDTO memberDTO = MemberSaveRequest.toMemberRegistrationCommand(memberSaveRequest);
         MemberRegistrationResultDTO registrationResultDTO = memberFacade.registerNewMember(memberDTO);
 
-        MemberSaveResponse response = MemberSaveResponse.toMemberSaveResponse(registrationResultDTO);
+        MemberSavedResponse response = MemberSavedResponse.toMemberSaveResponse(registrationResultDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

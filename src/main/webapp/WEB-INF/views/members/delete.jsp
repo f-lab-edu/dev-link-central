@@ -37,7 +37,8 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            min-height: 300px;
+            max-width: 430px;
         }
 
         .page-header {
@@ -49,36 +50,64 @@
             font-size: 24px;
             box-shadow: 0 2px 5px rgba(0, 0, 255, 0.2);
             margin-bottom: 20px;
+            position: relative;
+        }
+
+        .menu-button, .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 25%;
+        }
+
+        .menu-button:hover, .btn-primary:hover {
+            background-color: #0056b3;
         }
 
         form {
             width: 100%;
         }
 
-        input[type="password"], .btn {
-            width: 50%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+        label {
+            font-weight: bold;
+            margin-top: 10px;
         }
 
         input[type="password"] {
             width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 7px;
             border: 1px solid #ced4da;
         }
 
-        .btn-primary {
+        .btn-container button {
+            width: 80px;
+            padding: 12px;
+            color: #fff;
             background-color: #007bff;
-            border-color: #007bff;
-            float: right;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            margin-left: 13px;
         }
 
         .invalid-feedback {
             color: #dc3545;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .menu-button:hover, .btn-primary:hover {
+            background-color: #0056b3;
         }
     </style>
 
@@ -98,30 +127,33 @@
                 success: function(memberDeleteResponse) {
                     if (memberDeleteResponse.success) {
                         alert(memberDeleteResponse.message);
+                        localStorage.removeItem('jwt');
+                        // 로그아웃 후 홈페이지로 리디렉션
                         window.location.href = "/";
                     } else {
                         alert(memberDeleteResponse.message);
                     }
                 },
                 error: function(xhr, status, error) {
-                    alert('회원 탈퇴에 실패했습니다. 오류 메시지: ' + xhr.responseText);
+                    alert('회원 비밀번호가 일치하지 않습니다.');
                 }
             });
         }
-    </script>
 
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
+    </script>
 </head>
 <body>
-
 <div class="container">
     <form id="deleteForm" onsubmit="deleteMember(event)">
         <div class="page-header">회원 탈퇴</div>
-        <label for="password">비밀번호</label>
+        <label for="password">현재 비밀번호 입력:</label>
         <c:choose>
             <c:when test="${empty message}">
                 <div class="form-floating mb-3">
                     <input type="password" name="password" class="form-control" id="password" required>
-
                 </div>
             </c:when>
             <c:otherwise>
@@ -132,8 +164,10 @@
                 </div>
             </c:otherwise>
         </c:choose>
-
-        <button type="submit" class="btn btn-primary">회원 탈퇴</button>
+        <div class="btn-container">
+            <button type="button" class="menu-button" onclick="home()">이전</button>
+            <button type="submit" class="btn btn-primary">탈퇴</button>
+        </div>
     </form>
 </div>
 </body>

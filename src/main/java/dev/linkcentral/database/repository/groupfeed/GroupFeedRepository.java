@@ -1,6 +1,9 @@
 package dev.linkcentral.database.repository.groupfeed;
 
 import dev.linkcentral.database.entity.groupfeed.GroupFeed;
+import dev.linkcentral.database.entity.member.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,4 +14,6 @@ public interface GroupFeedRepository extends JpaRepository<GroupFeed, Long> {
     List<GroupFeed> findByMemberId(Long memberId);
 
     Optional<GroupFeed> findByIdAndMemberId(Long feedId, Long memberId);
+
+    Page<GroupFeed> findAllByMemberInOrMemberId(List<Member> members, Long memberId, Pageable pageable);
 }

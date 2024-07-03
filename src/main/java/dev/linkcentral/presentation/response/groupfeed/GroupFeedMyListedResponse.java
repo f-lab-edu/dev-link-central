@@ -12,12 +12,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MyFeedListResponse {
+public class GroupFeedMyListedResponse {
 
     private List<MyGroupFeedDetailsDTO> feeds;
 
-    public static MyFeedListResponse toMyFeedListResponse(List<MyGroupFeedDetailsDTO> memberFeeds) {
-        return MyFeedListResponse.builder()
+    public static GroupFeedMyListedResponse toMyFeedListResponse(List<MyGroupFeedDetailsDTO> memberFeeds) {
+        return GroupFeedMyListedResponse.builder()
                 .feeds(memberFeeds)
                 .build();
     }

@@ -7,7 +7,6 @@ import dev.linkcentral.service.dto.groupfeed.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.mapper.GroupFeedMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,10 +27,6 @@ public class GroupFeedFacade {
     public GroupFeedSavedDTO createGroupFeed(GroupFeedCreateDTO groupFeedCreateDTO) {
         Member currentMember = memberService.getCurrentMember();
         return groupFeedService.createGroupFeed(groupFeedCreateDTO);
-    }
-
-    public Page<GroupFeedWithProfileDTO> getGroupFeeds(int offset, int limit) {
-        return groupFeedService.getGroupFeeds(offset, limit);
     }
 
     public List<MyGroupFeedDetailsDTO> getAllFeedsByMemberId() {
@@ -74,5 +69,9 @@ public class GroupFeedFacade {
     public GroupFeedLikeDTO toggleLike(Long feedId) {
         Long memberId = memberService.getCurrentMember().getId();
         return groupFeedService.toggleLike(feedId, memberId);
+    }
+
+    public GroupFeedPageDTO getGroupFeedsForUser(Long userId, int offset, int limit) {
+        return groupFeedService.getGroupFeedsForUser(userId, offset, limit);
     }
 }
