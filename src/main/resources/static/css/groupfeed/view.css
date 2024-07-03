@@ -1,0 +1,281 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    padding: 20px;
+}
+
+.feed-container {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.feed-item {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.feed-item img.feed-image {
+    width: 90%;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 20px;
+    display: block;
+    margin: 20px auto;
+}
+
+.profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.writer-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.writer-details {
+    display: flex;
+    align-items: center;
+}
+
+.writer-name {
+    font-size: 1.3em;
+    margin-top: 15px;
+    font-weight: normal;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.writer-name:hover {
+    color: #007bff;
+}
+
+.feed-title {
+    font-size: 1.5em;
+    margin-left: 170px;
+    text-align: left;
+    flex-grow: 1;
+    font-weight: bold;
+}
+
+.loading-spinner {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.group-feed-create-button:hover {
+    background-color: #0056b3;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: -20px;
+    font-size: 27px;
+    font-weight: bold;
+    color: #007bff;
+    position: relative;
+}
+
+.feed-content {
+    margin-top: 20px;
+    padding-left: 35px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.feed-created {
+    text-align: right;
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
+.comments-section {
+    margin-top: 20px;
+}
+
+.comment-item {
+    padding: 10px;
+}
+
+.comment-writer {
+    font-weight: bold;
+}
+
+.comment-inline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: baseline;
+    margin-bottom: -24px;
+}
+
+.comment-actions a:hover {
+    text-decoration: underline;
+}
+
+h4, .h4 {
+    color: #007bff;
+    font-size: 1.4em;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.form-group textarea {
+    flex-grow: 1;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.form-group button {
+    height: 60px;
+    width: 11%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.comment-content {
+    flex-grow: 1;
+    word-wrap: break-word;
+}
+
+.comment-actions {
+    margin-left: 10px;
+    display: flex;
+    align-items: baseline;
+}
+
+.comment-actions a {
+    margin-left: 5px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.comment-actions button {
+    border: none;
+    background: none;
+    color: #007bff;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9em;
+}
+
+textarea.edit-comment-textarea {
+    height: 38px;
+    width: 80%;
+    resize: none;
+}
+
+.input-group {
+    width: 225%;
+}
+
+.input-group-append .btn {
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+.feed-created {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.like-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 8px 15px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.like-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.like-button svg {
+    margin-right: 5px;
+    fill: white;
+    width: 16px;
+    height: 16px;
+}
+
+.like-button span {
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+.button-container {
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+    position: relative;
+    top: -47px;
+    left: -400px;
+}
+
+.group-feed-create-button,
+.menu-button {
+    width: auto;
+    padding: 10px 16px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.group-feed-create-button:hover,
+.menu-button:hover {
+    background-color: #0056b3;
+}
+
+
+.title-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 400px;
+}
+
+.site-title {
+    font-size: 2.3em;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.no-feeds-message {
+    text-align: center;
+    font-size: 1.3em;
+    color: #888;
+    padding: 130px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
