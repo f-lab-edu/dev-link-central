@@ -23,9 +23,9 @@ public class ArticleController {
     private final ArticleFacade articleFacade;
 
     /**
-     * 현재 사용자의 정보를 가져옵니다.
+     * 현재 회원의 정보를 가져옵니다.
      *
-     * @return 현재 사용자의 ID를 포함하는 ArticleMemberResponse를 반환합니다.
+     * @return ArticleMemberInfoResponse 현재 회원의 정보 응답
      */
     @GetMapping("/member-info")
     public ResponseEntity<ArticleMemberInfoResponse> getMemberInfo() {
@@ -35,10 +35,10 @@ public class ArticleController {
     }
 
     /**
-     * 새로운 게시글을 생성합니다.
+     * 새로운 기사를 생성합니다.
      *
-     * @param articleCreateRequest 생성할 기사의 정보를 포함하는 요청 객체
-     * @return 생성된 기사의 정보를 포함하는 ArticleCreateResponse를 반환합니다.
+     * @param articleCreateRequest 기사 생성 요청
+     * @return ArticleCreatedResponse 생성된 기사 응답
      */
     @PostMapping
     public ResponseEntity<ArticleCreatedResponse> createArticle(@Validated @RequestBody ArticleCreateRequest articleCreateRequest) {
@@ -49,10 +49,10 @@ public class ArticleController {
     }
 
     /**
-     * 게시글을 업데이트합니다.
+     * 기사를 업데이트합니다.
      *
-     * @param updateRequest 업데이트할 기사의 정보를 포함하는 요청 객체
-     * @return 업데이트된 기사의 정보를 포함하는 ArticleUpdateResponse를 반환합니다.
+     * @param updateRequest 기사 업데이트 요청
+     * @return ArticleUpdatedResponse 업데이트된 기사 응답
      */
     @PutMapping
     public ResponseEntity<ArticleUpdatedResponse> updateArticle(@Validated @RequestBody ArticleUpdateRequest updateRequest) {
@@ -63,10 +63,10 @@ public class ArticleController {
     }
 
     /**
-     * 게시글을 삭제합니다.
+     * 기사를 삭제합니다.
      *
-     * @param id 삭제할 기사의 ID
-     * @return 삭제 성공 여부를 나타내는 ArticleDeleteResponse를 반환합니다.
+     * @param id 기사 ID
+     * @return ArticleDeletedResponse 삭제된 기사 응답
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ArticleDeletedResponse> deleteArticle(@PathVariable("id") Long id) {
@@ -76,10 +76,10 @@ public class ArticleController {
     }
 
     /**
-     * 게시글의 좋아요 상태를 토글합니다.
+     * 기사에 좋아요를 토글합니다.
      *
-     * @param id 좋아요 상태를 토글할 기사의 ID
-     * @return 좋아요 상태와 좋아요 수를 포함하는 ArticleLikeResponse를 반환합니다.
+     * @param id 기사 ID
+     * @return ArticleLikedResponse 기사 좋아요 응답
      */
     @PostMapping("/{id}/like")
     public ResponseEntity<ArticleLikedResponse> toggleArticleLike(@PathVariable Long id) {
@@ -89,10 +89,10 @@ public class ArticleController {
     }
 
     /**
-     * 게시글의 좋아요 수를 가져옵니다.
+     * 기사의 좋아요 수를 가져옵니다.
      *
-     * @param id 좋아요 수를 가져올 기사의 ID
-     * @return 좋아요 수를 포함하는 ArticleLikesCountResponse를 반환합니다.
+     * @param id 기사 ID
+     * @return ArticleLikesCountedResponse 기사 좋아요 수 응답
      */
     @GetMapping("/{id}/likes-count")
     public ResponseEntity<ArticleLikesCountedResponse> getArticleLikesCount(@PathVariable Long id) {
@@ -102,16 +102,15 @@ public class ArticleController {
     }
 
     /**
-     * 게시글에 댓글을 추가합니다.
+     * 기사에 댓글을 추가합니다.
      *
-     * @param id 댓글을 추가할 기사의 ID
-     * @param commentRequest 댓글의 내용을 포함하는 요청 객체
-     * @return 추가된 댓글의 정보를 포함하는 ArticleCommentResponse를 반환합니다.
+     * @param id 기사 ID
+     * @param commentRequest 댓글 요청
+     * @return ArticleCommentedResponse 댓글 응답
      */
     @PostMapping("/{id}/comments")
     public ResponseEntity<ArticleCommentedResponse> saveArticleComment(@PathVariable Long id,
                                                                        @Validated @RequestBody ArticleCommentRequest commentRequest) {
-
         if (commentRequest.getContents() == null) {
             throw new IllegalArgumentException("댓글 내용은 null이 아니어야 합니다.");
         }
@@ -123,16 +122,15 @@ public class ArticleController {
     }
 
     /**
-     * 게시글에 달린 댓글을 업데이트합니다.
+     * 기사 댓글을 업데이트합니다.
      *
-     * @param commentId 업데이트할 댓글의 ID
-     * @param commentRequest 업데이트할 내용을 포함하는 요청 객체
-     * @return 업데이트된 댓글의 정보를 포함하는 ArticleCommentUpdateResponse를 반환합니다.
+     * @param commentId 댓글 ID
+     * @param commentRequest 댓글 요청
+     * @return ArticleCommentUpdatedResponse 댓글 업데이트 응답
      */
     @PutMapping("/comment/{commentId}")
     public ResponseEntity<ArticleCommentUpdatedResponse> updateArticleComment(@PathVariable Long commentId,
                                                                               @Validated @RequestBody ArticleCommentRequest commentRequest) {
-
         ArticleCommentRequestDTO commentRequestDTO = ArticleCommentRequest.toArticleCommentRequestCommand(commentRequest);
         ArticleCommentUpdateDTO commentUpdateDTO = articleFacade.updateComment(commentRequestDTO, commentId);
         ArticleCommentUpdatedResponse response = ArticleCommentUpdatedResponse.toArticleCommentUpdateResponse(commentUpdateDTO);
@@ -140,10 +138,10 @@ public class ArticleController {
     }
 
     /**
-     * 게시글에 달린 댓글을 삭제합니다.
+     * 기사 댓글을 삭제합니다.
      *
-     * @param commentId 삭제할 댓글의 ID
-     * @return No Content 상태를 반환합니다.
+     * @param commentId 댓글 ID
+     * @return HTTP 204 상태 코드
      */
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<Void> deleteArticleComment(@PathVariable Long commentId) {
@@ -152,12 +150,12 @@ public class ArticleController {
     }
 
     /**
-     * 게시글에 달린 댓글들을 페이지네이션하여 가져옵니다.
+     * 특정 기사의 댓글들을 페이지네이션하여 가져옵니다.
      *
-     * @param id 댓글을 가져올 기사의 ID
-     * @param offset 페이지의 오프셋
-     * @param limit 한 페이지에 표시할 댓글의 수
-     * @return 댓글의 페이지를 포함하는 ArticleCommentPageResponse를 반환합니다.
+     * @param id 기사 ID
+     * @param offset 페이지 오프셋
+     * @param limit 페이지당 댓글 수
+     * @return ArticleCommentPagedResponse 댓글 페이지 응답
      */
     @GetMapping("/{id}/comments")
     public ResponseEntity<ArticleCommentPagedResponse> showCommentsForArticle(@PathVariable Long id,

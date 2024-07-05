@@ -26,9 +26,9 @@ public class GroupFeedController {
     private final GroupFeedFacade groupFeedFacade;
 
     /**
-     * 현재 사용자의 정보를 반환합니다.
+     * 현재 사용자의 그룹 피드 정보를 가져옵니다.
      *
-     * @return 사용자 정보 응답
+     * @return 현재 사용자의 그룹 피드 정보 응답
      */
     @GetMapping("/auth/member-info")
     public ResponseEntity<GroupFeedMemberInfoResponse> getGroupFeedInfo() {
@@ -54,9 +54,9 @@ public class GroupFeedController {
     }
 
     /**
-     * 현재 사용자의 모든 피드 목록을 반환합니다.
+     * 현재 사용자의 그룹 피드 목록을 가져옵니다.
      *
-     * @return 사용자의 피드 목록 응답
+     * @return 현재 사용자의 그룹 피드 목록 응답
      */
     @GetMapping("/my-feeds")
     public ResponseEntity<GroupFeedMyListedResponse> getMyFeeds() {
@@ -66,10 +66,10 @@ public class GroupFeedController {
     }
 
     /**
-     * 특정 피드의 세부 정보를 반환합니다.
+     * 특정 피드의 상세 정보를 가져옵니다.
      *
      * @param feedId 피드 ID
-     * @return 피드 세부 정보 응답
+     * @return 피드 상세 정보 응답
      */
     @GetMapping("/{feedId}")
     public ResponseEntity<GroupFeedWithProfiledResponse> getFeedDetail(@PathVariable Long feedId) {
@@ -82,7 +82,7 @@ public class GroupFeedController {
      * 특정 피드를 삭제합니다.
      *
      * @param feedId 피드 ID
-     * @return 응답 없음 (204 No Content)
+     * @return HTTP 204 상태 코드
      */
     @DeleteMapping("/{feedId}")
     public ResponseEntity<Void> deleteFeed(@PathVariable Long feedId) {
@@ -95,8 +95,8 @@ public class GroupFeedController {
      *
      * @param feedId 피드 ID
      * @param groupFeedUpdateRequest 그룹 피드 업데이트 요청
-     * @param image 이미지 파일
-     * @return 응답 없음 (204 No Content)
+     * @param image 이미지 파일 (선택 사항)
+     * @return HTTP 204 상태 코드
      */
     @PutMapping("/{feedId}")
     public ResponseEntity<Void> updateGroupFeed(@PathVariable Long feedId,
@@ -114,7 +114,7 @@ public class GroupFeedController {
      *
      * @param feedId 피드 ID
      * @param commentRequest 댓글 요청
-     * @return 응답 없음 (200 OK)
+     * @return HTTP 200 상태 코드
      */
     @PostMapping("/{feedId}/comments")
     public ResponseEntity<Void> createGroupFeedComment(@PathVariable Long feedId,
@@ -126,10 +126,10 @@ public class GroupFeedController {
     }
 
     /**
-     * 특정 피드의 모든 댓글을 반환합니다.
+     * 특정 피드의 댓글 목록을 가져옵니다.
      *
      * @param feedId 피드 ID
-     * @return 피드 댓글 목록 응답
+     * @return 댓글 목록 응답
      */
     @GetMapping("/{feedId}/comments")
     public ResponseEntity<GroupFeedCommentListedResponse> getComments(@PathVariable Long feedId) {
@@ -144,7 +144,7 @@ public class GroupFeedController {
      * @param feedId 피드 ID
      * @param commentId 댓글 ID
      * @param commentUpdateRequest 댓글 업데이트 요청
-     * @return 응답 없음 (204 No Content)
+     * @return HTTP 204 상태 코드
      */
     @PutMapping("/{feedId}/comments/{commentId}")
     public ResponseEntity<Void> updateComment(@PathVariable Long feedId, @PathVariable Long commentId,
@@ -161,7 +161,7 @@ public class GroupFeedController {
      *
      * @param feedId 피드 ID
      * @param commentId 댓글 ID
-     * @return 응답 없음 (204 No Content)
+     * @return HTTP 204 상태 코드
      */
     @DeleteMapping("/{feedId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long feedId, @PathVariable Long commentId) {
@@ -173,7 +173,7 @@ public class GroupFeedController {
      * 특정 피드에 좋아요를 토글합니다.
      *
      * @param feedId 피드 ID
-     * @return 좋아요 상태 응답
+     * @return GroupFeedLikedResponse 좋아요 상태 응답
      */
     @PostMapping("/{feedId}/like")
     public ResponseEntity<GroupFeedLikedResponse> toggleLike(@PathVariable Long feedId) {
@@ -182,6 +182,14 @@ public class GroupFeedController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 특정 사용자의 그룹 피드 목록을 페이지 단위로 가져옵니다.
+     *
+     * @param userId 사용자 ID
+     * @param offset 페이지 오프셋
+     * @param limit 페이지 크기
+     * @return 그룹 피드 페이지 응답
+     */
     @GetMapping("/user/{userId}")
     public ResponseEntity<GroupFeedPagedResponse> getGroupFeeds(@PathVariable Long userId, @RequestParam int offset,
                                                                 @RequestParam int limit) {
