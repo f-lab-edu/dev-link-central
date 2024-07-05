@@ -21,6 +21,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+/**
+ * JwtTokenProvider는 JWT 토큰 생성, 검증, 파싱 등을 처리하는 클래스입니다.
+ * 이 클래스는 TokenProvider 인터페이스를 구현합니다.
+ */
 @Slf4j
 @Component
 public class JwtTokenProvider implements TokenProvider {
@@ -32,7 +36,12 @@ public class JwtTokenProvider implements TokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
+    /**
+     * 사용자 정보를 기반으로 AccessToken과 RefreshToken을 생성합니다.
+     *
+     * @param authentication 사용자 인증 정보
+     * @return JwtTokenDTO 생성된 토큰 정보
+     */
     @Override
     public JwtTokenDTO generateToken(Authentication authentication) {
         // 권한 가져오기
@@ -64,7 +73,12 @@ public class JwtTokenProvider implements TokenProvider {
                 .build();
     }
 
-    // JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
+    /**
+     * JWT 토큰을 복호화하여 사용자 인증 정보를 반환합니다.
+     *
+     * @param accessToken JWT 액세스 토큰
+     * @return Authentication 사용자 인증 정보
+     */
     @Override
     public Authentication getAuthentication(String accessToken) {
         // 토큰 복호화
@@ -86,7 +100,12 @@ public class JwtTokenProvider implements TokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    // 토큰 정보를 검증하는 메서드
+    /**
+     * JWT 토큰의 유효성을 검증합니다.
+     *
+     * @param token JWT 토큰
+     * @return boolean 유효한 토큰 여부
+     */
     @Override
     public boolean validateToken(String token) {
         try {

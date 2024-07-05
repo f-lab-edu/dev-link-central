@@ -13,6 +13,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Spring Security 설정 클래스
+ * JWT 인증 필터와 패스워드 인코더 설정을 포함합니다.
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -20,11 +24,22 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
 
+
+    /**
+     * 비밀번호 인코더를 Bean으로 등록합니다.
+     * @return BCryptPasswordEncoder 인스턴스
+     */
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * SecurityFilterChain을 설정합니다.
+     * @param httpSecurity HttpSecurity 객체
+     * @return SecurityFilterChain 인스턴스
+     * @throws Exception 예외
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity

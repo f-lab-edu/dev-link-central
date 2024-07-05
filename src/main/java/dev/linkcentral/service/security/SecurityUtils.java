@@ -5,8 +5,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * SecurityUtils는 Spring Security와 관련된 유틸리티 메서드를 제공하는 클래스입니다.
+ */
 public class SecurityUtils {
 
+    /**
+     * 현재 사용자가 인증되었는지 확인합니다.
+     *
+     * @return boolean 인증 여부
+     */
     public static boolean isAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -23,6 +31,11 @@ public class SecurityUtils {
         return isAuthenticationNotNull && isNotAnonymousUser && isAuthenticated;
     }
 
+    /**
+     * 현재 인증된 사용자의 사용자명을 반환합니다.
+     *
+     * @return String 현재 사용자명 (이메일)
+     */
     public static String getCurrentUserUsername() {
         if (isAuthenticated()) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
