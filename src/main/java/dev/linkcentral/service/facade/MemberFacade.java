@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MemberFacade {
 
-    private final MemberService memberService;
     private final MemberMapper memberMapper;
+    private final MemberService memberService;
 
     public MemberInfoDTO getMemberInfo() {
         return memberService.getCurrentUserInfo();

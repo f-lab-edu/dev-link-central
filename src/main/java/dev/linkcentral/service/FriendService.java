@@ -4,7 +4,6 @@ import dev.linkcentral.database.entity.friend.Friend;
 import dev.linkcentral.database.entity.friend.FriendStatus;
 import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.database.repository.friend.FriendRepository;
-import dev.linkcentral.database.repository.member.MemberRepository;
 import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;
 import dev.linkcentral.service.mapper.FriendMapper;
@@ -21,43 +20,38 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FriendService {
 
-    private final FriendRepository friendRepository;
     private final FriendMapper friendMapper;
-    private final MemberRepository memberRepository;
+    private final FriendRepository friendRepository;
 
     /**
-     * 친구 요청을 보냅니다.
+     * 친구 요청을 보낸다
      *
-     * @param senderId 발신자 ID
-     * @param receiverId 수신자 ID
+     * @param sender   친구 요청을 보내는 사용자
+     * @param receiver 친구 요청을 받는 사용자
      * @return 생성된 친구 요청의 ID
      */
     @Transactional
-    public Long sendFriendRequest(Long senderId, Long receiverId) {
-        Member sender = findMemberById(senderId);
-        Member receiver = findMemberById(receiverId);
+    public Long sendFriendRequest(Member sender, Member receiver) {
         validateFriendRequest(sender, receiver);
-
         Friend friendEntity = friendMapper.createFriendRequest(sender, receiver);
         friendRepository.save(friendEntity);
         return friendEntity.getId();
     }
 
     /**
-     * 수신된 친구 요청 목록을 반환합니다.
+     * 받은 친구 요청을 조회
      *
-     * @param receiverId 수신자 ID
-     * @return 친구 요청 목록
+     * @param receiver 친구 요청을 받은 사용자
+     * @return 친구 요청 DTO 목록
      */
     @Transactional(readOnly = true)
-    public List<FriendRequestDTO> getReceivedFriendRequests(Long receiverId) {
-        Member receiver = findMemberById(receiverId);
+    public List<FriendRequestDTO> getReceivedFriendRequests(Member receiver) {
         List<Friend> friends = friendRepository.findAllByReceiverAndStatus(receiver, FriendStatus.REQUESTED);
         return friendMapper.toFriendRequestDTOList(friends);
     }
 
     /**
-     * 친구 요청을 수락합니다.
+     * 친구 요청을 수락
      *
      * @param requestId 친구 요청 ID
      */
@@ -69,7 +63,7 @@ public class FriendService {
     }
 
     /**
-     * 친구 요청을 거절합니다.
+     * 친구 요청을 거절
      *
      * @param requestId 친구 요청 ID
      */
@@ -80,23 +74,21 @@ public class FriendService {
     }
 
     /**
-     * 친구 관계 ID를 조회합니다.
+     * 친구 관계 ID를 조회
      *
-     * @param senderId 발신자 ID
-     * @param receiverId 수신자 ID
+     * @param sender   친구 요청을 보낸 사용자
+     * @param receiver 친구 요청을 받은 사용자
      * @return 친구 관계 ID
      */
     @Transactional
-    public Long findFriendshipId(Long senderId, Long receiverId) {
-        Member sender = findMemberById(senderId, "요청자 ID를 찾을 수 없습니다.");
-        Member receiver = findMemberById(receiverId, "대상의 ID를 찾을 수 없습니다.");
+    public Long findFriendshipId(Member sender, Member receiver) {
         return friendRepository.findBySenderAndReceiver(sender, receiver)
                 .map(Friend::getId)
                 .orElseThrow(() -> new EntityNotFoundException("친구 관계 ID를 찾을 수 없습니다."));
     }
 
     /**
-     * 친구 관계를 삭제합니다.
+     * 친구 관계를 삭제
      *
      * @param friendId 친구 관계 ID
      */
@@ -107,9 +99,9 @@ public class FriendService {
     }
 
     /**
-     * 선택된 친구 관계들을 삭제합니다.
+     * 선택된 친구 관계를 삭제
      *
-     * @param friendIds 친구 관계 ID 목록
+     * @param friendIds 삭제할 친구 관계 ID 목록
      */
     @Transactional
     public void unfriendSelected(List<Long> friendIds) {
@@ -118,10 +110,10 @@ public class FriendService {
     }
 
     /**
-     * 회원의 친구 관계 목록을 반환합니다.
+     * 사용자의 친구 관계 목록을 조회
      *
-     * @param memberId 회원 ID
-     * @return 친구 관계 목록
+     * @param memberId 사용자 ID
+     * @return 친구 관계 DTO 목록
      */
     @Transactional(readOnly = true)
     public List<FriendshipDetailDTO> getFriendships(Long memberId) {
@@ -130,33 +122,10 @@ public class FriendService {
     }
 
     /**
-     * 회원 ID로 회원을 찾습니다.
+     * 친구 요청을 유효성 검사
      *
-     * @param memberId 회원 ID
-     * @return 회원 엔티티
-     */
-    private Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
-    }
-
-    /**
-     * 회원 ID와 오류 메시지로 회원을 찾습니다.
-     *
-     * @param memberId 회원 ID
-     * @param errorMessage 오류 메시지
-     * @return 회원 엔티티
-     */
-    private Member findMemberById(Long memberId, String errorMessage) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException(errorMessage));
-    }
-
-    /**
-     * 친구 요청을 유효성 검사합니다.
-     *
-     * @param sender 발신자 회원 엔티티
-     * @param receiver 수신자 회원 엔티티
+     * @param sender   친구 요청을 보내는 사용자
+     * @param receiver 친구 요청을 받는 사용자
      */
     private void validateFriendRequest(Member sender, Member receiver) {
         boolean friendRequestExists = friendRepository.existsFriendshipBothWays(sender, receiver);
@@ -166,10 +135,10 @@ public class FriendService {
     }
 
     /**
-     * 친구 요청 ID로 친구 요청을 찾습니다.
+     * 주어진 ID로 친구 요청을 찾는다.
      *
      * @param requestId 친구 요청 ID
-     * @return 친구 엔티티
+     * @return 친구 요청 엔티티
      */
     private Friend findFriendRequestById(Long requestId) {
         return friendRepository.findById(requestId)
@@ -177,11 +146,11 @@ public class FriendService {
     }
 
     /**
-     * 친구 요청 ID와 상태로 친구 요청을 찾습니다.
+     * 주어진 ID와 상태로 친구 요청을 찾는다.
      *
      * @param requestId 친구 요청 ID
-     * @param status 친구 요청 상태
-     * @return 친구 엔티티
+     * @param status    친구 요청 상태
+     * @return 친구 요청 엔티티
      */
     private Friend findFriendRequestByIdAndStatus(Long requestId, FriendStatus status) {
         return friendRepository.findByIdAndStatus(requestId, status)
@@ -189,9 +158,9 @@ public class FriendService {
     }
 
     /**
-     * 친구 ID 목록의 유효성을 검사합니다.
+     * 친구 관계 ID 목록을 유효성 검사
      *
-     * @param friendIds 친구 ID 목록
+     * @param friendIds 친구 관계 ID 목록
      */
     private void validateFriendIds(List<Long> friendIds) {
         if (friendIds == null || friendIds.isEmpty()) {
@@ -200,9 +169,9 @@ public class FriendService {
     }
 
     /**
-     * 친구 ID로 친구 관계를 삭제합니다.
+     * 주어진 ID로 친구 관계를 삭제
      *
-     * @param friendId 친구 ID
+     * @param friendId 친구 관계 ID
      */
     private void deleteFriendById(Long friendId) {
         Friend friend = findFriendRequestById(friendId);

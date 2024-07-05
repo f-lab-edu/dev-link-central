@@ -5,7 +5,6 @@ import dev.linkcentral.common.exception.ResourceNotFoundException;
 import dev.linkcentral.database.entity.article.*;
 import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.database.repository.article.*;
-import dev.linkcentral.database.repository.member.MemberRepository;
 import dev.linkcentral.service.dto.article.*;
 import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import dev.linkcentral.service.mapper.ArticleMapper;
@@ -29,34 +28,33 @@ public class ArticleService {
 
     public static final int MAX_RETRIES = 3;
 
+    private final ArticleMapper articleMapper;
     private final ArticleRepository articleRepository;
+    private final ArticleCommentMapper articleCommentMapper;
     private final ArticleLikeRepository articleLikeRepository;
+    private final ArticleViewRepository articleViewRepository;
     private final ArticleCommentRepository articleCommentRepository;
     private final ArticleStatisticRepository articleStatisticRepository;
-    private final ArticleViewRepository articleViewRepository;
-    private final MemberRepository memberRepository;
-    private final ArticleMapper articleMapper;
-    private final ArticleCommentMapper articleCommentMapper;
 
     /**
-     * 새로운 게시글을 저장합니다.
+     * 게시글을 저장
      *
-     * @param articleDTO 저장할 기사의 정보
-     * @return 저장된 기사의 정보
+     * @param articleDTO 게시글 생성 DTO
+     * @param member     현재 사용자
+     * @return 저장된 게시글 DTO
      */
     @Transactional
-    public ArticleCreateDTO saveArticle(ArticleCreateDTO articleDTO) {
-        Member member = findMemberById(articleDTO.getWriterId());
+    public ArticleCreateDTO saveArticle(ArticleCreateDTO articleDTO, Member member) {
         Article article = articleMapper.toArticleEntity(articleDTO, member);
         Article savedArticle = articleRepository.save(article);
         return articleMapper.toArticleCreateDTO(savedArticle);
     }
 
     /**
-     * ID로 게시글의 상세 정보를 가져옵니다.
+     * 게시글을 ID로 조회
      *
-     * @param id 기사의 ID
-     * @return 기사의 상세 정보
+     * @param id 게시글 ID
+     * @return 게시글 상세 DTO
      */
     @Transactional(readOnly = true)
     public ArticleDetailsDTO getArticleById(Long id) {
@@ -65,11 +63,11 @@ public class ArticleService {
     }
 
     /**
-     * ID로 게시글을 조회하고 조회 수를 업데이트합니다.
+     * 게시글을 ID로 조회하고 조회수를 업데이트
      *
-     * @param id 기사의 ID
-     * @param member 조회한 회원의 정보
-     * @return 조회된 기사의 정보와 조회 수
+     * @param id     게시글 ID
+     * @param member 현재 사용자
+     * @return 조회된 게시글 DTO
      */
     @Transactional
     public ArticleViewDTO findArticleById(Long id, Member member) {
@@ -80,10 +78,10 @@ public class ArticleService {
     }
 
     /**
-     * 게시글을 업데이트합니다.
+     * 게시글을 업데이트
      *
-     * @param articleDTO 업데이트할 기사의 정보
-     * @return 업데이트된 기사의 정보
+     * @param articleDTO 게시글 업데이트 DTO
+     * @return 업데이트된 게시글 DTO
      */
     @Transactional
     public ArticleUpdatedDTO updateArticle(ArticleUpdateDTO articleDTO) {
@@ -93,9 +91,9 @@ public class ArticleService {
     }
 
     /**
-     * 게시글을 삭제합니다.
+     * 게시글을 삭제
      *
-     * @param id 삭제할 기사의 ID
+     * @param id 게시글 ID
      */
     @Transactional
     public void deleteArticle(Long id) {
@@ -105,10 +103,10 @@ public class ArticleService {
     }
 
     /**
-     * 페이지네이션을 사용하여 게시글 목록을 가져옵니다.
+     * 페이지네이션을 사용하여 게시글 목록을 조회
      *
-     * @param pageable 페이지 정보
-     * @return 페이지네이션된 기사 목록
+     * @param pageable 페이지 요청 정보
+     * @return 페이지네이션된 게시글 목록
      */
     @Transactional(readOnly = true)
     public Page<ArticleViewDTO> paginateArticles(Pageable pageable) {
@@ -117,11 +115,11 @@ public class ArticleService {
     }
 
     /**
-     * 게시글의 좋아요 상태를 토글합니다.
+     * 게시글 좋아요를 토글
      *
-     * @param articleId 기사의 ID
-     * @param member 좋아요를 토글한 회원의 정보
-     * @return 토글된 좋아요 상태와 좋아요 수
+     * @param articleId 게시글 ID
+     * @param member    현재 사용자
+     * @return 좋아요 상태 DTO
      */
     @Transactional
     public ArticleLikeDTO toggleArticleLike(Long articleId, Member member) {
@@ -136,10 +134,10 @@ public class ArticleService {
     }
 
     /**
-     * 게시글의 좋아요 수를 가져옵니다.
+     * 게시글의 좋아요 개수를 조회
      *
-     * @param articleId 기사의 ID
-     * @return 기사의 좋아요 수
+     * @param articleId 게시글 ID
+     * @return 좋아요 개수 DTO
      */
     @Transactional(readOnly = true)
     public ArticleLikesCountDTO countArticleLikes(Long articleId) {
@@ -149,28 +147,27 @@ public class ArticleService {
     }
 
     /**
-     * 게시글에 댓글을 저장합니다.
+     * 댓글을 저장
      *
-     * @param commentDTO 저장할 댓글의 정보
-     * @param writerNickname 댓글 작성자의 닉네임
-     * @return 저장된 댓글의 정보
+     * @param commentDTO 댓글 DTO
+     * @param member     현재 사용자
+     * @return 저장된 댓글 DTO
      */
     @Transactional
-    public ArticleCommentDTO saveComment(ArticleCommentDTO commentDTO, String writerNickname) {
-        Member member = findMemberByNickname(writerNickname);
+    public ArticleCommentDTO saveComment(ArticleCommentDTO commentDTO, Member member) {
         Article article = findArticleById(commentDTO.getArticleId());
-        ArticleComment commentEntity = articleCommentMapper.toArticleCommentEntity(commentDTO, writerNickname, article, member);
+        ArticleComment commentEntity = articleCommentMapper.toArticleCommentEntity(commentDTO, member.getNickname(), article, member);
         ArticleComment savedComment = articleCommentRepository.save(commentEntity);
         return articleCommentMapper.toArticleCommentDTO(savedComment);
     }
 
     /**
-     * 게시글의 댓글을 스크롤링하여 가져옵니다.
+     * 게시글의 댓글 목록을 페이지네이션하여 조회
      *
-     * @param articleId 기사의 ID
-     * @param offset 페이지의 오프셋
-     * @param limit 한 페이지에 표시할 댓글의 수
-     * @return 스크롤링된 댓글 목록
+     * @param articleId 게시글 ID
+     * @param offset    페이지 오프셋
+     * @param limit     페이지 당 댓글 수
+     * @return 페이지네이션된 댓글 목록
      */
     @Transactional(readOnly = true)
     public Page<ArticleCommentViewDTO> findCommentsForScrolling(Long articleId, int offset, int limit) {
@@ -181,11 +178,11 @@ public class ArticleService {
     }
 
     /**
-     * 게시글의 댓글을 업데이트합니다.
+     * 댓글을 업데이트
      *
-     * @param commentDTO 업데이트할 댓글의 정보
-     * @param currentNickname 현재 사용자의 닉네임
-     * @return 업데이트된 댓글의 정보
+     * @param commentDTO      댓글 업데이트 DTO
+     * @param currentNickname 현재 사용자 닉네임
+     * @return 업데이트된 댓글 DTO
      */
     @Transactional
     public ArticleCommentUpdateDTO updateComment(ArticleCommentUpdateDTO commentDTO, String currentNickname) {
@@ -197,10 +194,10 @@ public class ArticleService {
     }
 
     /**
-     * 게시글의 댓글을 삭제합니다.
+     * 댓글을 삭제
      *
-     * @param commentId 삭제할 댓글의 ID
-     * @param currentNickname 현재 사용자의 닉네임
+     * @param commentId       댓글 ID
+     * @param currentNickname 현재 사용자 닉네임
      */
     @Transactional
     public void deleteComment(Long commentId, String currentNickname) {
@@ -209,22 +206,12 @@ public class ArticleService {
         articleCommentRepository.delete(comment);
     }
 
-    /**
-     * ID로 멤버를 찾습니다.
-     *
-     * @param writerId 멤버의 ID
-     * @return 멤버 정보
-     */
-    private Member findMemberById(Long writerId) {
-        return memberRepository.findById(writerId)
-                .orElseThrow(() -> new IllegalArgumentException("멤버를 찾을 수 없습니다."));
-    }
 
     /**
-     * ID로 게시글을 찾습니다.
+     * 주어진 ID로 게시글을 찾는다.
      *
-     * @param articleId 게시글의 ID
-     * @return 게시글 정보
+     * @param articleId 게시글 ID
+     * @return 게시글 엔티티
      */
     private Article findArticleById(Long articleId) {
         return articleRepository.findById(articleId)
@@ -232,10 +219,10 @@ public class ArticleService {
     }
 
     /**
-     * ID로 댓글을 찾습니다.
+     * 주어진 ID로 댓글을 찾는다.
      *
-     * @param commentId 댓글의 ID
-     * @return 댓글 정보
+     * @param commentId 댓글 ID
+     * @return 댓글 엔티티
      */
     private ArticleComment findArticleCommentById(Long commentId) {
         return articleCommentRepository.findById(commentId)
@@ -243,10 +230,10 @@ public class ArticleService {
     }
 
     /**
-     * ID로 게시글의 상세 정보를 가져옵니다.
+     * 주어진 ID로 게시글의 상세 정보를 조회
      *
-     * @param id 가져올 게시글의 ID
-     * @return 게시글의 상세 정보가 포함된 Article 객체
+     * @param id 게시글 ID
+     * @return 게시글 엔티티
      */
     @Transactional(readOnly = true)
     public Article getArticleDetails(Long id) {
@@ -255,21 +242,10 @@ public class ArticleService {
     }
 
     /**
-     * 닉네임으로 멤버를 찾습니다.
+     * 주어진 게시글의 통계 정보를 조회
      *
-     * @param nickname 멤버의 닉네임
-     * @return 멤버 정보
-     */
-    private Member findMemberByNickname(String nickname) {
-        return memberRepository.findByNicknameAndDeletedFalse(nickname)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-    }
-
-    /**
-     * 게시글의 통계 정보를 가져옵니다.
-     *
-     * @param article 게시글 정보
-     * @return 통계 정보
+     * @param article 게시글 엔티티
+     * @return 게시글 통계 엔티티
      */
     private ArticleStatistic getArticleStatistic(Article article) {
         return articleStatisticRepository.findByArticle(article)
@@ -277,10 +253,10 @@ public class ArticleService {
     }
 
     /**
-     * 페이지네이션을 위한 PageRequest 객체를 생성합니다.
+     * 페이지 요청 객체를 생성
      *
-     * @param pageable 페이지 정보
-     * @return PageRequest 객체
+     * @param pageable 페이지 요청 정보
+     * @return 페이지 요청 객체
      */
     private PageRequest getPageRequest(Pageable pageable) {
         int page = pageable.getPageNumber() - 1; // page 위치에 있는 값은 0부터 시작한다.
@@ -289,10 +265,10 @@ public class ArticleService {
     }
 
     /**
-     * 업데이트된 게시글의 DTO를 찾습니다.
+     * 업데이트된 게시글 DTO를 조회
      *
-     * @param updatedArticleId 업데이트된 게시글의 ID
-     * @return 업데이트된 게시글의 DTO
+     * @param updatedArticleId 업데이트된 게시글 ID
+     * @return 업데이트된 게시글 DTO
      */
     private ArticleUpdatedDTO findUpdatedArticleDTO(Long updatedArticleId) {
         return articleRepository.findById(updatedArticleId)
@@ -301,9 +277,9 @@ public class ArticleService {
     }
 
     /**
-     * 게시글과 관련된 모든 엔티티를 삭제합니다.
+     * 주어진 게시글과 관련된 모든 엔티티를 삭제
      *
-     * @param article 게시글 정보
+     * @param article 게시글 엔티티
      */
     private void deleteAllRelatedEntities(Article article) {
         articleLikeRepository.deleteByArticle(article);
@@ -313,10 +289,10 @@ public class ArticleService {
     }
 
     /**
-     * 댓글 작성자를 검증합니다.
+     * 댓글 소유자를 검증
      *
-     * @param comment 댓글 정보
-     * @param currentNickname 현재 사용자의 닉네임
+     * @param comment         댓글 엔티티
+     * @param currentNickname 현재 사용자 닉네임
      */
     private void validateCommentOwner(ArticleComment comment, String currentNickname) {
         if (!comment.getWriterNickname().equals(currentNickname)) {
@@ -325,10 +301,10 @@ public class ArticleService {
     }
 
     /**
-     * 게시글의 조회 수를 업데이트합니다.
+     * 게시글의 조회수를 업데이트
      *
-     * @param member 조회한 회원의 정보
-     * @param article 조회한 게시글 정보
+     * @param member  현재 사용자
+     * @param article 게시글 엔티티
      */
     private void viewCountUpdate(Member member, Article article) {
         if (member == null || article == null) {
@@ -351,11 +327,11 @@ public class ArticleService {
     }
 
     /**
-     * 게시글의 좋아요 상태를 토글합니다.
+     * 게시글 좋아요 상태를 토글
      *
-     * @param articleId 게시글의 ID
-     * @param member 좋아요를 토글한 회원의 정보
-     * @return 토글된 좋아요 상태와 좋아요 수
+     * @param articleId 게시글 ID
+     * @param member    현재 사용자
+     * @return 좋아요 상태 DTO
      */
     private ArticleLikeDTO processLikeToggle(Long articleId, Member member) {
         Article article = articleRepository.findById(articleId)
@@ -369,11 +345,11 @@ public class ArticleService {
     }
 
     /**
-     * 첫 번째 조회인지 확인합니다.
+     * 사용자가 처음으로 게시글을 조회하는지 확인
      *
-     * @param member 조회한 회원의 정보
-     * @param article 조회한 게시글 정보
-     * @return 첫 번째 조회 여부
+     * @param member  현재 사용자
+     * @param article 게시글 엔티티
+     * @return 처음 조회하는 경우 true, 아니면 false
      */
     private boolean isFirstView(Member member, Article article) {
         boolean alreadyViewed = articleViewRepository.existsByMemberAndArticle(member, article);
@@ -386,10 +362,10 @@ public class ArticleService {
     }
 
     /**
-     * 게시글의 통계 정보를 생성하거나 가져옵니다.
+     * 주어진 게시글의 통계 정보를 조회하거나 생성
      *
-     * @param article 게시글 정보
-     * @return 통계 정보
+     * @param article 게시글 엔티티
+     * @return 게시글 통계 엔티티
      */
     private ArticleStatistic getOrCreateStatistic(Article article) {
         return articleStatisticRepository.findByArticle(article)
@@ -397,11 +373,11 @@ public class ArticleService {
     }
 
     /**
-     * 게시글의 좋아요 상태를 업데이트합니다.
+     * 게시글 좋아요 상태를 업데이트
      *
-     * @param member 좋아요를 토글한 회원의 정보
-     * @param article 게시글 정보
-     * @param statistic 통계 정보
+     * @param member    현재 사용자
+     * @param article   게시글 엔티티
+     * @param statistic 게시글 통계 엔티티
      * @return 좋아요 상태
      */
     private boolean updateLikes(Member member, Article article, ArticleStatistic statistic) {
@@ -410,17 +386,16 @@ public class ArticleService {
             articleLikeRepository.delete(existingLike.get());
             statistic.decrementLikes();
             return false;
-        } else {
-            articleLikeRepository.save(new ArticleLike(member, article));
-            statistic.incrementLikes();
-            return true;
         }
+        articleLikeRepository.save(new ArticleLike(member, article));
+        statistic.incrementLikes();
+        return true;
     }
 
     /**
-     * 재시도 시도 중 예외를 처리합니다.
+     * 재시도 처리를 수행
      *
-     * @param attempt 재시도 횟수
+     * @param attempt 현재 시도 횟수
      */
     private void handleRetry(int attempt) {
         if (attempt >= MAX_RETRIES - 1) {

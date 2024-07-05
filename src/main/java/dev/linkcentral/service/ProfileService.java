@@ -19,16 +19,16 @@ import javax.persistence.EntityNotFoundException;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private final ProfileRepository profileRepository;
-    private final MemberRepository memberRepository;
     private final FileUploader fileUploader;
     private final ProfileMapper profileMapper;
+    private final MemberRepository memberRepository;
+    private final ProfileRepository profileRepository;
 
     /**
-     * 특정 회원의 프로필 정보를 가져옵니다.
+     * 주어진 회원의 프로필 세부 정보를 가져온다
      *
-     * @param memberId 회원 ID
-     * @return ProfileDetailsDTO 프로필 상세 정보 DTO
+     * @param memberId 프로필을 가져올 회원의 ID
+     * @return 프로필 세부 정보
      */
     public ProfileDetailsDTO getProfile(Long memberId) {
         return profileRepository.findByMemberId(memberId)
@@ -37,10 +37,10 @@ public class ProfileService {
     }
 
     /**
-     * 프로필을 업데이트합니다.
+     * 회원의 프로필을 업데이트
      *
-     * @param profileDTO 프로필 업데이트 DTO
-     * @param imageFile 프로필 이미지 파일
+     * @param profileDTO 프로필 업데이트 데이터 전송 객체
+     * @param imageFile  업로드할 이미지 파일
      */
     @Transactional
     public void updateProfile(ProfileUpdateDTO profileDTO, MultipartFile imageFile) {
@@ -49,10 +49,10 @@ public class ProfileService {
     }
 
     /**
-     * 특정 회원 ID로 프로필을 가져옵니다.
+     * 주어진 회원 ID에 대한 프로필을 가져온다
      *
-     * @param memberId 회원 ID
-     * @return Profile 프로필 엔티티
+     * @param memberId 프로필을 가져올 회원의 ID
+     * @return 프로필
      */
     @Transactional(readOnly = true)
     public Profile getProfileByMemberId(Long memberId) {
@@ -61,10 +61,10 @@ public class ProfileService {
     }
 
     /**
-     * 특정 회원 ID로 프로필을 찾거나 생성합니다.
+     * 주어진 회원 ID에 대한 프로필을 찾거나 생성
      *
-     * @param memberId 회원 ID
-     * @return Profile 프로필 엔티티
+     * @param memberId 회원의 ID
+     * @return 프로필
      */
     public Profile findOrCreateProfile(Long memberId) {
         return profileRepository.findByMemberId(memberId)
@@ -78,11 +78,11 @@ public class ProfileService {
     }
 
     /**
-     * 프로필의 상세 정보를 업데이트합니다.
+     * 프로필 세부 정보를 업데이트
      *
-     * @param profile 프로필 엔티티
-     * @param bio 자기소개
-     * @param imageFile 프로필 이미지 파일
+     * @param profile  업데이트할 프로필
+     * @param bio      새로운 자기소개
+     * @param imageFile 업로드할 이미지 파일
      */
     private void updateProfileDetails(Profile profile, String bio, MultipartFile imageFile) {
         profile.updateBio(bio);

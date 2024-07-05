@@ -24,9 +24,9 @@ public class StudyMemberService {
     private final StudyMemberRepository studyMemberRepository;
 
     /**
-     * 특정 회원 ID로 스터디 그룹 ID 목록을 가져옵니다.
+     * 멤버 ID로 스터디 그룹 ID 목록을 조회
      *
-     * @param memberId 회원 ID
+     * @param memberId 멤버 ID
      * @return 스터디 그룹 ID 목록
      */
     @Transactional(readOnly = true)
@@ -35,7 +35,7 @@ public class StudyMemberService {
     }
 
     /**
-     * 스터디 그룹에 가입 요청을 보냅니다.
+     * 현재 멤버가 스터디 그룹에 참여 요청을 보낸다
      *
      * @param studyGroupId 스터디 그룹 ID
      */
@@ -45,21 +45,15 @@ public class StudyMemberService {
         StudyGroup studyGroup = findStudyGroupById(studyGroupId);
 
         validateMemberJoinRequest(currentMember, studyGroup);
-
-        StudyMember studyMember = StudyMember.builder()
-                .member(currentMember)
-                .studyGroup(studyGroup)
-                .status(StudyGroupStatus.REQUESTED)
-                .build();
-
+        StudyMember studyMember = StudyMember.of(currentMember, studyGroup, StudyGroupStatus.REQUESTED);
         studyMemberRepository.save(studyMember);
     }
 
     /**
-     * 특정 스터디 그룹의 가입 요청 목록을 가져옵니다.
+     * 스터디 그룹에 대한 참여 요청 목록을 조회
      *
      * @param studyGroupId 스터디 그룹 ID
-     * @return 스터디 그룹 가입 요청 DTO 목록
+     * @return 참여 요청 목록
      */
     @Transactional(readOnly = true)
     public List<StudyGroupJoinRequestDTO> listJoinRequestsForStudyGroup(Long studyGroupId) {
@@ -78,7 +72,7 @@ public class StudyMemberService {
     }
 
     /**
-     * 특정 스터디 그룹의 가입 요청을 수락합니다.
+     * 스터디 그룹의 참여 요청을 수락
      *
      * @param studyGroupId 스터디 그룹 ID
      * @param requestId 요청 ID
@@ -97,7 +91,7 @@ public class StudyMemberService {
     }
 
     /**
-     * 특정 스터디 그룹의 가입 요청을 거부합니다.
+     * 스터디 그룹의 참여 요청을 거절
      *
      * @param studyGroupId 스터디 그룹 ID
      * @param requestId 요청 ID
@@ -114,7 +108,7 @@ public class StudyMemberService {
     }
 
     /**
-     * 특정 스터디 그룹의 모든 멤버를 제거합니다.
+     * 스터디 그룹의 모든 멤버를 제거
      *
      * @param studyGroupId 스터디 그룹 ID
      */
@@ -124,10 +118,10 @@ public class StudyMemberService {
     }
 
     /**
-     * 특정 ID로 스터디 그룹을 찾습니다.
+     * 주어진 ID로 스터디 그룹을 찾는다.
      *
      * @param studyGroupId 스터디 그룹 ID
-     * @return StudyGroup 스터디 그룹 엔티티
+     * @return 스터디 그룹 객체
      */
     private StudyGroup findStudyGroupById(Long studyGroupId) {
         return studyGroupRepository.findById(studyGroupId)
@@ -135,10 +129,10 @@ public class StudyMemberService {
     }
 
     /**
-     * 특정 ID로 스터디 멤버를 찾습니다.
+     * 주어진 ID로 스터디 멤버를 찾는다.
      *
      * @param studyMemberId 스터디 멤버 ID
-     * @return StudyMember 스터디 멤버 엔티티
+     * @return 스터디 멤버 객체
      */
     private StudyMember findStudyMemberById(Long studyMemberId) {
         return studyMemberRepository.findById(studyMemberId)
@@ -146,10 +140,10 @@ public class StudyMemberService {
     }
 
     /**
-     * 회원의 스터디 그룹 가입 요청을 유효성 검사합니다.
+     * 멤버의 스터디 그룹 참여 요청을 검증
      *
-     * @param member 회원 엔티티
-     * @param studyGroup 스터디 그룹 엔티티
+     * @param member 멤버 객체
+     * @param studyGroup 스터디 그룹 객체
      */
     private void validateMemberJoinRequest(Member member, StudyGroup studyGroup) {
         if (studyMemberRepository.existsByMemberAndStudyGroup(member, studyGroup)) {
@@ -158,10 +152,10 @@ public class StudyMemberService {
     }
 
     /**
-     * 스터디 그룹 리더의 권한을 유효성 검사합니다.
+     * 스터디 그룹 리더의 권한을 검증
      *
-     * @param member 회원 엔티티
-     * @param studyGroup 스터디 그룹 엔티티
+     * @param member 멤버 객체
+     * @param studyGroup 스터디 그룹 객체
      */
     private void validateLeaderPermission(Member member, StudyGroup studyGroup) {
         if (!studyGroup.getStudyLeaderId().equals(member.getId())) {
