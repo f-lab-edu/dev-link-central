@@ -31,9 +31,9 @@ public class MemberPublicController {
     private final MemberFacade memberFacade;
 
     /**
-     * 새로운 회원을 등록합니다.
+     * 회원 등록
      *
-     * @param memberSaveRequest 회원 등록 요청
+     * @param memberSaveRequest 회원 저장 요청
      * @return 회원 저장 응답
      */
     @PostMapping("/register")
@@ -47,10 +47,10 @@ public class MemberPublicController {
     }
 
     /**
-     * 회원 로그인을 처리합니다.
+     * 회원 로그인
      *
      * @param memberLoginRequest 회원 로그인 요청
-     * @param request            HttpServletRequest 객체
+     * @param request            HTTP 요청
      * @return 로그인 성공 응답
      */
     @PostMapping("/login")
@@ -66,10 +66,10 @@ public class MemberPublicController {
     }
 
     /**
-     * 비밀번호 유효성을 검사합니다.
+     * 비밀번호 찾기 요청
      *
      * @param userEmail 사용자 이메일
-     * @return 비밀번호 응답
+     * @return 비밀번호 유효성 검사 응답
      */
     @GetMapping("/forgot-password")
     @ResponseBody
@@ -80,10 +80,10 @@ public class MemberPublicController {
     }
 
     /**
-     * 비밀번호 재설정 이메일을 보냅니다.
+     * 비밀번호 재설정 이메일 전송
      *
      * @param userEmail 사용자 이메일
-     * @return 비밀번호 재설정 이메일 응답
+     * @return 이메일 전송 응답
      */
     @PostMapping("/send-email/update-password")
     public ResponseEntity<MailPasswordResetResponse> sendPasswordResetEmail(String userEmail) {
@@ -93,10 +93,10 @@ public class MemberPublicController {
     }
 
     /**
-     * 현재 비밀번호를 확인합니다.
+     * 현재 비밀번호 확인
      *
      * @param password 현재 비밀번호
-     * @return 비밀번호 응답
+     * @return 비밀번호 유효성 검사 응답
      */
     @PostMapping("/check-current-password")
     @ResponseBody

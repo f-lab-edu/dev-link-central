@@ -1,6 +1,7 @@
 package dev.linkcentral.database.entity.studygroup;
 
 import dev.linkcentral.database.entity.AuditingFields;
+import dev.linkcentral.database.entity.member.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,7 +33,6 @@ public class StudyGroup extends AuditingFields {
     protected StudyGroup() {
     }
 
-
     public void updateStudyLeaderId(Long studyLeaderId) {
         this.studyLeaderId = studyLeaderId;
     }
@@ -47,5 +47,14 @@ public class StudyGroup extends AuditingFields {
 
     public void updateCreated(boolean created) {
         isCreated = created;
+    }
+
+    public static StudyGroup of(String groupName, String studyTopic, Long leaderId) {
+        return StudyGroup.builder()
+                .groupName(groupName)
+                .studyTopic(studyTopic)
+                .studyLeaderId(leaderId)
+                .isCreated(true)
+                .build();
     }
 }

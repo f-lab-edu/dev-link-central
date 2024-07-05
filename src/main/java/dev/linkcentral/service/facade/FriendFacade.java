@@ -1,5 +1,6 @@
 package dev.linkcentral.service.facade;
 
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.service.FriendService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.friend.FriendMemberInfoDTO;
@@ -16,16 +17,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FriendFacade {
 
-    private final FriendService friendService;
     private final FriendMapper friendMapper;
+    private final FriendService friendService;
     private final MemberService memberService;
 
     public Long sendFriendRequest(FriendRequestDTO friendRequestDTO) {
-        return friendService.sendFriendRequest(friendRequestDTO.getSenderId(), friendRequestDTO.getReceiverId());
+        Member sender = memberService.findMemberById(friendRequestDTO.getSenderId());
+        Member receiver = memberService.findMemberById(friendRequestDTO.getReceiverId());
+        return friendService.sendFriendRequest(sender, receiver);
     }
 
     public List<FriendRequestDTO> getReceivedFriendRequests(Long receiverId) {
-         return friendService.getReceivedFriendRequests(receiverId);
+        Member receiver = memberService.findMemberById(receiverId);
+        return friendService.getReceivedFriendRequests(receiver);
     }
 
     public void acceptFriendRequest(Long requestId) {
@@ -33,7 +37,9 @@ public class FriendFacade {
     }
 
     public Long findFriendshipId(Long senderId, Long receiverId) {
-        return friendService.findFriendshipId(senderId, receiverId);
+        Member sender = memberService.findMemberById(senderId);
+        Member receiver = memberService.findMemberById(receiverId);
+        return friendService.findFriendshipId(sender, receiver);
     }
 
     public void rejectFriendRequest(Long requestId) {

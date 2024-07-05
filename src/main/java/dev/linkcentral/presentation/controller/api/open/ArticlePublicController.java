@@ -20,10 +20,10 @@ public class ArticlePublicController {
     private final ArticleFacade articleFacade;
 
     /**
-     * 특정 ID의 게시글 상세 정보를 가져옵니다.
+     * 특정 ID의 기사 상세 정보를 가져옵니다.
      *
-     * @param id 게시글 ID
-     * @return 게시글 상세 정보 응답
+     * @param id 기사 ID
+     * @return 기사 상세 정보 응답
      */
     @GetMapping("/{id}")
     public ResponseEntity<ArticleDetailsResponse> getArticleDetails(@PathVariable Long id) {

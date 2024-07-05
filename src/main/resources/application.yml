@@ -5,6 +5,7 @@ spring:
       suffix: .jsp
     pathmatch:
       matching-strategy: ant_path_matcher
+    static-path-pattern: /css/**
   datasource:
     url: jdbc:mysql://localhost:3306/linkcentral?useUnicode=true&serverTimezone=Asia/Seoul&autoReconnect=true
     username: seok
@@ -42,6 +43,9 @@ spring:
           timeout: 5000
           starttls:
             enable: true
+  web:
+    resources:
+      static-locations: classpath:/static/
 jwt:
  secret: ${JWT_SECRET:ZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWVfZGVmYXVsdF9zZWNyZXRfdmFsdWUK}
 

@@ -2,13 +2,21 @@ package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.database.entity.studygroup.StudyGroup;
+import dev.linkcentral.database.entity.studygroup.StudyGroupStatus;
+import dev.linkcentral.database.entity.studygroup.StudyMember;
+import dev.linkcentral.database.repository.studygroup.StudyMemberRepository;
 import dev.linkcentral.service.dto.studygroup.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class StudyGroupMapper {
+
+    private final StudyMemberRepository studyMemberRepository;
 
     public StudyGroupIdsDTO toStudyGroupIdsDTO(List<Long> studyGroupIds) {
         return new StudyGroupIdsDTO(studyGroupIds);
@@ -65,5 +73,21 @@ public class StudyGroupMapper {
                 studyGroup.getStudyLeaderId(),
                 members
         );
+    }
+
+    public StudyGroupMembersDetailDTO toStudyGroupMembersDetailDTO(StudyGroup group) {
+        List<StudyMember> acceptedMembers = studyMemberRepository.findAllByStudyGroupAndStatus(group, StudyGroupStatus.ACCEPTED);
+
+        List<StudyGroupMemberBasicInfoDTO> memberDtos = acceptedMembers.stream()
+                .map(member -> new StudyGroupMemberBasicInfoDTO(
+                        member.getMember().getId(),
+                        member.getMember().getName()))
+                .collect(Collectors.toList());
+
+        return new StudyGroupMembersDetailDTO(
+                group.getId(),
+                group.getStudyLeaderId(),
+                group.getGroupName(),
+                memberDtos);
     }
 }

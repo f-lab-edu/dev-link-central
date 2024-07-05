@@ -1,0 +1,235 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f8f9fa;
+    font-size: 14px;
+}
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 630px;
+    margin: auto;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #007bff;
+    margin-right: auto;
+}
+.button-group {
+    display: flex;
+    align-items: center;
+}
+button:hover {
+    background-color: #0056b3;
+}
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+.detail-box {
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+}
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+.like, .views {
+    padding: 8px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.like button, .views span {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 16px;
+    line-height: 1.5;
+    cursor: pointer;
+    display: inline-block;
+    height: 36px;
+
+    transition: background-color 0.3s;
+    margin-right: 10px;
+}
+
+button {
+    padding: 6px 12px;
+    margin-left: 7px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.like button:hover {
+    background-color: #0056b3;
+}
+
+.like span {
+    display: inline-block;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.content-box {
+    background: #e9ecef;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    height: 200px;
+}
+.date {
+    text-align: right;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.views {
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 16px;
+    line-height: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-left: 10px;
+    height: auto;
+}
+
+.views {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.views span {
+    background-color: #f0f0f0;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.comment-write, .comment-list {
+    margin-top: 10px;
+}
+
+.comment-write {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.comment-write input[type="text"] {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.comment-write button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.comment-write button:hover {
+    background-color: #0056b3;
+}
+
+.comment-list table {
+    width: 100%;
+}
+
+.date {
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 5px;
+    padding: 16px 12px;
+    background-color: #f0f0f0;
+    color: #333;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    line-height: 20px;
+    text-align: right;
+    height: auto;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.right-align {
+    text-align: right;
+}
+
+.comment-title {
+    font-size: 24px;
+    color: #007bff;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #007bff;
+}
+
+#moreCommentsIndicator {
+    color: #007bff;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
+}
+
+.edit-input {
+    width: 70%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.btn-save {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.btn-save:hover {
+    background-color: #0056b3;
+}

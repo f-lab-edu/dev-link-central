@@ -15,47 +15,9 @@
     <!-- SweetAlert2 CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
     <title>dev-link-central</title>
-    <style>
-        body {
-            background-color: #f4f4f4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .form-container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-
-        .form-control {
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .form-label {
-            font-weight: bold;
-        }
-
-        .link-button {
-            text-decoration: none;
-            color: #007bff;
-            cursor: pointer;
-        }
-    </style>
 
     <script>
         $(document).ready(function () {

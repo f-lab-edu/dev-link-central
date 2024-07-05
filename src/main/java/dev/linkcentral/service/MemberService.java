@@ -44,16 +44,16 @@ public class MemberService {
 
     private static final String FROM_ADDRESS = "alstjr706@gmail.com";
 
-    private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final MemberMapper memberMapper;
     private final JavaMailSender mailSender;
     private final TokenProvider tokenProvider;
-    private final MemberMapper memberMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
 
     /**
-     * 현재 사용자의 정보를 가져옵니다.
+     * 현재 사용자의 정보를 가져온다
      *
-     * @return MemberInfoDTO 현재 사용자 정보
+     * @return 현재 사용자의 정보 DTO
      */
     public MemberInfoDTO getCurrentUserInfo() {
         Member member = getCurrentMember();
@@ -61,10 +61,10 @@ public class MemberService {
     }
 
     /**
-     * 이메일로 삭제되지 않은 회원을 찾습니다.
+     * 이메일과 삭제되지 않은 상태를 기준으로 회원을 찾는다
      *
-     * @param email 이메일 주소
-     * @return Member 회원 정보
+     * @param email 이메일
+     * @return 회원 엔티티
      */
     @Transactional(readOnly = true)
     public Member findByEmailAndDeletedFalse(String email) {
@@ -73,10 +73,22 @@ public class MemberService {
     }
 
     /**
-     * ID로 회원을 찾습니다.
+     * ID로 회원을 찾는다
      *
      * @param memberId 회원 ID
-     * @return Member 회원 정보
+     * @return 회원 엔티티
+     */
+    @Transactional(readOnly = true)
+    public Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("ID로 멤버를 찾을 수 없습니다."));
+    }
+
+    /**
+     * ID로 회원을 가져온다
+     *
+     * @param memberId 회원 ID
+     * @return 회원 엔티티
      */
     @Transactional(readOnly = true)
     public Member getMemberById(Long memberId) {
@@ -85,9 +97,9 @@ public class MemberService {
     }
 
     /**
-     * 현재 로그인한 회원의 정보를 가져옵니다.
+     * 현재 인증된 회원을 가져온다
      *
-     * @return Member 회원 정보
+     * @return 회원 엔티티
      */
     @Transactional(readOnly = true)
     public Member getCurrentMember() {
@@ -97,9 +109,9 @@ public class MemberService {
     }
 
     /**
-     * 현재 인증된 회원의 정보를 가져옵니다.
+     * 현재 인증된 회원을 가져옵니다. 인증되지 않은 경우 null을 반환
      *
-     * @return Member 회원 정보
+     * @return 회원 엔티티 또는 null
      */
     @Transactional(readOnly = true)
     public Member getAuthenticatedMember() {
@@ -114,11 +126,11 @@ public class MemberService {
     }
 
     /**
-     * 사용자 인증 및 JWT 토큰을 생성합니다.
+     * 인증하고 JWT 토큰을 생성
      *
      * @param username 사용자 이름
      * @param password 비밀번호
-     * @return JwtTokenDTO JWT 토큰 정보
+     * @return JWT 토큰 DTO
      */
     @Transactional
     public JwtTokenDTO authenticateAndGenerateJwtToken(String username, String password) {
@@ -134,10 +146,10 @@ public class MemberService {
     }
 
     /**
-     * 새로운 회원을 등록합니다.
+     * 회원을 등록
      *
      * @param memberDTO 회원 등록 DTO
-     * @return Member 등록된 회원 정보
+     * @return 등록된 회원 엔티티
      */
     @Transactional
     public Member registerMember(MemberRegistrationDTO memberDTO) {
@@ -155,10 +167,10 @@ public class MemberService {
     }
 
     /**
-     * 닉네임 중복을 확인합니다.
+     * 닉네임 중복을 검사
      *
      * @param nickname 닉네임
-     * @return boolean 중복 여부
+     * @return 중복 여부
      */
     @Transactional(readOnly = true)
     public boolean validateNicknameDuplication(String nickname) {
@@ -171,10 +183,10 @@ public class MemberService {
     }
 
     /**
-     * 사용자 이메일의 유효성을 확인합니다.
+     * 유저 이메일의 유효성을 검사
      *
-     * @param userEmail 사용자 이메일
-     * @return boolean 유효 여부
+     * @param userEmail 유저 이메일
+     * @return 유효 여부
      */
     @Transactional(readOnly = true)
     public boolean validateUserEmail(String userEmail) {
@@ -187,10 +199,10 @@ public class MemberService {
     }
 
     /**
-     * 비밀번호 재설정을 위한 이메일을 생성합니다.
+     * 비밀번호 재설정을 위한 메일을 생성
      *
-     * @param userEmail 사용자 이메일
-     * @return MemberMailDTO 비밀번호 재설정 이메일 정보
+     * @param userEmail 유저 이메일
+     * @return 생성된 메일 DTO
      */
     @Transactional
     public MemberMailDTO createMailForPasswordReset(String userEmail) {
@@ -208,21 +220,21 @@ public class MemberService {
     }
 
     /**
-     * 비밀번호를 재설정합니다.
+     * 비밀번호를 재설정
      *
-     * @param generatedPassword 임시 비밀번호
-     * @param userEmail         사용자 이메일
+     * @param generatedPassword 생성된 비밀번호
+     * @param userEmail         유저 이메일
      */
     @Transactional
     public void resetPassword(String generatedPassword, String userEmail) {
-        String passwordHash = passwordEncoder.encode(generatedPassword); // 비밀번호 해싱
+        String passwordHash = passwordEncoder.encode(generatedPassword);
         updateMemberPassword(userEmail, passwordHash);
     }
 
     /**
-     * 이메일을 전송합니다.
+     * 이메일을 보낸다
      *
-     * @param memberMailDTO 이메일 정보 DTO
+     * @param memberMailDTO 메일 DTO
      */
     public void sendMail(MemberMailDTO memberMailDTO) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -241,7 +253,7 @@ public class MemberService {
     }
 
     /**
-     * 회원 정보를 수정합니다.
+     * 회원 정보를 수정
      *
      * @param memberEditDTO 회원 수정 DTO
      */
@@ -256,11 +268,11 @@ public class MemberService {
     }
 
     /**
-     * 닉네임과 비밀번호를 사용하여 비밀번호 유효성을 확인합니다.
+     * 닉네임과 비밀번호를 기준으로 비밀번호의 유효성을 검사
      *
      * @param nickname 닉네임
      * @param password 비밀번호
-     * @return boolean 유효 여부
+     * @return 유효 여부
      */
     @Transactional(readOnly = true)
     public boolean validatePassword(String nickname, String password) {
@@ -274,11 +286,11 @@ public class MemberService {
     }
 
     /**
-     * 회원을 삭제(소프트 삭제)합니다.
+     * 회원을 삭제
      *
      * @param nickname 닉네임
      * @param password 비밀번호
-     * @return boolean 삭제 성공 여부
+     * @return 삭제 여부
      */
     @Transactional
     public boolean removeMember(String nickname, String password) {
@@ -293,10 +305,10 @@ public class MemberService {
     }
 
     /**
-     * 이메일로 회원을 찾습니다.
+     * 주어진 이메일로 회원을 찾는다
      *
-     * @param email 이메일 주소
-     * @return Member 회원 정보
+     * @param email 이메일
+     * @return 회원 엔티티
      */
     private Member findMemberByEmail(String email) {
         return memberRepository.findByEmailAndDeletedFalse(email)
@@ -304,7 +316,7 @@ public class MemberService {
     }
 
     /**
-     * 회원 등록 시 중복된 닉네임과 이메일을 확인합니다.
+     * 회원 등록 시 중복 검사를 수행
      *
      * @param memberDTO 회원 등록 DTO
      * @param nickname  닉네임
@@ -320,10 +332,10 @@ public class MemberService {
     }
 
     /**
-     * 회원 비밀번호를 업데이트합니다.
+     * 회원 비밀번호를 업데이트
      *
-     * @param userEmail    사용자 이메일
-     * @param passwordHash 해싱된 비밀번호
+     * @param userEmail    유저 이메일
+     * @param passwordHash 비밀번호 해시
      */
     private void updateMemberPassword(String userEmail, String passwordHash) {
         Member member = memberRepository.findByEmailAndDeletedFalse(userEmail)
@@ -332,7 +344,7 @@ public class MemberService {
     }
 
     /**
-     * 회원 수정 DTO의 유효성을 검사합니다.
+     * 회원 수정 DTO를 검증
      *
      * @param memberEditDTO 회원 수정 DTO
      */
@@ -349,9 +361,9 @@ public class MemberService {
     }
 
     /**
-     * 임시 비밀번호를 생성합니다.
+     * 임시 비밀번호를 생성
      *
-     * @return String 임시 비밀번호
+     * @return 생성된 임시 비밀번호
      */
     private String createTemporaryPassword() {
         char[] charSet = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',

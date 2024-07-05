@@ -24,9 +24,9 @@ public class MemberController {
     private final MemberFacade memberFacade;
 
     /**
-     * 현재 회원의 정보를 반환합니다.
+     * 멤버 정보를 가져옵니다.
      *
-     * @return 회원 정보 응답
+     * @return 멤버 정보 응답
      */
     @GetMapping("/info")
     public ResponseEntity<MemberInfoResponse> getMemberInfo() {
@@ -36,10 +36,10 @@ public class MemberController {
     }
 
     /**
-     * 회원 정보를 업데이트합니다.
+     * 멤버 정보를 업데이트합니다.
      *
-     * @param editRequest 회원 수정 요청
-     * @return 회원 수정 응답
+     * @param editRequest 멤버 업데이트 요청
+     * @return 멤버 업데이트 응답
      */
     @PutMapping
     public ResponseEntity<MemberEditedResponse> updateMember(@Validated @RequestBody MemberEditRequest editRequest) {
@@ -50,10 +50,10 @@ public class MemberController {
     }
 
     /**
-     * 회원을 소프트 삭제합니다.
+     * 멤버를 소프트 삭제합니다.
      *
-     * @param deleteRequest 회원 삭제 요청
-     * @return 회원 삭제 응답
+     * @param deleteRequest 멤버 삭제 요청
+     * @return 멤버 삭제 응답
      */
     @DeleteMapping
     public ResponseEntity<MemberDeletedResponse> softDeleteMember(@Validated @RequestBody MemberDeleteRequest deleteRequest) {

@@ -21,9 +21,9 @@ public class StudyGroupFacade {
 
     private final MemberService memberService;
     private final ArticleService articleService;
+    private final StudyGroupMapper studyGroupMapper;
     private final StudyGroupService studyGroupService;
     private final StudyMemberService studyMemberService;
-    private final StudyGroupMapper studyGroupMapper;
 
     public StudyGroupIdsDTO getStudyGroupIdsForMember() {
         Member currentMember = memberService.getCurrentMember();

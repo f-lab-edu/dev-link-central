@@ -21,9 +21,9 @@ public class StudyGroupController {
     private final StudyGroupFacade studyGroupFacade;
 
     /**
-     * 현재 회원의 스터디 그룹 ID 목록을 가져옵니다.
+     * 현재 사용자의 스터디 그룹 ID 목록을 가져옵니다.
      *
-     * @return ResponseEntity<StudyGroupIdsResponse> 스터디 그룹 ID 응답
+     * @return 스터디 그룹 ID 목록 응답
      */
     @GetMapping("/my-groups/ids")
     public ResponseEntity<StudyGroupIdsResponse> getStudyGroupIdsForMember() {
@@ -33,9 +33,9 @@ public class StudyGroupController {
     }
 
     /**
-     * 현재 로그인된 회원의 정보를 가져옵니다.
+     * 현재 인증된 사용자의 정보를 가져옵니다.
      *
-     * @return ResponseEntity<StudyGroupMemberInfoResponse> 회원 정보 응답
+     * @return 사용자 정보 응답
      */
     @GetMapping("/auth/member-info")
     public ResponseEntity<StudyGroupMemberInfoResponse> getCurrentMemberInfo() {
@@ -45,10 +45,10 @@ public class StudyGroupController {
     }
 
     /**
-     * 스터디 그룹을 삭제합니다.
+     * 스터디 그룹에서 탈퇴합니다.
      *
      * @param studyGroupId 스터디 그룹 ID
-     * @return ResponseEntity<StudyGroupDeletionResponse> 스터디 그룹 삭제 응답
+     * @return 스터디 그룹 삭제 응답
      */
     @DeleteMapping("/{studyGroupId}/leave")
     public ResponseEntity<StudyGroupDeletedResponse> deleteStudyGroup(@PathVariable Long studyGroupId) {
@@ -61,7 +61,7 @@ public class StudyGroupController {
      * 새로운 스터디 그룹을 생성합니다.
      *
      * @param studyGroupCreateRequest 스터디 그룹 생성 요청
-     * @return ResponseEntity<StudyGroupCreateResponse> 스터디 그룹 생성 응답
+     * @return 스터디 그룹 생성 응답
      */
     @PostMapping
     public ResponseEntity<StudyGroupCreatedResponse> createStudyGroup(
@@ -74,10 +74,10 @@ public class StudyGroupController {
     }
 
     /**
-     * 특정 게시글 ID로 스터디 그룹 세부 정보를 가져옵니다.
+     * 스터디 그룹의 세부 정보를 가져옵니다.
      *
      * @param articleId 게시글 ID
-     * @return ResponseEntity<StudyGroupDetailsResponse> 스터디 그룹 세부 정보 응답
+     * @return 스터디 그룹 세부 정보 응답
      */
     @GetMapping("/details/{articleId}")
     public ResponseEntity<StudyGroupDetailsResponse> getStudyGroupDetails(@PathVariable Long articleId) {
@@ -87,10 +87,10 @@ public class StudyGroupController {
     }
 
     /**
-     * 스터디 그룹에 참여 요청을 보냅니다.
+     * 스터디 그룹에 가입 요청을 보냅니다.
      *
      * @param studyGroupId 스터디 그룹 ID
-     * @return ResponseEntity<Void> 빈 응답
+     * @return 상태 없음 응답
      */
     @PostMapping("/{studyGroupId}/join-requests")
     public ResponseEntity<Void> createJoinRequest(@PathVariable Long studyGroupId) {
@@ -99,10 +99,10 @@ public class StudyGroupController {
     }
 
     /**
-     * 특정 스터디 그룹의 참여 요청 목록을 가져옵니다.
+     * 스터디 그룹의 가입 요청 목록을 가져옵니다.
      *
      * @param studyGroupId 스터디 그룹 ID
-     * @return ResponseEntity<StudyGroupListJoinResponse> 참여 요청 목록 응답
+     * @return 스터디 그룹 가입 요청 목록 응답
      */
     @GetMapping("/{studyGroupId}/received-requests")
     public ResponseEntity<StudyGroupListJoinResponse> listStudyGroupJoinRequests(@PathVariable Long studyGroupId) {
@@ -112,11 +112,11 @@ public class StudyGroupController {
     }
 
     /**
-     * 스터디 그룹 참여 요청을 수락합니다.
+     * 스터디 그룹의 가입 요청을 수락합니다.
      *
      * @param studyGroupId 스터디 그룹 ID
      * @param requestId 요청 ID
-     * @return ResponseEntity<Void> 빈 응답
+     * @return 상태 없음 응답
      */
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/accept")
     public ResponseEntity<Void> acceptJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
@@ -125,11 +125,11 @@ public class StudyGroupController {
     }
 
     /**
-     * 스터디 그룹 참여 요청을 거절합니다.
+     * 스터디 그룹의 가입 요청을 거절합니다.
      *
      * @param studyGroupId 스터디 그룹 ID
      * @param requestId 요청 ID
-     * @return ResponseEntity<Void> 빈 응답
+     * @return 상태 없음 응답
      */
     @PostMapping("/{studyGroupId}/membership-requests/{requestId}/reject")
     public ResponseEntity<Void> rejectJoinRequest(@PathVariable Long studyGroupId, @PathVariable Long requestId) {
@@ -141,7 +141,7 @@ public class StudyGroupController {
      * 사용자가 스터디 그룹을 가지고 있는지 확인합니다.
      *
      * @param userId 사용자 ID
-     * @return ResponseEntity<StudyGroupCheckMembershipResponse> 스터디 그룹 보유 여부 응답
+     * @return 스터디 그룹 존재 여부 응답
      */
     @GetMapping("/exists")
     public ResponseEntity<StudyGroupCheckMembershipResponse> checkIfUserHasStudyGroup(@RequestParam Long userId) {
@@ -151,9 +151,9 @@ public class StudyGroupController {
     }
 
     /**
-     * 현재 사용자가 참여하고 있는 스터디 그룹 목록을 가져옵니다.
+     * 현재 사용자의 승인된 스터디 그룹 목록을 가져옵니다.
      *
-     * @return ResponseEntity<AcceptedStudyGroupDetailsResponse> 참여 스터디 그룹 목록 응답
+     * @return 승인된 스터디 그룹 목록 응답
      */
     @GetMapping("/current-accepted")
     public ResponseEntity<AcceptedStudyGroupDetailsResponse> getCurrentUserAcceptedStudyGroups() {
@@ -163,10 +163,10 @@ public class StudyGroupController {
     }
 
     /**
-     * 특정 사용자의 스터디 그룹과 구성원 정보를 가져옵니다.
+     * 특정 사용자의 스터디 그룹 및 구성원 정보를 가져옵니다.
      *
      * @param userId 사용자 ID
-     * @return ResponseEntity<StudyGroupMembersDetailResponse> 스터디 그룹 및 구성원 정보 응답
+     * @return 스터디 그룹 및 구성원 정보 응답
      */
     @GetMapping("/user/{userId}/groups-with-members")
     public ResponseEntity<StudyGroupMembersDetailResponse> getStudyGroupsAndMembers(@PathVariable Long userId) {
@@ -176,11 +176,11 @@ public class StudyGroupController {
     }
 
     /**
-     * 특정 스터디 그룹의 회원을 추방합니다.
+     * 스터디 그룹에서 구성원을 추방합니다.
      *
-     * @param groupId 스터디 그룹 ID
+     * @param groupId 그룹 ID
      * @param memberId 회원 ID
-     * @return ResponseEntity<Void> 빈 응답
+     * @return 상태 없음 응답
      */
     @DeleteMapping("/{groupId}/members/{memberId}/expel")
     public ResponseEntity<Void> expelStudyGroupMember(@PathVariable Long groupId, @PathVariable Long memberId) {
@@ -192,7 +192,7 @@ public class StudyGroupController {
      * 사용자가 스터디 그룹을 생성했는지 확인합니다.
      *
      * @param userId 사용자 ID
-     * @return ResponseEntity<StudyGroupExistsResponse> 스터디 그룹 생성 여부 응답
+     * @return 스터디 그룹 생성 여부 응답
      */
     @GetMapping("/user/{userId}/group-existence")
     public ResponseEntity<StudyGroupExistsResponse> hasUserCreatedStudyGroup(@PathVariable Long userId) {

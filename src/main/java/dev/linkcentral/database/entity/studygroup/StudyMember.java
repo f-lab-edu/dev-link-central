@@ -39,4 +39,12 @@ public class StudyMember extends AuditingFields {
     public void updateStudyGroupStatus(StudyGroupStatus status) {
         this.status = status;
     }
+
+    public static StudyMember of(Member member, StudyGroup studyGroup, StudyGroupStatus status) {
+        return StudyMember.builder()
+                .member(member)
+                .studyGroup(studyGroup)
+                .status(status)
+                .build();
+    }
 }
