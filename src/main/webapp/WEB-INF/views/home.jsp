@@ -15,47 +15,9 @@
     <!-- SweetAlert2 CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
     <title>dev-link-central</title>
-    <style>
-        body {
-            background-color: #f4f4f4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .form-container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-
-        .form-control {
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .form-label {
-            font-weight: bold;
-        }
-
-        .link-button {
-            text-decoration: none;
-            color: #007bff;
-            cursor: pointer;
-        }
-    </style>
 
     <script>
         $(document).ready(function () {
@@ -85,7 +47,7 @@
                         // 'accessToken' 키를 사용하여 토큰을 로컬 스토리지에 저장
                         if (response && response.accessToken) {
                             localStorage.setItem("jwt", response.accessToken);
-                            window.location.href = response.redirectUrl
+                            groupFeedView();
                         } else {
                             // 응답에서 'accessToken'을 찾을 수 없는 경우
                             console.error("응답에서 accessToken을 찾을 수 없습니다.");
@@ -99,6 +61,27 @@
                 });
             });
         });
+
+        function groupFeedView() {
+            $.ajax({
+                type: "GET",
+                url: "/api/v1/group-feed/auth/member-info",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function (response) {
+                    var memberId = response.memberId;
+                    if (!memberId) {
+                        alert('회원 ID가 존재하지 않습니다.');
+                        return;
+                    }
+                    window.location.href = "/api/v1/view/group-feed/list?memberId=" + memberId;
+                },
+                error: function (xhr) {
+                    alert("회원 정보를 가져올 수 없습니다: " + xhr.responseText);
+                }
+            });
+        }
     </script>
 
 </head>

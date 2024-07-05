@@ -1,6 +1,6 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.ProfileService;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
@@ -17,9 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileFacade {
 
     private final MemberService memberService;
-    private final ProfileService profileService;
-    private final ProfileMapper profileMapper;
     private final ArticleMapper articleMapper;
+    private final ProfileMapper profileMapper;
+    private final ProfileService profileService;
 
     public MemberCurrentDTO getUserInfo() {
         Member currentMember = memberService.getCurrentMember();
@@ -40,5 +40,4 @@ public class ProfileFacade {
         Member member = memberService.getMemberById(memberId);
         return profileMapper.toMemberCurrentDTO(member);
     }
-
 }

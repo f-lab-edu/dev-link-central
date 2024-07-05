@@ -1,7 +1,7 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.Member;
-import dev.linkcentral.database.entity.StudyGroup;
+import dev.linkcentral.database.entity.member.Member;
+import dev.linkcentral.database.entity.studygroup.StudyGroup;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.StudyGroupService;
@@ -21,9 +21,9 @@ public class StudyGroupFacade {
 
     private final MemberService memberService;
     private final ArticleService articleService;
+    private final StudyGroupMapper studyGroupMapper;
     private final StudyGroupService studyGroupService;
     private final StudyMemberService studyMemberService;
-    private final StudyGroupMapper studyGroupMapper;
 
     public StudyGroupIdsDTO getStudyGroupIdsForMember() {
         Member currentMember = memberService.getCurrentMember();

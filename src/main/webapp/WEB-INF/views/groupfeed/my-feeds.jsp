@@ -16,72 +16,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            padding-top: 30px;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
-        }
-
-        .container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 100%;
-            max-width: 800px;
-            margin-top: 40px;
-        }
-
-        .feed-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .feed-item {
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: calc(30% - 20px);
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s;
-            margin: 5px;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .feed-item:hover {
-            transform: scale(1.05);
-        }
-
-        .feed-title {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .loading-spinner {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .title {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 27px;
-            font-weight: bold;
-            color: #007bff;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/groupfeed/my-feeds.css">
 
     <script>
         $(document).ready(function() {
@@ -107,7 +43,7 @@
                             $('#feedContainer').append(feedHtml);
                         });
                     } else {
-                        $('#feedContainer').append('<p>No feeds available</p>');
+                        $('#feedContainer').append('<p>피드가 없습니다.</p>');
                     }
                 },
                 error: function(xhr) {
@@ -119,11 +55,18 @@
         function viewFeedDetail(feedId) {
             window.location.href = "/api/v1/view/group-feed/detail/" + feedId;
         }
+
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
     </script>
 </head>
 <body>
 <div class="container">
-    <div class="title">나의 피드</div>
+    <div class="title-container">
+        <div class="title">나의 피드</div>
+        <button class="menu-button" onclick="home()">나가기</button>
+    </div>
     <div class="feed-container" id="feedContainer"></div>
     <div class="loading-spinner" id="loadingSpinner" style="display: none;">
         <div class="spinner-border text-primary" role="status">

@@ -18,115 +18,8 @@
     <!-- SweetAlert2 CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-    <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 800px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            border-radius: 10px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .title {
-            font-size: 24px;
-            font-weight: bold;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .header-actions {
-            margin-left: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #4A90E2;
-            color: white;
-        }
-
-        a, .pagination span {
-            color: #4A90E2;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            list-style-type: none;
-            padding: 20px;
-        }
-
-        .pagination a, .pagination span {
-            margin: 0 5px;
-            padding: 5px 8px;
-            border: 1px solid #ddd;
-            color: #333;
-        }
-
-        .pagination a.active, .pagination span {
-            background-color: #4A90E2;
-            color: white;
-            border: 1px solid #4A90E2;
-        }
-
-        .pagination a:hover {
-            background-color: #ddd;
-        }
-
-        button {
-            background-color: #4A90E2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 5px;
-            outline: none;
-        }
-
-        button:hover {
-            background-color: #357ABD;
-        }
-    </style>
-
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/articles/paging.css">
 
     <script>
         $(document).ready(function() {
@@ -220,6 +113,10 @@
                 });
             });
         });
+
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
     </script>
 </head>
 <body>
@@ -228,9 +125,11 @@
         <div class="title">스터디 모집 게시판</div>
         <div class="header-actions">
             <% if ((Boolean) request.getAttribute("isAuthenticated")) { %>
-            <button onclick="saveReq()">글작성</button>
+            <button onclick="home()" style="margin-left: 10px;">이전</button>
+            <button onclick="saveReq()" style="margin-left: 8px;">글작성</button>
             <% } %>
-            <button id="writeButton" onclick="saveReq()" style="display:none;">글작성</button>
+            <button onclick="home()" style="margin-left: 10px;">나가기</button>
+            <button id="writeButton" onclick="saveReq()" style="margin-left: 8px;">글작성</button>
         </div>
     </div>
 

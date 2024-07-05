@@ -14,6 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.UUID;
 
+/**
+ * AWS S3 파일 업로드 컴포넌트
+ * 파일을 S3에 업로드하고 해당 파일의 URL을 반환합니다.
+ */
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -21,8 +25,9 @@ public class AwsS3Uploader implements FileUploader {
 
     private final AmazonS3Client amazonS3Client;
 
+    // S3 버킷 이름 주입
     @Value("${cloud.aws.s3.bucket}")
-    private String bucket; // S3 버킷 이름 주입
+    private String bucket;
 
     @Override
     public String uploadFile(MultipartFile multipartFile, String dirName) {

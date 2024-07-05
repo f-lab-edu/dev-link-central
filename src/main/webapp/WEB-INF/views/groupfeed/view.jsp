@@ -17,237 +17,32 @@
     <!-- SweetAlert2 CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            padding: 20px;
-        }
-
-        .feed-container {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .feed-item {
-            background: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .feed-item img.feed-image {
-            width: 90%;
-            height: 260px;
-            object-fit: cover;
-            border-radius: 20px;
-            display: block;
-            margin: 20px auto;
-        }
-
-        .profile-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        .writer-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            justify-content: space-between;
-        }
-
-        .writer-details {
-            display: flex;
-            align-items: center;
-        }
-
-        .writer-name {
-            font-size: 1.3em;
-            margin-top: 15px;
-            font-weight: normal;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .writer-name:hover {
-            color: #007bff;
-        }
-
-        .feed-title {
-            font-size: 1.5em;
-            margin-left: 150px;
-            text-align: left;
-            flex-grow: 1;
-            font-weight: bold;
-        }
-
-        .loading-spinner {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .title {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 27px;
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .feed-content {
-            margin-top: 20px;
-            padding-left: 35px;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-        }
-
-        .feed-created {
-            text-align: right;
-            margin-top: 10px;
-            font-size: 1.2em;
-        }
-
-        .comments-section {
-            margin-top: 20px;
-        }
-
-        .comment-item {
-            padding: 10px;
-        }
-
-        .comment-writer {
-            font-weight: bold;
-        }
-
-        .comment-inline {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            align-items: baseline;
-            margin-bottom: -24px;
-        }
-
-        .comment-actions a:hover {
-            text-decoration: underline;
-        }
-
-        h4, .h4 {
-            color: #007bff;
-            font-size: 1.4em;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-        }
-
-        .form-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .form-group textarea {
-            flex-grow: 1;
-            margin-top: 10px;
-            margin-right: 10px;
-        }
-
-        .form-group button {
-            height: 60px;
-            width: 11%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .comment-content {
-            flex-grow: 1;
-            word-wrap: break-word;
-        }
-
-        .comment-actions {
-            margin-left: 10px;
-            display: flex;
-            align-items: baseline;
-        }
-
-        .comment-actions a {
-            margin-left: 5px;
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .comment-actions button {
-            border: none;
-            background: none;
-            color: #007bff;
-            cursor: pointer;
-            padding: 0;
-            font-size: 0.9em;
-        }
-
-        textarea.edit-comment-textarea {
-            height: 38px;
-            width: 80%;
-            resize: none;
-        }
-
-        .input-group {
-            width: 225%;
-        }
-
-        .input-group-append .btn {
-            height: 38px;
-            display: flex;
-            align-items: center;
-        }
-
-        .feed-created {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .like-button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 7px 10px;
-            border-radius: 4px;
-        }
-
-        .like-button:hover {
-            background-color: #0056b3;
-        }
-
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/groupfeed/view.css">
 
     <script>
-        function profileView() {
+        function profileView(memberId) {
             $.ajax({
                 type: 'GET',
                 url: '/api/v1/group-feed/auth/member-info',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
-                success: function (response) {
+                success: function(response) {
                     if (!response.memberId) {
                         alert('회원 ID가 존재하지 않습니다.');
                         return;
                     }
-                    const memberId = response.memberId;
-                    window.location.href = "/api/v1/view/profile/view?memberId=" + memberId;
+                    const loggedInUserId = response.memberId;
+                    if (loggedInUserId === memberId) {
+                        const memberId = response.memberId;
+                        window.location.href = "/api/v1/view/profile/view?memberId=" + memberId;
+                    } else {
+                        window.location.href = "/api/v1/view/profile/view?memberId=" + memberId;
+                    }
                 },
-                error: function (xhr, status, error) {
-                    alert('작성자 정보를 가져오는 중 오류가 발생했습니다: ' + xhr.responseText);
+                error: function(xhr, status, error) {
+                    alert('사용자 정보를 가져오는 중 오류가 발생했습니다: ' + xhr.responseText);
                 }
             });
         }
@@ -256,6 +51,17 @@
         const limit = 3;
         let isLoading = false;
         let hasMoreFeeds = true;
+        let userId = null;
+
+        function getUserId() {
+            return $.ajax({
+                type: 'GET',
+                url: '/api/v1/group-feed/auth/member-info',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                }
+            });
+        }
 
         function loadFeeds() {
             if (isLoading || !hasMoreFeeds) return;
@@ -264,7 +70,7 @@
             $('#loadingSpinner').show();
 
             $.ajax({
-                url: '/api/v1/group-feed',
+                url: '/api/v1/group-feed/user/' + userId,
                 method: 'GET',
                 data: {
                     offset: offset,
@@ -274,15 +80,16 @@
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
                 success: function(response) {
-                    const feeds = response.feeds.content;
+                    const { feeds } = response;
                     if (feeds.length > 0) {
                         feeds.forEach(feed => {
+                            const profileImageUrl = feed.profileImageUrl ? feed.profileImageUrl + '?t=' + new Date().getTime() : '/images/default.png';
                             const feedHtml =
                                 '<div class="feed-item">' +
                                 '<div class="writer-info">' +
                                 '<div class="writer-details">' +
-                                (feed.profileImageUrl ? '<img src="' + feed.profileImageUrl + '" alt="Profile Image" class="profile-image" onclick="profileView(' + feed.writerId + ')">' : '') +
-                                '<p class="writer-name" onclick="profileView(' + feed.writerId + ')">' + feed.writer + '</p>' +
+                                '<img src="' + profileImageUrl + '" alt="Profile Image" class="profile-image" onclick="profileView(' + feed.memberId + ')">' +
+                                '<p class="writer-name" onclick="profileView(' + feed.memberId + ')">' + feed.writer + '</p>' +
                                 '</div>' +
                                 '<h3 class="feed-title">' + feed.title + '</h3>' +
                                 '</div>' +
@@ -309,6 +116,9 @@
                             hasMoreFeeds = false;
                         }
                     } else {
+                        if (offset === 0) {
+                            $('#feedContainer').append('<p class="no-feeds-message">작성된 피드 또는 스터디 그룹이 없습니다.</p>');
+                        }
                         hasMoreFeeds = false;
                     }
                 },
@@ -321,6 +131,18 @@
                 }
             });
         }
+
+
+        $(document).ready(function() {
+            getUserId().done(function(response) {
+                userId = response.memberId;
+                loadFeeds();
+            }).fail(function(xhr, status, error) {
+                console.error('사용자 ID를 가져오지 못했습니다.', xhr.responseText);
+            });
+        });
+
+
 
         function loadComments(feedId) {
             $.ajax({
@@ -464,13 +286,48 @@
             }
         });
 
-        $(document).ready(function() {
-            loadFeeds();
-        });
+        function groupFeedSave() {
+            $.ajax({
+                type: "GET",
+                url: "/api/v1/group-feed/auth/member-info",
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function (response) {
+                    var memberId = response.memberId;
+                    if (!memberId) {
+                        alert('회원 ID가 존재하지 않습니다.');
+                        return;
+                    }
+                    window.location.href = "/api/v1/view/group-feed/create?memberId=" + memberId;
+                },
+                error: function (xhr) {
+                    alert("회원 정보를 가져올 수 없습니다: " + xhr.responseText);
+                }
+            });
+        }
+
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
+
+        function studyRecruitmentArticlePaging() {
+            window.location.href = "/api/v1/view/article/paging";
+        }
     </script>
 </head>
 <body>
-<div class="title">그룹 피드</div>
+<div class="title-container">
+    <span class="site-title">dev-link-central</span>
+</div>
+
+<div class="title">
+    <div class="button-container">
+        <button class="menu-button" onclick="home()">메뉴</button>
+        <button class="group-feed-create-button" onclick="studyRecruitmentArticlePaging()">스터디 참여</button>
+        <button class="group-feed-create-button" onclick="groupFeedSave()">글작성</button>
+    </div>
+</div>
 <div class="feed-container" id="feedContainer">
     <c:forEach items="${feeds}" var="feed">
         <div class="feed-item">
@@ -478,10 +335,10 @@
                 <div class="writer-details">
                     <c:choose>
                         <c:when test="${not empty feed.profileImageUrl}">
-                            <img src="${feed.profileImageUrl}" alt="Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
+                            <img src="${feed.profileImageUrl}?t=${System.currentTimeMillis()}" alt="Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
                         </c:when>
                         <c:otherwise>
-                            <img src="/images/default.png" alt="Default Profile Image" class="profile-image" onclick="profileView(${feed.writerId})"> <!-- 기본 프로필 이미지 경로 -->
+                            <img src="/images/default.png" alt="Default Profile Image" class="profile-image" onclick="profileView(${feed.writerId})">
                         </c:otherwise>
                     </c:choose>
                     <p class="writer-name" onclick="profileView(${feed.writerId})">${feed.writer}</p>
@@ -500,6 +357,9 @@
             <p class="feed-created">
                 <small>작성자: ${feed.writer}</small>
                 <button id="like-button-${feed.id}" class="btn btn-secondary like-button" onclick="toggleLike(${feed.id})">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
                     좋아요 <span id="like-count-${feed.id}">${feed.likeCount || 0}</span>
                 </button>
             </p>

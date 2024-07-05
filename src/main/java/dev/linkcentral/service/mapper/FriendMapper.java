@@ -1,8 +1,8 @@
 package dev.linkcentral.service.mapper;
 
-import dev.linkcentral.database.entity.Friend;
-import dev.linkcentral.database.entity.FriendStatus;
-import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.friend.Friend;
+import dev.linkcentral.database.entity.friend.FriendStatus;
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.service.dto.friend.FriendMemberInfoDTO;
 import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;

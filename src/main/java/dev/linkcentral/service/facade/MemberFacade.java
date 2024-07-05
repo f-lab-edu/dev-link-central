@@ -1,6 +1,6 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.infrastructure.jwt.JwtTokenDTO;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.member.*;
@@ -13,13 +13,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MemberFacade {
 
-    private final MemberService memberService;
     private final MemberMapper memberMapper;
-
-    public MemberEditFormDTO memberEditForm() {
-        Member currentMember = memberService.getCurrentMember();
-        return memberMapper.toCurrentMember(currentMember);
-    }
+    private final MemberService memberService;
 
     public MemberInfoDTO getMemberInfo() {
         return memberService.getCurrentUserInfo();
@@ -56,12 +51,11 @@ public class MemberFacade {
 
     public boolean checkPassword(String password) {
         Member member = memberService.getCurrentMember();
-        return memberService.validatePassword(member.getNickname(),password);
+        return memberService.validatePassword(member.getNickname(), password);
     }
 
     public MemberDetailsDTO findByEmailAndDeletedFalse(String email) {
         Member member = memberService.findByEmailAndDeletedFalse(email);
         return memberMapper.toMemberDetailsDTO(member);
     }
-
 }

@@ -1,8 +1,8 @@
 package dev.linkcentral.service.mapper;
 
-import dev.linkcentral.database.entity.Article;
-import dev.linkcentral.database.entity.ArticleComment;
-import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.article.Article;
+import dev.linkcentral.database.entity.article.ArticleComment;
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.service.dto.article.*;
 import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.utils.DateUtils;
@@ -37,7 +37,7 @@ public class ArticleMapper {
         return Article.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
-                .writer(member.getNickname())
+                .writer(member.getName())
                 .member(member)
                 .build();
     }
@@ -45,6 +45,7 @@ public class ArticleMapper {
     public ArticleUpdateDTO toArticleUpdateDTO(ArticleUpdateRequestDTO updateRequestDTO) {
         return new ArticleUpdateDTO(
                 updateRequestDTO.getId(),
+                updateRequestDTO.getWriterId(),
                 updateRequestDTO.getWriter(),
                 updateRequestDTO.getTitle(),
                 updateRequestDTO.getContent()
@@ -54,6 +55,7 @@ public class ArticleMapper {
     public Article toUpdateEntity(ArticleUpdateDTO articleDTO) {
         return Article.builder()
                 .id(articleDTO.getId())
+                .member(Member.builder().id(articleDTO.getWriterId()).build())
                 .title(articleDTO.getTitle())
                 .content(articleDTO.getContent())
                 .writer(articleDTO.getWriter())

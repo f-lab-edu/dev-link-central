@@ -16,108 +16,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #007bff;
-            margin-bottom: 20px;
-            flex-grow: 1;
-        }
-
-        .form-group {
-            margin-bottom: 5px;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            display: block;
-            margin-top: 10px;
-        }
-
-        input, textarea {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin: 3px 0;
-            margin-left: 0px;
-        }
-
-        textarea {
-            height: 170px;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            margin-top: 10px;
-            margin-left: -10px;
-        }
-
-        .file-input {
-            font-size: 1.1em;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-        }
-
-        .file-label {
-            display: inline-block;
-            cursor: pointer;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: white;
-            font-size: 16px;
-            margin-left: 10px;
-        }
-
-        .file-status {
-            display: inline-block;
-            margin-left: 10px;
-            font-size: 1em;
-            color: green;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: white;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/groupfeed/update.css">
 
     <script>
         $(document).ready(function() {
@@ -182,6 +82,10 @@
                 }
             });
         }
+
+        function home() {
+            window.history.back();
+        }
     </script>
 </head>
 <body>
@@ -205,7 +109,10 @@
                 <span id="fileStatus" class="file-status"></span>
             </div>
         </div>
-        <button type="button" onclick="submitUpdate()">수정하기</button>
+        <div class="form-actions">
+            <button type="button" class="menu-button" onclick="home()">이전으로</button>
+            <button type="button" onclick="submitUpdate()">수정하기</button>
+        </div>
     </form>
 </div>
 </body>

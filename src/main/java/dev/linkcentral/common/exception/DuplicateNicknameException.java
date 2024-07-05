@@ -9,6 +9,3 @@ public class DuplicateNicknameException extends RuntimeException {
         super(message);
     }
 }
-
-
-

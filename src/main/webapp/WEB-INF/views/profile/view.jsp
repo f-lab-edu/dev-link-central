@@ -15,194 +15,21 @@
     <!-- SweetAlert2 CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .profile-container {
-            display: flex;
-            justify-content: space-between;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 800px;
-        }
-
-        .left-section, .right-section {
-            flex: 1;
-            padding: 20px;
-        }
-
-        .left-section {
-            align-items: center;
-            text-align: center;
-        }
-
-        .profile-image {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            margin-bottom: 15px;
-            border: 4px solid #ddd;
-        }
-
-        h2, h5, .profile-bio-label {
-            color: #007bff;
-            font-weight: bold;
-        }
-
-        h2.centered {
-            text-align: center;
-        }
-
-        .profile-bio {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .profile-button {
-            padding: 10px 20px;
-            background-color: #4A90E2;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .profile-button:hover {
-            background-color: #0056b3;
-            color: white;
-            text-decoration: none;
-        }
-
-        .friend-requests-container, .friends-list-container {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .friend-request, .friend-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: white;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .accept-friend-request, .reject-friend-request {
-            padding: 5px 10px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .accept-friend-request {
-            background-color: #81C784;
-            color: white;
-        }
-
-        .accept-friend-request:hover {
-            background-color: #81C784;
-        }
-
-        .reject-friend-request {
-            background-color: #E57373;
-            color: white;
-        }
-
-        .reject-friend-request:hover {
-            background-color: #B71C1C
-        }
-
-
-        .btn-group .btn {
-            margin-right: 5px;
-        }
-
-        .btn-group .btn:last-child {
-            margin-right: 0;
-        }
-
-        .profile-title, .friends-title {
-            text-align: center;
-            color: #007bff;
-            font-weight: bold;
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-
-        .unfriend-button-container .profile-button {
-            background-color: #E57373;
-        }
-
-        .unfriend-button-container .profile-button:hover {
-            background-color: #E57373;
-        }
-
-        .friend-request-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
-        .accept-friend-request, .reject-friend-request {
-            padding: 5px 10px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .accept-friend-request {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .accept-friend-request:hover {
-            background-color: #45a049;
-        }
-
-        .reject-friend-request {
-            background-color: #E57373;
-            color: white;
-        }
-
-        .reject-friend-request:hover {
-            background-color: #E57373;
-        }
-
-        .friend-request span, .friend-item span {
-            font-weight: bold;
-            color: #333;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/profile/view.css">
 
     <script type="text/javascript">
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
         var memberId;
+        var userId;
 
-        function initEventListeners(userId) {
+        function initEventListeners() {
             $('#sendFriendRequestBtn').off('click').on('click', function() {
-                var receiverId = $(this).data('receiver-id');
+                var receiverId = $('#profileUserId').val();
+                console.log("ProfileUserId Element:", $('#profileUserId')); // 추가 로그
+                console.log("senderId: " + memberId + "receiverId: " + receiverId); // 로그 추가
                 sendFriendRequest(memberId, receiverId);
             });
 
@@ -218,8 +45,7 @@
 
             $(document).off('click', '.reject-friend-request').on('click', '.reject-friend-request', function () {
                 var requestId = $(this).data('request-id');
-                var userId = $('#userId').val();
-                rejectFriendRequest(requestId, userId);
+                rejectFriendRequest(requestId);
             });
 
             // "친구 끊기" 버튼 클릭 이벤트
@@ -234,11 +60,6 @@
             });
         }
 
-        // 페이지 준비 완료 후 한 번만 이벤트 리스너를 초기화
-        $(document).ready(function() {
-            initEventListeners();
-        });
-
         function sendFriendRequest(senderId, receiverId) {
             $.ajax({
                 type: 'POST',
@@ -248,11 +69,8 @@
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                 success: function (response) {
                     alert('친구 요청이 성공적으로 전송되었습니다.');
-
-                    var friendRequestId = response.friendRequestId;
-                    console.log("@@ --> friendRequestId: " + friendRequestId);
-
-                    updateUnfriendButton(friendRequestId);
+                    updateUnfriendButton(response.friendRequestId);
+                    location.reload(); // 페이지 새로고침
                 },
                 error: function (xhr, status, error) {
                     console.error("Failed to send friend request.");
@@ -261,20 +79,26 @@
                     console.error("XHR Response: " + xhr.responseText);
 
                     var errorMessage = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : "Unknown error occurred.";
-                    alert('친구 요청을 보내지 못했습니다. 오류: ' + errorMessage);
+                    alert('이미 친구 요청을 보냈습니다.');
                 }
             });
         }
 
         function updateUnfriendButton(friendId) {
+            var senderId = memberId; // 로그인한 사용자의 ID
+            var receiverId = userId; // 프로필 소유자의 ID
+
+            console.log("Inside updateUnfriendButton - senderId:", senderId, "receiverId:", receiverId); // 추가 로그
+
             $.ajax({
                 url: '/api/v1/friends/friendship-ids',
                 type: 'GET',
-                data: {senderId: memberId, receiverId: userId},
-                headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
+                data: { senderId: senderId, receiverId: receiverId },
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem("jwt") },
                 success: function(response) {
+                    console.log("Success response:", response); // 추가 로그
                     // 친구 관계의 ID로 버튼을 업데이트
-                    $('#unfriendBtn').data('friend-id', response).attr('data-friend-id', response).show();
+                    $('#unfriendBtn').data('friend-id', response.friendshipId).attr('data-friend-id', response.friendshipId).show();
                 },
                 error: function(xhr, status, error) {
                     console.error("친구 관계 ID 조회에 실패했습니다.", xhr.responseText);
@@ -297,14 +121,7 @@
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                 success: function () {
                     alert('친구 요청을 수락했습니다.');
-
-                    // 친구 목록을 새로고침하는 함수를 호출
-                    fetchAndDisplayFriends();
-
-                    // 요청이 수락되면, 서버로부터 친구 관계 ID를 받아와야 한다.
-                    // 이 ID를 받기 위해 별도의 함수를 호출
-                    updateFriendButtonAfterAcceptance(memberId, $(buttonElement).data('sender-id'));
-                    $(buttonElement).closest('.friend-request').remove(); // 요청을 DOM에서 제거
+                    location.reload(); // 성공 후 새로고침
                 },
                 error: function (xhr, status, error) {
                     console.error("친구 요청 수락에 실패했습니다. 오류: " + xhr.responseText);
@@ -346,11 +163,10 @@
         var isRejectingRequest = false; // 요청 거절 처리 중인지 확인하는 플래그
 
         function rejectFriendRequest(requestId, userId) {
-            if (isRejectingRequest) {
-                return; // 함수를 종료하여 추가 요청을 방지
+            if (!requestId) {
+                console.error("Request ID is undefined.");
+                return;
             }
-
-            isRejectingRequest = true; // 요청 거절 처리 시작
 
             $.ajax({
                 url: '/api/v1/friends/reject/' + requestId,
@@ -358,12 +174,10 @@
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                 success: function () {
                     alert('친구 요청을 거절했습니다.');
-                    fetchAndDisplayUserInfo(userId);
-                    isRejectingRequest = false; // 요청 거절 처리 완료 후 플래그를 다시 false로 설정
+                    location.reload(); // 성공 후 새로고침
                 },
-                error: function (error) {
-                    console.error("친구 요청 거절에 실패했습니다.", error);
-                    isRejectingRequest = false; // 오류 발생 시 플래그를 다시 false로 설정
+                error: function (xhr, status, error) {
+                    console.error("친구 요청 거절에 실패했습니다.", xhr.responseText);
                 }
             });
         }
@@ -391,19 +205,20 @@
 
         // 페이지 로딩 완료 시 이벤트 리스너 초기화
         $(document).ready(function() {
+            fetchUserInfo();
             initEventListeners();
         });
 
         // 친구 요청을 불러오는 함수 추가
-        function fetchAndDisplayReceivedFriendRequests() {
-            if (!memberId) {
-                console.error("memberId가 정의되지 않았습니다.");
+        function fetchAndDisplayReceivedFriendRequests(profileMemberId) {
+            if (!profileMemberId) {
+                console.error("profileMemberId가 정의되지 않았습니다.");
                 return;
             }
 
             $.ajax({
                 type: "GET",
-                url: "/api/v1/friends/received-requests/" + memberId,
+                url: "/api/v1/friends/received-requests/" + profileMemberId,
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
@@ -414,14 +229,20 @@
                         var requestsHtml = response.friendRequests.map(function(request) {
                             console.log('Entire request object:', request);
 
-                            // request.id를 사용하여 data-request-id를 설정
-                            return '<div class="friend-request">' +
-                                '<span>From: ' + request.senderName + '</span>' +
-                                '<div class="friend-request-buttons">' +
-                                '<button data-request-id="' + request.id + '" class="accept-friend-request">수락</button>' +
-                                '<button data-request-id="' + request.id + '" class="reject-friend-request">거절</button>' +
-                                '</div>' +
-                                '</div>';
+                            // 수신자와 로그인한 사용자가 동일한 경우에만 수락 및 거절 버튼을 표시
+                            if (request.receiverId === memberId) {
+                                return '<div class="friend-request">' +
+                                    '<span>From: ' + request.senderName + '</span>' +
+                                    '<div class="friend-request-buttons">' +
+                                    '<button data-request-id="' + request.id + '" class="accept-friend-request">수락</button>' +
+                                    '<button data-request-id="' + request.id + '" class="reject-friend-request">거절</button>' +
+                                    '</div>' +
+                                    '</div>';
+                            } else {
+                                return '<div class="friend-request">' +
+                                    '<span>From: ' + request.senderName + '</span>' +
+                                    '</div>';
+                            }
                         }).join('');
 
                         // HTML을 DOM에 삽입
@@ -437,7 +258,6 @@
             });
         }
 
-        // 이벤트 위임을 사용하도록 수정
         // 이벤트 위임을 사용하도록 수정
         function bindRequestButtons() {
             $(document).off('click', '.accept-friend-request').on('click', '.accept-friend-request', function() {
@@ -466,12 +286,12 @@
                 type: 'GET',
                 data: {
                     senderId: memberId,
-                    receiverId: profileMemberId
+                    receiverId: profileMemberId // receiverId를 포함하도록 수정
                 },
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
-                success: function(friendId) {
-                    if (friendId) {
-                        $('#unfriendBtn').data('friend-id', friendId).attr('data-friend-id', friendId);
+                success: function(response) {
+                    if (response && response.friendshipId) {
+                        $('#unfriendBtn').data('friend-id', response.friendshipId).attr('data-friend-id', response.friendshipId);
                     } else {
                         $('#unfriendBtn').hide();
                     }
@@ -481,22 +301,18 @@
                 }
             });
         }
-    </script>
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-            // 친구 끊기 폼 제출 처리
-            $('#unfriendForm').submit(function(event) {
-                event.preventDefault();
+        // 친구 끊기 폼 제출 처리
+        $('#unfriendForm').submit(function(event) {
+            event.preventDefault();
 
-                // 체크된 모든 체크박스 수집
-                var selectedFriends = $('.friend-checkbox:checked').map(function() {
-                    return $(this).val();
-                }).get();
+            // 체크된 모든 체크박스 수집
+            var selectedFriends = $('.friend-checkbox:checked').map(function() {
+                return $(this).val();
+            }).get();
 
-                // 선택된 친구들에 대해 친구 끊기 요청 보내기
-                unfriendSelected(selectedFriends);
-            });
+            // 선택된 친구들에 대해 친구 끊기 요청 보내기
+            unfriendSelected(selectedFriends);
         });
 
         // 친구 끊기 요청을 보내는 함수
@@ -522,7 +338,7 @@
                     console.error("친구 끊기에 실패했습니다.", xhr.responseText);
                 }
             });
-        }
+        };
 
         $(document).on('click', '#unfriendSelectedBtn', function() {
             // 체크된 모든 체크박스에서 친구 관계 ID를 가져온다.
@@ -546,9 +362,9 @@
         // 사용자 정보를 가져오는 함수
         $(document).ready(function() {
             fetchUserInfo();
+            initEventListeners();
         });
 
-        var memberId;
         function fetchUserInfo() {
             $.ajax({
                 url: '/api/v1/member/info',
@@ -557,10 +373,9 @@
                 success: function(response) {
                     console.log("사용자 정보 받기 성공:", response);
                     memberId = response.userId;
-
-                    // 사용자 ID를 사용하여 필요한 함수들을 호출
+                    userId = $('#profileUserId').val();
+                    console.log("userId 설정: ", userId); // 추가 로그
                     initEventListeners();
-                    fetchAndDisplayFriends();
                 },
                 error: function(xhr, status, error) {
                     console.error("사용자 정보 요청에 실패했습니다.", xhr.responseText);
@@ -568,14 +383,14 @@
             });
         }
 
-        function fetchAndDisplayFriends() {
-            if (!memberId) {
-                console.error("memberId가 정의되지 않았습니다.");
+        function fetchAndDisplayFriends(profileMemberId) {
+            if (!profileMemberId) {
+                console.error("profileMemberId가 정의되지 않았습니다.");
                 return;
             }
 
             $.ajax({
-                url: '/api/v1/friends/' + memberId + '/friendships',
+                url: '/api/v1/friends/' + profileMemberId + '/friendships',
                 type: 'GET',
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                 success: function(friendships) {
@@ -585,7 +400,8 @@
                     });
 
                     var friendsHtml = acceptedFriendships.map(function(friendship) {
-                        var friendName = friendship.senderId === memberId ? friendship.receiverName : friendship.senderName;
+                        // 현재 로그인한 사용자의 ID를 기준으로 친구의 이름을 가져옴
+                        var friendName = (friendship.senderId !== memberId) ? friendship.senderName : friendship.receiverName;
                         console.log(friendship); // 콘솔 로그로 확인
 
                         return '<div class="friend friend-item">' +
@@ -606,13 +422,27 @@
         // 페이지 로딩 완료 시 사용자 정보 요청과 함께 친구 목록을 가져오는 함수를 호출한다.
         $(document).ready(function() {
             fetchUserInfo();
+            initEventListeners();
         });
 
+        $(document).ready(function() {
+            userId = $('#profileUserId').val(); // 프로필 사용자의 ID 가져오기
+            console.log("Profile userId: ", userId); // 로그로 확인
+            fetchUserInfo(); // 사용자 정보를 가져온 후 이벤트 리스너 초기화
+            fetchAndDisplayFriends(userId); // 프로필 사용자의 친구 목록을 표시
+            fetchAndDisplayReceivedFriendRequests(userId); // 프로필 사용자의 받은 친구 요청 목록을 표시
+        });
 
         $(document).ready(function() {
-            memberId = $("#userId").val(); // 로그인한 사용자의 ID를 가져 온다.
-            initEventListeners(memberId); // memberId를 인자로 넘겨 초기화
-            fetchAndDisplayFriends(memberId); // 여기에서 호출하여 친구 목록을 표시
+            var profileMemberId = '<c:out value="${profile.memberId}"/>'; // 프로필 소유자의 ID
+
+            fetchUserInfo(); // 현재 로그인한 사용자의 정보를 가져옴
+            fetchAndDisplayFriends(profileMemberId); // 프로필 소유자의 친구 목록을 가져옴
+        });
+
+        $(document).ready(function() {
+            fetchUserInfo();
+            initEventListeners();
         });
     </script>
 
@@ -704,7 +534,14 @@
     </script>
 </head>
 <body>
+<div class="profile-header">
+    <h3>프로필 & 친구 목록</h3>
+    <button class="menu-button" onclick="home()">나가기</button>
+</div>
 <div class="profile-container">
+    <!-- JSP 또는 HTML 페이지에 userId를 출력하는 부분을 추가 -->
+    <input type="hidden" id="profileUserId" value="<c:out value='${profile.memberId}'/>">
+
     <div class="left-section">
         <h2 class="profile-title">프로필</h2>
         <img class="profile-image" src="${not empty profile.imageUrl ? profile.imageUrl : '/images/default.png'}" alt="Profile Image">
@@ -717,7 +554,6 @@
         </div>
     </div>
 
-    <!-- 오른쪽 섹션: 친구 요청 및 친구 목록 -->
     <div class="right-section">
         <h2 class="friends-title">친구 목록</h2>
         <div class="friends-list-container">

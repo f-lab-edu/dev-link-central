@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="dev.linkcentral.database.entity.StudyGroup" %>
-<%@ page import="dev.linkcentral.database.entity.StudyGroup" %>
+<%@ page import="dev.linkcentral.database.entity.studygroup.StudyGroup" %>
+<%@ page import="dev.linkcentral.database.entity.studygroup.StudyGroup" %>
 <% Boolean showCreateButton = (Boolean) request.getAttribute("showCreateButton"); %>
 <!DOCTYPE html>
 <html>
@@ -17,264 +17,9 @@
     <!-- SweetAlert2 CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/studys/study-group.css">
     <title>스터디 그룹 페이지</title>
-
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px auto;
-            max-width: 600px;
-            text-align: center;
-        }
-        h2 {
-            color: black;
-            margin-bottom: 20px;
-            font-size: 30px;
-            font-weight: bold;
-        }
-        h5 {
-            color: #4A90E2;
-            margin: 1px;
-            padding: 6px;
-            text-align: left;
-            border-bottom: none;
-            font-weight: bold;
-        }
-        h5 + * {
-            margin-top: 0;
-        }
-        h4 {
-            font-size: 25px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            margin-top: 2px;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #ccc;
-            word-wrap: break-word;
-        }
-
-        th {
-            background-color: #4A90E2;
-            color: white;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
-        th:first-child {
-            border-top-left-radius: 10px;
-        }
-
-        th:last-child {
-            border-top-right-radius: 10px;
-        }
-
-        th:nth-child(1), td:nth-child(1) {
-            width: 40%;
-        }
-
-        th:nth-child(2), td:nth-child(2) {
-            width: 40%;
-        }
-
-        th:nth-child(3), td:nth-child(3) {
-            width: 30%;
-        }
-        .btn-primary, .btn-danger {
-            background-color: #4A90E2;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            margin: 4px 2px;
-            transition-duration: 0.4s;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .btn-primary:hover {
-            background-color: #4A90E2;
-        }
-        .btn-danger {
-            background-color: #E57373;
-        }
-        .btn-danger:hover {
-            background-color: #E57373;
-        }
-        .alert {
-            color: #E57373;
-            background-color: transparent;
-            padding: 0;
-            margin-bottom: 20px;
-            text-align: center;
-            border: none;
-        }
-        .group-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .study-group {
-            flex: 1 1 calc(33.333% - 10px);
-            background-color: white;
-            border: 1px solid #007bff;
-            border-radius: 8px;
-            padding: 10px;
-            margin: 10px 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .study-group h3 {
-            color: #007bff;
-            font-size: 18px;
-            margin: 0 0 10px 0;
-        }
-        .study-group ul {
-            list-style-type: none;
-            padding-left: 0;
-            margin: 0;
-        }
-
-        .study-group ul li {
-            padding: 5px 0;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .study-group ul li:last-child {
-            border-bottom: none;
-        }
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        ul li {
-            padding: 8px 0;
-            border-bottom: 1px solid #ccc;
-        }
-        ul li:last-child {
-            border-bottom: none;
-        }
-        a {
-            color: #4A90E2;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        input:focus, textarea:focus, select:focus {
-            border-color: #4A90E2;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-
-        .dynamic-text {
-            color: #333;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .dynamic-text span {
-            font-weight: bold;
-            color: #4A90E2;
-        }
-
-        .dynamic-text ul {
-            padding-left: 20px;
-        }
-
-        .dynamic-text li {
-            margin-bottom: 5px;
-        }
-
-        .group-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .text-red {
-            color: #E57373;
-        }
-
-        .text-right {
-            text-align: right;
-            padding-right: 50px;
-        }
-
-        .btn-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 5px;
-        }
-
-        .text-light-red {
-            color: #E57373;
-        }
-
-        #noGroupsMessage {
-            color: #E57373;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        #createStudyGroupButton {
-            text-align: right;
-            margin-bottom: 10px;
-        }
-
-        .text-light-red {
-            color: #E57373;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        #createStudyGroupButton .btn-primary {
-            background-color: #42A5F5;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 17px;
-            font-weight: bold;
-            margin: 4px 2px;
-            transition-duration: 0.4s;
-            cursor: pointer;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
-        }
-
-        #createStudyGroupButton .btn-primary:hover {
-            background-color: #0056b3;
-            box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
-        }
-
-        #createStudyGroupButton .btn-primary:active {
-            background-color: #003f7f;
-            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
-            transform: translateY(2px);
-        }
-    </style>
 
     <script type="text/javascript">
         var userId = ${member.id};
@@ -430,19 +175,19 @@
                             groupHtml += '<ul>';
                             if (group.members && Array.isArray(group.members)) {
                                 group.members.forEach(function(member) {
+                                    groupHtml += '<li>' + member.name;
                                     if (member.id === group.leaderId) {
-                                        groupHtml += '<li>' + member.name + ' (리더)</li>';
-                                    } else {
-                                        groupHtml += '<li>' + member.name + '</li>';
+                                        groupHtml += ' (리더)';
                                     }
+                                    groupHtml += '</li>';
                                 });
                             }
-                            groupHtml += '</ul>';
-                            groupHtml += '</div>';
+                            groupHtml += '</ul></div>';
                             $("#studyGroupsAndMembers").append(groupHtml);
 
                             var rowHtml = '<tr class="dynamic-text">' +
                                 '<td class="group-name">' + group.groupName + '</td>' +
+                                '<td>' + group.memberCount + '명 (리더 포함)</td>' +
                                 '<td class="text-right">' +
                                 '<div class="btn-group">' +
                                 '<button class="btn-danger leaveGroup" data-studygroupid="' + group.id + '">탈퇴</button>' +
@@ -562,15 +307,19 @@
                 });
             }
         }
-    </script>
 
+        function home() {
+            window.location.href = "/api/v1/view/member/";
+        }
+    </script>
 </head>
 <body>
 <div class="container">
     <header>
         <h2>스터디 그룹</h2>
     </header>
-    <div id="createStudyGroupButton">
+    <div id="createStudyGroupButton" class="button-container">
+        <button class="btn-primary" onclick="home()">나가기</button>
         <button class="btn-primary" onclick="window.location.href='/api/v1/view/study-group/create'">그룹 생성</button>
     </div>
 
@@ -611,6 +360,7 @@
             <thead>
             <tr>
                 <th>그룹 이름</th>
+                <th>현재 인원</th>
                 <th class="text-right">요청 여부</th>
             </tr>
             </thead>
@@ -618,6 +368,7 @@
             <c:forEach var="group" items="${acceptedStudyGroups}">
                 <tr class="dynamic-text">
                     <td class="group-name">${group.groupName}</td>
+                    <td>${group.memberCount}명(자신 포함)</td>
                     <td class="text-right">
                         <div class="btn-group">
                             <button class="btn-danger leaveGroup" data-studygroupid="${group.id}" style="display:none;">탈퇴</button>
@@ -652,6 +403,5 @@
     </div>
     <p id="noGroupsMessage" class="text-light-red" style="display:none;">가입된 스터디 그룹이 없습니다.</p>
 </div>
-
 </body>
 </html>

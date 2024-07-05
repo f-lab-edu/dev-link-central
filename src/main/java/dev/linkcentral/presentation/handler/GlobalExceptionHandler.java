@@ -3,7 +3,7 @@ package dev.linkcentral.presentation.handler;
 import dev.linkcentral.common.exception.*;
 import dev.linkcentral.presentation.response.member.AuthenticationErrorResponse;
 import dev.linkcentral.presentation.response.member.RegistrationErrorResponse;
-import dev.linkcentral.presentation.response.profile.ProfileUpdateResponse;
+import dev.linkcentral.presentation.response.profile.ProfileUpdatedResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -56,8 +56,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ProfileUpdateResponse> handleProfileUsernameNotFoundException(UsernameNotFoundException ex) {
-        ProfileUpdateResponse response = ProfileUpdateResponse.builder()
+    public ResponseEntity<ProfileUpdatedResponse> handleProfileUsernameNotFoundException(UsernameNotFoundException ex) {
+        ProfileUpdatedResponse response = ProfileUpdatedResponse.builder()
                 .message("인증되지 않은 사용자입니다.")
                 .build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
@@ -66,14 +66,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProfileNotFoundException.class)
     public ResponseEntity<Object> handleProfileNotFoundException(ProfileNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ProfileUpdateResponse.builder().message(ex.getMessage()).build()
+                ProfileUpdatedResponse.builder().message(ex.getMessage()).build()
         );
     }
 
     @ExceptionHandler(ProfileUpdateException.class)
     public ResponseEntity<Object> handleProfileUpdateException(ProfileUpdateException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ProfileUpdateResponse.builder().message("프로필 업데이트에 실패했습니다.").build()
+                ProfileUpdatedResponse.builder().message("프로필 업데이트에 실패했습니다.").build()
         );
     }
 
@@ -97,5 +97,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

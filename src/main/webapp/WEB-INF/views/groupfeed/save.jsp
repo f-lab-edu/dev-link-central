@@ -16,101 +16,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f7f7f7;
-            padding: 20px;
-        }
-
-        #feedForm h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #007bff;
-        }
-
-        #feedForm {
-            max-width: 500px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        #feedForm div {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"],
-        textarea,
-        input[type="file"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-
-        input[readonly] {
-            background-color: #e9ecef;
-        }
-
-        textarea {
-            height: 150px;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 10px;
-        }
-
-        input[type="submit"], .file-input-button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        input[type="submit"]:hover, .file-input-button:hover {
-            background-color: #0056b3;
-        }
-
-        #imagePreview {
-            display: block;
-            max-width: 100%;
-            height: auto;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .file-input {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/groupfeed/save.css">
 
     <script>
         $(document).ready(function() {
@@ -173,6 +80,10 @@
                 });
             });
         });
+
+        function home() {
+            window.history.back();
+        }
     </script>
 </head>
 
@@ -199,7 +110,8 @@
         <img id="imagePreview" src="#" alt="Image Preview" style="display: none;" />
     </div>
     <div class="form-actions">
-        <button type="button" class="file-input-button">이미지 등록</button>
+        <button type="button" class="file-input-button">이미지 추가</button>
+        <button type="button" class="menu-button" onclick="home()">이전으로</button>
         <input type="submit" value="등록하기" />
     </div>
 </form>

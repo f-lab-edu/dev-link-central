@@ -1,6 +1,6 @@
 package dev.linkcentral.service.mapper;
 
-import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.service.dto.member.*;
 import dev.linkcentral.service.dto.token.MemberDetailsDTO;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +28,7 @@ public class MemberMapper {
     public MemberInfoDTO toMemberInfoDTO(Member member) {
         return MemberInfoDTO.builder()
                 .userId(member.getId())
+                .name(member.getName())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .build();

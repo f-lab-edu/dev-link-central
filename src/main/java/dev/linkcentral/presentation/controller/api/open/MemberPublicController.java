@@ -7,7 +7,7 @@ import dev.linkcentral.presentation.request.member.MemberSaveRequest;
 import dev.linkcentral.presentation.response.member.LoginSuccessResponse;
 import dev.linkcentral.presentation.response.member.MailPasswordResetResponse;
 import dev.linkcentral.presentation.response.member.MemberPasswordResponse;
-import dev.linkcentral.presentation.response.member.MemberSaveResponse;
+import dev.linkcentral.presentation.response.member.MemberSavedResponse;
 import dev.linkcentral.service.dto.member.MemberLoginRequestDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationDTO;
 import dev.linkcentral.service.dto.member.MemberRegistrationResultDTO;
@@ -30,16 +30,29 @@ public class MemberPublicController {
 
     private final MemberFacade memberFacade;
 
+    /**
+     * 회원 등록
+     *
+     * @param memberSaveRequest 회원 저장 요청
+     * @return 회원 저장 응답
+     */
     @PostMapping("/register")
     @ResponseBody
-    public ResponseEntity<MemberSaveResponse> register(@Validated @RequestBody MemberSaveRequest memberSaveRequest) {
+    public ResponseEntity<MemberSavedResponse> register(@Validated @RequestBody MemberSaveRequest memberSaveRequest) {
         MemberRegistrationDTO memberDTO = MemberSaveRequest.toMemberRegistrationCommand(memberSaveRequest);
         MemberRegistrationResultDTO registrationResultDTO = memberFacade.registerNewMember(memberDTO);
 
-        MemberSaveResponse response = MemberSaveResponse.toMemberSaveResponse(registrationResultDTO);
+        MemberSavedResponse response = MemberSavedResponse.toMemberSaveResponse(registrationResultDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    /**
+     * 회원 로그인
+     *
+     * @param memberLoginRequest 회원 로그인 요청
+     * @param request            HTTP 요청
+     * @return 로그인 성공 응답
+     */
     @PostMapping("/login")
     public ResponseEntity<LoginSuccessResponse> login(@Validated @RequestBody MemberLoginRequest memberLoginRequest,
                                                       HttpServletRequest request) {
@@ -52,6 +65,12 @@ public class MemberPublicController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 비밀번호 찾기 요청
+     *
+     * @param userEmail 사용자 이메일
+     * @return 비밀번호 유효성 검사 응답
+     */
     @GetMapping("/forgot-password")
     @ResponseBody
     public ResponseEntity<MemberPasswordResponse> validatePassword(String userEmail) {
@@ -60,6 +79,12 @@ public class MemberPublicController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 비밀번호 재설정 이메일 전송
+     *
+     * @param userEmail 사용자 이메일
+     * @return 이메일 전송 응답
+     */
     @PostMapping("/send-email/update-password")
     public ResponseEntity<MailPasswordResetResponse> sendPasswordResetEmail(String userEmail) {
         memberFacade.sendPasswordResetEmail(userEmail);
@@ -67,6 +92,12 @@ public class MemberPublicController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 현재 비밀번호 확인
+     *
+     * @param password 현재 비밀번호
+     * @return 비밀번호 유효성 검사 응답
+     */
     @PostMapping("/check-current-password")
     @ResponseBody
     public ResponseEntity<MemberPasswordResponse> verifyCurrentPassword(@RequestParam String password) {

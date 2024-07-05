@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class StudyGroupExistsDTO {
 
     private boolean exists;
+    private Long groupId;
 }

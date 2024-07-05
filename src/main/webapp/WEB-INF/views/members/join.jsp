@@ -7,100 +7,8 @@
             integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
             crossorigin="anonymous">
     </script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .container {
-            background-color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            padding: 40px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 360px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form_group {
-            margin-bottom: 20px;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-            margin-left: 10px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        label {
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        input {
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #passwordMatchMessage {
-            color: green;
-            font-size: 14px;
-        }
-
-        #passwordMismatchMessage {
-            color: red;
-            font-size: 14px;
-        }
-
-        .error-message {
-            font-size: 14px;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/members/join.css">
 
     <script>
         $(document).ready(function () {
@@ -199,8 +107,6 @@
             window.location.href = "/api/v1/view/member/";
         }
     </script>
-
-
 </head>
 <body>
 <div class="container">
@@ -226,7 +132,7 @@
             <span id="nicknameStatus" class="success-message"></span>
 
             <div class="buttons">
-                <button type="button" class="btn btn-danger" onclick="cancelButtonClicked()">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="cancelButtonClicked()">나가기</button>
                 <button type="submit" id="signupButton" disabled>회원가입</button>
             </div>
         </div>

@@ -1,6 +1,6 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.Member;
+import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.service.ArticleService;
 import dev.linkcentral.service.MemberService;
 import dev.linkcentral.service.dto.article.*;
@@ -19,20 +19,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ArticleFacade {
 
-    private final ArticleService articleService;
-    private final MemberService memberService;
     private final ArticleMapper articleMapper;
+    private final MemberService memberService;
+    private final ArticleService articleService;
     private final ArticleCommentMapper articleCommentMapper;
 
     public ArticleCreateDTO createAndSaveArticle(ArticleCreateRequestDTO createRequestDTO) {
         Member currentMember = memberService.getCurrentMember();
         ArticleCreateDTO articleCreateDTO = articleMapper.toArticleCreateDTO(createRequestDTO, currentMember);
-        return articleService.saveArticle(articleCreateDTO);
+        return articleService.saveArticle(articleCreateDTO, currentMember);
     }
 
     public ArticleUpdatedDTO updateArticle(ArticleUpdateRequestDTO updateRequestDTO) {
         Member member = memberService.getCurrentMember();
         ArticleUpdateDTO articleDTO = articleMapper.toArticleUpdateDTO(updateRequestDTO);
+        articleDTO.updateWriterId(member.getId());
         return articleService.updateArticle(articleDTO);
     }
 
@@ -53,7 +54,7 @@ public class ArticleFacade {
     public ArticleCommentDTO commentSave(ArticleCommentRequestDTO commentRequestDTO) {
         Member member = memberService.getCurrentMember();
         ArticleCommentDTO commentDTO = articleCommentMapper.toArticleCommentDTO(commentRequestDTO, member.getNickname());
-        return articleService.saveComment(commentDTO, member.getNickname());
+        return articleService.saveComment(commentDTO, member);
     }
 
     public ArticleCommentUpdateDTO updateComment(ArticleCommentRequestDTO commentRequestDTO, Long commentId) {

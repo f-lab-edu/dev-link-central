@@ -1,86 +1,142 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Page Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!-- Bootstrap JS 및 jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
-            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
-            crossorigin="anonymous">
-    </script>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- SweetAlert2 CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/members/edit.css">
 
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            padding-top: 30px;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            height: 100vh;
-        }
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // 사용자 정보를 가져와서 폼에 채움
+            $.ajax({
+                url: '/api/v1/member/info',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
+                },
+                success: function(response) {
+                    console.log("Member info response:", response);  // 응답 확인
+                    $('#name').val(response.name);
+                    $('#email').val(response.email);
+                    $('#nickname').val(response.nickname);
+                    $('#id').val(response.userId);  // userId를 id로 매핑
+                },
+                error: function(xhr, status, error) {
+                    console.error("사용자 정보를 가져오는 데 실패했습니다:", xhr.responseText);
+                    alert('사용자 정보를 가져오는 데 실패했습니다.');
+                }
+            });
 
-        .container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            margin-top: 40px;
-        }
+            // '현재 비밀번호 확인' 입력 칸에서 입력값을 확인
+            $('#currentPassword').on('input', function() {
+                var currentPassword = $(this).val();
 
-        form {
-            display: flex;
-            flex-direction: column;
-        }
+                if (currentPassword.length > 0) {
+                    $.ajax({
+                        url: '/api/v1/public/member/check-current-password',
+                        type: 'POST',
+                        data: { password: currentPassword },
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem("jwt") // 인증 헤더 추가
+                        },
+                        success: function(response) {
+                            console.log("Server response:", response);
+                            if (response.result) {
+                                $('#passwordFeedback').text('비밀번호가 일치합니다.').removeClass('invalid').addClass('valid');
+                            } else {
+                                $('#passwordFeedback').text('비밀번호가 일치하지 않습니다.').removeClass('valid').addClass('invalid');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("비밀번호 확인 실패:", xhr.responseText);
+                        }
+                    });
+                } else {
+                    $('#passwordFeedback').text('').removeClass('valid invalid');
+                }
+            });
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+            $('#updateForm').on('submit', function(e) {
+                e.preventDefault();
 
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-        }
+                var currentPassword = $('#currentPassword').val();
+                var newPassword = $('#password').val();
+                var nickname = $('#nickname').val();
+                var id = $('#id').val();  // id 추가
+                var name = $('#name').val();  // name 추가
 
-        input {
-            width: calc(100% - 20px);
-            padding: 8px;
-            box-sizing: border-box;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            background-color: #fff;
-            color: #495057;
-        }
+                console.log("Update request data:", {
+                    id: id,
+                    name: name,
+                    nickname: nickname,
+                    password: newPassword
+                });
 
-        button {
-            width: 90px;
-            padding: 8px;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            align-self: flex-end;
-        }
+                // 현재 비밀번호 확인
+                $.ajax({
+                    url: '/api/v1/public/member/check-current-password',
+                    type: 'POST',
+                    data: { password: currentPassword },
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem("jwt") // 인증 헤더 추가
+                    },
+                    success: function(response) {
+                        if (response.result) {
+                            // 현재 비밀번호가 일치하는 경우, 회원 정보를 업데이트
+                            $.ajax({
+                                url: '/api/v1/member',
+                                type: 'PUT',
+                                contentType: 'application/json',
+                                data: JSON.stringify({
+                                    id: id,
+                                    name: name,
+                                    nickname: nickname,
+                                    password: newPassword
+                                }),
+                                headers: {
+                                    'Authorization': 'Bearer ' + localStorage.getItem("jwt") // 인증 헤더 추가
+                                },
+                                success: function(response) {
+                                    alert('회원 정보가 성공적으로 업데이트되었습니다.');
+                                    window.location.href = "/api/v1/view/member/";
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error("회원 정보 업데이트 실패:", xhr.responseText);
+                                    alert('회원 정보 업데이트 실패.');
+                                }
+                            });
+                        } else {
+                            // 현재 비밀번호가 일치하지 않는 경우
+                            alert('현재 비밀번호가 일치하지 않습니다.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("비밀번호 확인 실패:", xhr.responseText);
+                    }
+                });
+            });
+        });
 
-        button:hover {
-            background-color: #0056b3;
+        function home() {
+            window.location.href = "/api/v1/view/member/";
         }
-    </style>
+    </script>
 </head>
 <body>
 <div class="container">
@@ -88,25 +144,29 @@
         <input type="hidden" id="id" value="${member.id}"/>
         <div class="form-group">
             <label for="name">이름 :</label>
-            <input type="text" class="form-control" value="${member.name}" id="name" readonly>
+            <input type="text" class="form-control" value="${member.name}" id="name" readonly autocomplete="name">
         </div>
         <div class="form-group">
             <label for="email">이메일 :</label>
-            <input type="email" class="form-control" value="${member.email}" id="email" readonly>
+            <input type="email" class="form-control" value="${member.email}" id="email" readonly autocomplete="email">
         </div>
         <div class="form-group">
             <label for="nickname">닉네임 :</label>
-            <input type="text" class="form-control" value="${member.nickname}" id="nickname">
+            <input type="text" class="form-control" value="${member.nickname}" id="nickname" autocomplete="username">
         </div>
         <div class="form-group">
             <label for="currentPassword">현재 비밀번호 확인 :</label>
-            <input type="password" class="form-control" id="currentPassword" required>
+            <input type="password" class="form-control" id="currentPassword" required autocomplete="current-password">
+            <div id="passwordFeedback" class="password-feedback"></div>
         </div>
         <div class="form-group">
             <label for="password">새 비밀번호 입력 :</label>
-            <input type="password" class="form-control" id="password" required>
+            <input type="password" class="form-control" id="password" required autocomplete="new-password">
         </div>
-        <button id="btn-update" class="btn btn-primary">저장하기</button>
+        <div class="btn-container">
+            <button type="button" onclick="home()">이전</button>
+            <button id="btn-update" class="btn btn-primary">저장</button>
+        </div>
     </form>
 </div>
 </body>
