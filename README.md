@@ -2,10 +2,6 @@
 
 취업 준비생과 현직자들이 참여하고 소통하며 연결될 수 있는 커뮤니티 서비스입니다.
 
-
-
-
-
 <br/>
 
 ## 📌 dev-link-central 서비스 설명
@@ -21,15 +17,56 @@ IT 업계는 새로운 지식이 계속 업데이트되기 때문에 트렌드�
 
 소수의 스터디 인원을 구성하여 소통하고 정보를 얻을 수 있는 커뮤니티 서비스입니다.
 
+<br/><br/>
+
+## 📌 프로젝트를 진행하며 고민한 Technical Issue
+
+- [[#1] Java에서 블로킹, 논블로킹, 동기, 비동기 코드](https://alstjr706.tistory.com/372)
+- [[#2] 자바와 스프링 프레임워크에서의 싱글톤 패턴과 전략 패턴](https://alstjr706.tistory.com/373)
+- [[#3] MySQL과 S3를 활용한 효율적인 설계](https://alstjr706.tistory.com/374)
+- [[#4] MySQL 외래키 제약 조건 설정](https://alstjr706.tistory.com/375)
+- [[#5] AWS에서 MySQL 연결 문제](https://alstjr706.tistory.com/376)
+- [[#6] 닉네임 중복 체크 기능 구현 및 문제 해결 과정](https://alstjr706.tistory.com/377)
+- [[#7] 이메일 인증 기능 구현 및 문제 해결](https://alstjr706.tistory.com/378)
+- [[#8] 비밀번호 찾기 및 재설정 기능 구현(session 사용해보기)](https://alstjr706.tistory.com/379)
+- [[#9] NonUniqueResultException 해결하기](https://alstjr706.tistory.com/380)
+- [[#10] 이메일 전송 및 트랜잭션 문제 해결](https://alstjr706.tistory.com/381)
+- [[#11] JPA 엔터티 수정 과정의 문제 해결](https://alstjr706.tistory.com/382)
+- [[#12] 안전한 비밀번호 검증 및 로그인 기능 구현하기](https://alstjr706.tistory.com/383)
+- [[#13] 회원가입 기능 구현 및 문제 해결](https://alstjr706.tistory.com/384)
+- [[#14] ]()
+- [[#15] ]()
+- [[#16] ]()
+- [[]]()
+- [[]]()
+- [[]]()
+- [[]]()
+- [[]]()
 
 
 
 
 <br/><br/>
 
+## 📌 시퀀스 다이어그램
+
+- [시퀀스 다이어그램 확인하기](https://github.com/f-lab-edu/dev-link-central/blob/master/demo/%EC%8B%9C%ED%80%80%EC%8A%A4.md)
+
+<br/><br/>
+
+## 📌 서비스 아키텍처
+
+![이미지](/demo/아키텍처.png)
+
+<br/><br/>
+
+## 📌 ER 다이어그램
+
+![이미지](/schema/project-erd.svg)
+
+<br/><br/>
 
 ## 📌 사용 기술 및 개발 환경
-
 
 ### ✔️ 기술 스택
 
@@ -53,57 +90,14 @@ IT 업계는 새로운 지식이 계속 업데이트되기 때문에 트렌드�
   - `service` 패키지 -> `database` 패키지
 
 
-
-<br/><br/>
-
-
-## 📌 서비스 아키텍처
-
-![이미지](/demo/아키텍처.png)
-
-
-
-
-
-<br/><br/>
-
-
-## 📌 프로젝트를 진행하며 고민한 Technical Issue
-
-- [#1] 하나씩 추가하며 내려가기
-
-
-<br/><br/>
-
-
-## 📌 시퀀스 다이어그램
-
-- [시퀀스 다이어그램 확인하기](https://github.com/f-lab-edu/dev-link-central/blob/master/demo/%EC%8B%9C%ED%80%80%EC%8A%A4.md)
-
-
-
-
-<br/><br/>
-
-
-
-## 📌 ER 다이어그램
-
-
-![이미지](/schema/project-erd.svg)
-
-
-
 <br/><br/>
 
 ## 📌 브랜치 전략 (Git-Flow)
-
 
 - [브랜치 전략 확인하기](https://github.com/f-lab-edu/dev-link-central/blob/master/demo/%EB%B8%8C%EB%9E%9C%EC%B9%98%20%EA%B4%80%EB%A6%AC%20%EC%A0%84%EB%9E%B5.md)
 
 
 <br/><br/>
-
 
 ## 📌 Commit Message Convension
 
