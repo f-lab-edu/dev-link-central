@@ -113,7 +113,19 @@ IT 업계는 새로운 지식이 계속 업데이트되기 때문에 트렌드�
 
 ## 📌 브랜치 전략 (Git-Flow)
 
-- [브랜치 전략 확인하기](https://github.com/f-lab-edu/dev-link-central/blob/master/demo/%EB%B8%8C%EB%9E%9C%EC%B9%98%20%EA%B4%80%EB%A6%AC%20%EC%A0%84%EB%9E%B5.md)
+### dev-link-central는 `Git-Flow` 를 이용하여 브랜치를 관리하였습니다.
+
+![이미지](/demo/깃.png)
+
+✔️ `master` : 배포시 사용할 브랜치. -> (완벽히 제품으로 출시될 수 있는 브랜치를 의미합니다)
+
+✔️ `develop` : 다음 버전을 개발하는 브랜치. -> (feature에서 리뷰 완료한 브랜치를 Merge 하고 합니다.)
+
+✔️ `feature` : 기능을 개발하는 브랜치
+
+✔️ `release` : 배포를 준비할 때 사용할 브랜치
+
+✔️ `hotfix` : 배포 후에 발생한 버그를 수정 하는 브랜치
 
 
 <br/><br/>
