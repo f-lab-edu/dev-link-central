@@ -11,7 +11,6 @@ import dev.linkcentral.database.repository.groupfeed.GroupFeedLikeRepository;
 import dev.linkcentral.database.repository.groupfeed.GroupFeedRepository;
 import dev.linkcentral.database.repository.groupfeed.GroupFeedStatisticRepository;
 import dev.linkcentral.database.repository.member.MemberRepository;
-import dev.linkcentral.infrastructure.s3.FileUploader;
 import dev.linkcentral.service.dto.groupfeed.*;
 import dev.linkcentral.service.mapper.GroupFeedMapper;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GroupFeedService {
 
-    private final FileUploader fileUploader;
+//    private final FileUploader fileUploader;
     private final ProfileService profileService;
     private final GroupFeedMapper groupFeedMapper;
     private final MemberRepository memberRepository;
@@ -289,9 +288,9 @@ public class GroupFeedService {
      * @return 업로드된 이미지의 URL
      */
     private String uploadImageFile(MultipartFile imageFile, Long memberId) {
-        if (imageFile != null && !imageFile.isEmpty()) {
-            return fileUploader.uploadFile(imageFile, "group-feeds/" + memberId);
-        }
+//        if (imageFile != null && !imageFile.isEmpty()) {
+//            return fileUploader.uploadFile(imageFile, "group-feeds/" + memberId);
+//        }
         return null;
     }
 

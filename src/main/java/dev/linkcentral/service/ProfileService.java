@@ -4,7 +4,6 @@ import dev.linkcentral.database.entity.member.Member;
 import dev.linkcentral.database.entity.profile.Profile;
 import dev.linkcentral.database.repository.member.MemberRepository;
 import dev.linkcentral.database.repository.profile.ProfileRepository;
-import dev.linkcentral.infrastructure.s3.FileUploader;
 import dev.linkcentral.service.dto.profile.ProfileDetailsDTO;
 import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import dev.linkcentral.service.mapper.ProfileMapper;
@@ -19,7 +18,7 @@ import javax.persistence.EntityNotFoundException;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private final FileUploader fileUploader;
+//    private final FileUploader fileUploader;
     private final ProfileMapper profileMapper;
     private final MemberRepository memberRepository;
     private final ProfileRepository profileRepository;
@@ -87,10 +86,10 @@ public class ProfileService {
     private void updateProfileDetails(Profile profile, String bio, MultipartFile imageFile) {
         profile.updateBio(bio);
 
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String imageUrl = fileUploader.uploadFile(imageFile, "profile-images/" + profile.getMember().getId());
-            profile.updateImageUrl(imageUrl);
-        }
+//        if (imageFile != null && !imageFile.isEmpty()) {
+//            String imageUrl = fileUploader.uploadFile(imageFile, "profile-images/" + profile.getMember().getId());
+//            profile.updateImageUrl(imageUrl);
+//        }
         profileRepository.save(profile);
     }
 }
