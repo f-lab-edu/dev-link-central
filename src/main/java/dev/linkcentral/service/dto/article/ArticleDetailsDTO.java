@@ -1,6 +1,6 @@
 package dev.linkcentral.service.dto.article;
 
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

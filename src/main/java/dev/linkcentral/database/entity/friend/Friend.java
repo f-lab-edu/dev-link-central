@@ -1,7 +1,7 @@
 package dev.linkcentral.database.entity.friend;
 
 import dev.linkcentral.database.entity.AuditingFields;
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

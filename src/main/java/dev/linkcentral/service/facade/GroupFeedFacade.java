@@ -1,10 +1,9 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.service.GroupFeedService;
-import dev.linkcentral.service.MemberService;
+import dev.member.service.MemberService;
 import dev.linkcentral.service.dto.groupfeed.*;
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.mapper.GroupFeedMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

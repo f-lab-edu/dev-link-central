@@ -2,10 +2,9 @@ package dev.linkcentral.service.mapper;
 
 import dev.linkcentral.database.entity.article.Article;
 import dev.linkcentral.database.entity.article.ArticleComment;
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.service.dto.article.*;
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
-import dev.linkcentral.service.utils.DateUtils;
+import dev.common.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

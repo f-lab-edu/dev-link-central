@@ -2,7 +2,7 @@ package dev.linkcentral.database.repository.groupfeed;
 
 import dev.linkcentral.database.entity.groupfeed.GroupFeed;
 import dev.linkcentral.database.entity.groupfeed.GroupFeedLike;
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.response.profile;
 
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

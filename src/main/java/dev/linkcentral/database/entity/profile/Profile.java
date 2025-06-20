@@ -1,7 +1,7 @@
 package dev.linkcentral.database.entity.profile;
 
 import dev.linkcentral.database.entity.AuditingFields;
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import lombok.Getter;
 
 import javax.persistence.*;

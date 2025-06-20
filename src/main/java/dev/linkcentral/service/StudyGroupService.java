@@ -1,21 +1,19 @@
 package dev.linkcentral.service;
 
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.database.entity.studygroup.StudyGroup;
 import dev.linkcentral.database.entity.studygroup.StudyGroupStatus;
 import dev.linkcentral.database.entity.studygroup.StudyMember;
-import dev.linkcentral.database.repository.member.MemberRepository;
+import dev.member.repository.MemberRepository;
 import dev.linkcentral.database.repository.studygroup.StudyGroupRepository;
 import dev.linkcentral.database.repository.studygroup.StudyMemberRepository;
 import dev.linkcentral.service.dto.studygroup.*;
 import dev.linkcentral.service.mapper.StudyGroupMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -50,12 +50,16 @@
 
                     $.ajax({
                         type: "POST",
-                        url: "/api/v1/public/member/register",
+                        url: "/api/v1/public/members",
                         contentType: "application/json",
                         data: JSON.stringify(formData),
                         success: function (response) {
-                            alert("회원가입 성공");
-                            window.location.href = "/";
+                            if (response.code === "20000") {
+                                alert("회원가입 성공");
+                                window.location.href = "/";
+                            } else {
+                                alert(response.message || "회원가입 실패");
+                            }
                         },
                         error: function (xhr) {
                             if (xhr.status === 400 && xhr.responseText === "닉네임이 이미 사용 중입니다.") {

@@ -2,7 +2,7 @@ package dev.linkcentral.database.repository.friend;
 
 import dev.linkcentral.database.entity.friend.Friend;
 import dev.linkcentral.database.entity.friend.FriendStatus;
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,9 +1,7 @@
 package dev.linkcentral.service;
 
-import dev.linkcentral.common.exception.CustomOptimisticLockException;
-import dev.linkcentral.common.exception.ResourceNotFoundException;
 import dev.linkcentral.database.entity.article.*;
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.database.repository.article.*;
 import dev.linkcentral.service.dto.article.*;
 import dev.linkcentral.service.mapper.ArticleCommentMapper;

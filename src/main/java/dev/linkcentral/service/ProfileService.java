@@ -1,8 +1,8 @@
 package dev.linkcentral.service;
 
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.database.entity.profile.Profile;
-import dev.linkcentral.database.repository.member.MemberRepository;
+import dev.member.repository.MemberRepository;
 import dev.linkcentral.database.repository.profile.ProfileRepository;
 import dev.linkcentral.service.dto.profile.ProfileDetailsDTO;
 import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;

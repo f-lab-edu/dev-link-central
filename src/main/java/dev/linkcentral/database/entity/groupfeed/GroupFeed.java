@@ -1,7 +1,7 @@
 package dev.linkcentral.database.entity.groupfeed;
 
 import dev.linkcentral.database.entity.AuditingFields;
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.service.dto.groupfeed.GroupFeedCreateDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

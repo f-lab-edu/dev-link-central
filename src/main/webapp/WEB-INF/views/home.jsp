@@ -37,19 +37,16 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/api/v1/public/member/login",
+                    url: "/api/v1/public/members/signin",
                     contentType: "application/json",
                     data: JSON.stringify({email: email, password: password}),
-
                     success: function (response) {
                         console.log("로그인 응답: ", response);
 
-                        // 'accessToken' 키를 사용하여 토큰을 로컬 스토리지에 저장
-                        if (response && response.accessToken) {
-                            localStorage.setItem("jwt", response.accessToken);
+                        if (response && response.code === "20000" && response.body && response.body.accessToken) {
+                            localStorage.setItem("jwt", response.body.accessToken);
                             groupFeedView();
                         } else {
-                            // 응답에서 'accessToken'을 찾을 수 없는 경우
                             console.error("응답에서 accessToken을 찾을 수 없습니다.");
                             alert("로그인 실패: 응답에서 토큰을 찾을 수 없습니다.");
                         }

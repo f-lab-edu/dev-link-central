@@ -25,20 +25,22 @@
         $(document).ready(function() {
             // 사용자 정보를 가져와서 폼에 채움
             $.ajax({
-                url: '/api/v1/member/info',
+                url: '/api/v1/members',
                 type: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
                 success: function(response) {
-                    console.log("Member info response:", response);  // 응답 확인
-                    $('#name').val(response.name);
-                    $('#email').val(response.email);
-                    $('#nickname').val(response.nickname);
-                    $('#id').val(response.userId);  // userId를 id로 매핑
+                    if (response.code === "20000") {
+                        $('#name').val(response.body.name);
+                        $('#email').val(response.body.email);
+                        $('#nickname').val(response.body.nickname);
+                        $('#id').val(response.body.userId);
+                    } else {
+                        alert(response.message || "회원 정보를 가져오지 못했습니다.");
+                    }
                 },
-                error: function(xhr, status, error) {
-                    console.error("사용자 정보를 가져오는 데 실패했습니다:", xhr.responseText);
+                error: function(xhr) {
                     alert('사용자 정보를 가져오는 데 실패했습니다.');
                 }
             });
@@ -49,15 +51,15 @@
 
                 if (currentPassword.length > 0) {
                     $.ajax({
-                        url: '/api/v1/public/member/check-current-password',
+                        url: '/api/v1/public/members/check-password',
                         type: 'POST',
                         data: { password: currentPassword },
                         headers: {
-                            'Authorization': 'Bearer ' + localStorage.getItem("jwt") // 인증 헤더 추가
+                            'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                         },
                         success: function(response) {
                             console.log("Server response:", response);
-                            if (response.result) {
+                            if (response.code === "20000" && response.body === true) {
                                 $('#passwordFeedback').text('비밀번호가 일치합니다.').removeClass('invalid').addClass('valid');
                             } else {
                                 $('#passwordFeedback').text('비밀번호가 일치하지 않습니다.').removeClass('valid').addClass('invalid');
@@ -75,58 +77,59 @@
             $('#updateForm').on('submit', function(e) {
                 e.preventDefault();
 
+                var id = $('#id').val();
+                var name = $('#name').val();
+                var nickname = $('#nickname').val();
                 var currentPassword = $('#currentPassword').val();
                 var newPassword = $('#password').val();
-                var nickname = $('#nickname').val();
-                var id = $('#id').val();  // id 추가
-                var name = $('#name').val();  // name 추가
-
-                console.log("Update request data:", {
-                    id: id,
-                    name: name,
-                    nickname: nickname,
-                    password: newPassword
-                });
 
                 // 현재 비밀번호 확인
                 $.ajax({
-                    url: '/api/v1/public/member/check-current-password',
+                    url: '/api/v1/public/members/check-password',
                     type: 'POST',
                     data: { password: currentPassword },
                     headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem("jwt") // 인증 헤더 추가
+                        'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                     },
                     success: function(response) {
-                        if (response.result) {
-                            // 현재 비밀번호가 일치하는 경우, 회원 정보를 업데이트
+                        if (response.code === "20000" && response.body === true) {
                             $.ajax({
-                                url: '/api/v1/member',
+                                url: '/api/v1/members',
                                 type: 'PUT',
                                 contentType: 'application/json',
                                 data: JSON.stringify({
                                     id: id,
                                     name: name,
                                     nickname: nickname,
-                                    password: newPassword
+                                    currentPassword: currentPassword,
+                                    newPassword: newPassword
                                 }),
                                 headers: {
-                                    'Authorization': 'Bearer ' + localStorage.getItem("jwt") // 인증 헤더 추가
+                                    'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                                 },
                                 success: function(response) {
-                                    alert('회원 정보가 성공적으로 업데이트되었습니다.');
-                                    window.location.href = "/api/v1/view/member/";
+                                    if (response.code === "20000") {
+                                        alert('회원 정보가 성공적으로 업데이트되었습니다.');
+                                        window.location.href = "/api/v1/view/member/";
+                                    } else {
+                                        alert('회원 정보 업데이트 실패: ' + response.message);
+                                    }
                                 },
-                                error: function(xhr, status, error) {
+                                error: function(xhr) {
+                                    let msg = "회원 정보 업데이트 실패.";
+                                    try {
+                                        const res = JSON.parse(xhr.responseText);
+                                        if (res && res.message) msg = res.message;
+                                    } catch (e) {}
+                                    alert(msg);
                                     console.error("회원 정보 업데이트 실패:", xhr.responseText);
-                                    alert('회원 정보 업데이트 실패.');
                                 }
                             });
                         } else {
-                            // 현재 비밀번호가 일치하지 않는 경우
                             alert('현재 비밀번호가 일치하지 않습니다.');
                         }
                     },
-                    error: function(xhr, status, error) {
+                    error: function(xhr) {
                         console.error("비밀번호 확인 실패:", xhr.responseText);
                     }
                 });

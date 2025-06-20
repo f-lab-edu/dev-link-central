@@ -1,10 +1,9 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.service.ArticleService;
-import dev.linkcentral.service.MemberService;
+import dev.member.service.MemberService;
 import dev.linkcentral.service.dto.article.*;
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.mapper.ArticleCommentMapper;
 import dev.linkcentral.service.mapper.ArticleMapper;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +77,7 @@ public class ArticleFacade {
     }
 
     public ArticleViewDTO findById(Long articleId) {
-        Member currentMember = memberService.getAuthenticatedMember();
+        Member currentMember = memberService.current();
         return articleService.findArticleById(articleId, currentMember);
     }
 
