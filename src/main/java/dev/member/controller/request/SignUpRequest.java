@@ -1,9 +1,12 @@
 package dev.member.controller.request;
 
+import dev.member.constant.MemberRole;
+import dev.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -11,6 +14,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -36,4 +41,18 @@ public class SignUpRequest {
     private String nickname;
 
     private List<String> roles = new ArrayList<>();
+
+    public Member toEntity(PasswordEncoder passwordEncoder) {
+        Set<MemberRole> memberRoles = (roles == null || roles.isEmpty())
+                ? Set.of(MemberRole.USER)
+                : roles.stream().map(MemberRole::valueOf).collect(Collectors.toSet());
+
+        return Member.builder()
+                .name(name)
+                .passwordHash(passwordEncoder.encode(password))
+                .email(email)
+                .nickname(nickname)
+                .roles(memberRoles)
+                .build();
+    }
 }

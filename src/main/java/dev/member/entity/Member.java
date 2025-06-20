@@ -2,11 +2,14 @@ package dev.member.entity;
 
 import dev.common.BaseEntity;
 import dev.member.constant.MemberRole;
+import dev.member.controller.request.SignUpRequest;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -68,5 +71,25 @@ public class Member extends BaseEntity {
 
     public void changePassword(String newPassword, PasswordEncoder passwordEncoder) {
         this.passwordHash = passwordEncoder.encode(newPassword);
+    }
+
+    public static Member fromSignUpRequest(SignUpRequest dto, PasswordEncoder passwordEncoder) {
+        Set<MemberRole> memberRoles = convertToMemberRoles(dto.getRoles());
+        return Member.builder()
+                .name(dto.getName())
+                .passwordHash(passwordEncoder.encode(dto.getPassword()))
+                .email(dto.getEmail())
+                .nickname(dto.getNickname())
+                .roles(memberRoles)
+                .build();
+    }
+
+    private static Set<MemberRole> convertToMemberRoles(List<String> roles) {
+        if (roles == null || roles.isEmpty()) {
+            return Set.of(MemberRole.USER);
+        }
+        return roles.stream()
+                .map(MemberRole::valueOf)
+                .collect(Collectors.toSet());
     }
 }

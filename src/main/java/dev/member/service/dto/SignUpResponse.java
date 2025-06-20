@@ -12,4 +12,8 @@ import lombok.NoArgsConstructor;
 public class SignUpResponse {
 
     private Long memberId;
+
+    public static SignUpResponse from(Long memberId) {
+        return new SignUpResponse(memberId);
+    }
 }

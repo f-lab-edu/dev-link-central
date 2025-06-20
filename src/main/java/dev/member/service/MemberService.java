@@ -5,7 +5,6 @@ import dev.member.controller.request.UpdateMemberRequest;
 import dev.member.entity.Member;
 import dev.member.exception.MemberError;
 import dev.member.exception.MemberException;
-import dev.member.mapper.MemberMapper;
 import dev.member.repository.MemberRepository;
 import dev.member.service.dto.SignUpResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MailService mailService;
-    private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final MemberAuthService memberAuthService;
@@ -45,9 +43,9 @@ public class MemberService {
     @Transactional
     public SignUpResponse signup(SignUpRequest signUpRequest) {
         validateDuplicate(signUpRequest.getEmail(), signUpRequest.getNickname());
-        Member memberEntity = memberMapper.mapSignUpDtoToMember(signUpRequest);
+        Member memberEntity = signUpRequest.toEntity(passwordEncoder);
         Member savedMember = memberRepository.save(memberEntity);
-        return memberMapper.toMemberSignUpResultDto(savedMember.getId());
+        return SignUpResponse.from(savedMember.getId());
     }
 
     @Transactional
