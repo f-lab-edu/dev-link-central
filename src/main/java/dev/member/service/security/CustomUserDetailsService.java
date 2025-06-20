@@ -3,11 +3,12 @@ package dev.member.service.security;
 import dev.linkcentral.service.dto.token.MemberDetailsDTO;
 import dev.member.entity.Member;
 import dev.member.service.MemberService;
-import dev.member.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final MemberMapper memberMapper;
+    private final PasswordEncoder passwordEncoder;
     private final MemberService memberService;
 
     /**
@@ -31,10 +32,18 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberService.findByEmail(email);
-        MemberDetailsDTO memberDetailsDTO = memberMapper.toMemberDetailsDto(member);
+        MemberDetailsDTO memberDetailsDTO = MemberDetailsDTO.from(member);
         if (memberDetailsDTO == null) {
             throw new UsernameNotFoundException("사용자를 이메일로 찾을 수 없습니다: " + email);
         }
-        return memberMapper.toUserDetails(memberDetailsDTO);
+        return toUserDetails(memberDetailsDTO);
+    }
+
+    private UserDetails toUserDetails(MemberDetailsDTO userDTO) {
+        return User.builder()
+                .username(userDTO.getName())
+                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .roles(userDTO.getRoles().toArray(new String[0]))
+                .build();
     }
 }

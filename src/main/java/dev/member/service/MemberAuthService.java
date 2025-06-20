@@ -6,7 +6,6 @@ import dev.member.controller.request.SignInRequest;
 import dev.member.entity.Member;
 import dev.member.exception.MemberError;
 import dev.member.exception.MemberException;
-import dev.member.mapper.MemberMapper;
 import dev.member.service.dto.MemberInfoResponse;
 import dev.member.service.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +26,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberAuthService {
 
-    private final MemberMapper memberMapper;
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
 
     public MemberInfoResponse info() {
         Member member = authenticated();
-        return memberMapper.toMemberInfoDto(member);
+        return MemberInfoResponse.from(member);
     }
 
     public Member authenticated() {
