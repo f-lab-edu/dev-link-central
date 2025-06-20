@@ -1,9 +1,8 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.member.Member;
-import dev.linkcentral.service.MemberService;
+import dev.member.entity.Member;
+import dev.member.service.MemberService;
 import dev.linkcentral.service.ProfileService;
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.dto.profile.ProfileDetailsDTO;
 import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import dev.linkcentral.service.mapper.ArticleMapper;

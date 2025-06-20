@@ -2,7 +2,7 @@ package dev.linkcentral.service;
 
 import dev.linkcentral.database.entity.friend.Friend;
 import dev.linkcentral.database.entity.friend.FriendStatus;
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.database.repository.friend.FriendRepository;
 import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;

@@ -1,6 +1,6 @@
 package dev.linkcentral.database.repository.studygroup;
 
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.database.entity.studygroup.StudyGroup;
 import dev.linkcentral.database.entity.studygroup.StudyGroupStatus;
 import dev.linkcentral.database.entity.studygroup.StudyMember;

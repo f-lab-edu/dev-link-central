@@ -2,7 +2,7 @@ package dev.linkcentral.database.repository.article;
 
 import dev.linkcentral.database.entity.article.Article;
 import dev.linkcentral.database.entity.article.ArticleView;
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ArticleViewRepository extends JpaRepository<ArticleView, Long> {

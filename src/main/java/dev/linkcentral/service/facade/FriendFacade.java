@@ -1,12 +1,12 @@
 package dev.linkcentral.service.facade;
 
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.service.FriendService;
-import dev.linkcentral.service.MemberService;
+import dev.member.service.MemberService;
 import dev.linkcentral.service.dto.friend.FriendMemberInfoDTO;
 import dev.linkcentral.service.dto.friend.FriendRequestDTO;
 import dev.linkcentral.service.dto.friend.FriendshipDetailDTO;
-import dev.linkcentral.service.dto.member.MemberInfoDTO;
+import dev.member.service.dto.MemberInfoResponse;
 import dev.linkcentral.service.mapper.FriendMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,13 +22,13 @@ public class FriendFacade {
     private final MemberService memberService;
 
     public Long sendFriendRequest(FriendRequestDTO friendRequestDTO) {
-        Member sender = memberService.findMemberById(friendRequestDTO.getSenderId());
-        Member receiver = memberService.findMemberById(friendRequestDTO.getReceiverId());
+        Member sender = memberService.findById(friendRequestDTO.getSenderId());
+        Member receiver = memberService.findById(friendRequestDTO.getReceiverId());
         return friendService.sendFriendRequest(sender, receiver);
     }
 
     public List<FriendRequestDTO> getReceivedFriendRequests(Long receiverId) {
-        Member receiver = memberService.findMemberById(receiverId);
+        Member receiver = memberService.findById(receiverId);
         return friendService.getReceivedFriendRequests(receiver);
     }
 
@@ -37,8 +37,8 @@ public class FriendFacade {
     }
 
     public Long findFriendshipId(Long senderId, Long receiverId) {
-        Member sender = memberService.findMemberById(senderId);
-        Member receiver = memberService.findMemberById(receiverId);
+        Member sender = memberService.findById(senderId);
+        Member receiver = memberService.findById(receiverId);
         return friendService.findFriendshipId(sender, receiver);
     }
 
@@ -59,7 +59,7 @@ public class FriendFacade {
     }
 
     public FriendMemberInfoDTO getMemberInfo() {
-        MemberInfoDTO currentMember = memberService.getCurrentUserInfo();
+        MemberInfoResponse currentMember = memberService.getCurrentUserInfo();
         return friendMapper.toFriendMemberInfoDTO(currentMember);
     }
 }

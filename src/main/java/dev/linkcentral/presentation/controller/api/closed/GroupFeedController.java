@@ -6,7 +6,6 @@ import dev.linkcentral.presentation.request.groupfeed.GroupFeedCreateRequest;
 import dev.linkcentral.presentation.request.groupfeed.GroupFeedUpdateRequest;
 import dev.linkcentral.presentation.response.groupfeed.*;
 import dev.linkcentral.service.dto.groupfeed.*;
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.facade.GroupFeedFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -3,7 +3,6 @@ package dev.linkcentral.presentation.controller.api.closed;
 import dev.linkcentral.presentation.request.profile.ProfileDetailsRequest;
 import dev.linkcentral.presentation.response.profile.ProfileInfoResponse;
 import dev.linkcentral.presentation.response.profile.ProfileUpdatedResponse;
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import dev.linkcentral.service.facade.ProfileFacade;
 import lombok.RequiredArgsConstructor;

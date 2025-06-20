@@ -1,6 +1,5 @@
 package dev.linkcentral.presentation.controller.view;
 
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.dto.profile.ProfileDetailsDTO;
 import dev.linkcentral.service.facade.ProfileFacade;
 import lombok.RequiredArgsConstructor;

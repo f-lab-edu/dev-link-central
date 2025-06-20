@@ -27,24 +27,23 @@
             var password = $('#password').val();
 
             $.ajax({
-                url: "/api/v1/member?password=" + encodeURIComponent(password),
+                url: "/api/v1/members",
                 type: 'DELETE',
                 contentType: 'application/json',
                 data: JSON.stringify({password: password}),
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem("jwt")
                 },
-                success: function(memberDeleteResponse) {
-                    if (memberDeleteResponse.success) {
-                        alert(memberDeleteResponse.message);
+                success: function(response) {
+                    if (response.code === "20000") {
+                        alert('회원 탈퇴가 완료되었습니다.');
                         localStorage.removeItem('jwt');
-                        // 로그아웃 후 홈페이지로 리디렉션
                         window.location.href = "/";
                     } else {
-                        alert(memberDeleteResponse.message);
+                        alert('회원 탈퇴 실패: ' + (response.message || "처리 중 오류가 발생했습니다."));
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function() {
                     alert('회원 비밀번호가 일치하지 않습니다.');
                 }
             });

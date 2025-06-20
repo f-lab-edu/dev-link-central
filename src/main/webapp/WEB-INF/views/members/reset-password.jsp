@@ -23,23 +23,27 @@
                 let userEmail = $("#userEmail").val();
                 $.ajax({
                     type: "GET",
-                    url: "/api/v1/public/member/forgot-password",
+                    url: "/api/v1/public/members/password/check-email",
                     data: { "userEmail": userEmail },
                     success: function (response) {
-                        if (response.result) {
+                        if (response.code === "20000" && response.body === true) {
                             Swal.fire({
                                 title: '발송 완료!',
                                 text: '입력하신 이메일로 임시 비밀번호가 발송되었습니다.',
                                 icon: 'success'
                             }).then((OK) => {
                                 if (OK) {
-                                    // 비동기 메일 발송 요청
                                     $.ajax({
                                         type: "POST",
-                                        url: "/api/v1/public/member/send-email/update-password",
+                                        url: "/api/v1/public/members/password/check-email",
                                         data: { "userEmail": userEmail },
-                                        success: function () {
-                                            console.log('임시 비밀번호 발송 성공');
+                                        success: function (response) {
+                                            if (response.code === "20000") {
+                                                console.log('임시 비밀번호 발송 성공');
+                                            } else {
+                                                console.warn('임시 비밀번호 발송 실패: ' + (response.message || '오류'));
+                                                alert(response.message || '임시 비밀번호 발송 실패');
+                                            }
                                         },
                                         error: function (xhr) {
                                             console.error('임시 비밀번호 발송 실패', xhr);
@@ -49,7 +53,7 @@
                                 }
                             });
                         } else {
-                            $('#checkMsg').html('<p style="color:red">일치하는 정보가 없습니다.</p>');
+                            $('#checkMsg').html('<p style="color:red">' + (response.message || '일치하는 정보가 없습니다.') + '</p>');
                         }
                     },
                     error: function(xhr, status, error) {

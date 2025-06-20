@@ -367,17 +367,20 @@
 
         function fetchUserInfo() {
             $.ajax({
-                url: '/api/v1/member/info',
+                url: '/api/v1/members',
                 type: 'GET',
                 headers: {'Authorization': 'Bearer ' + localStorage.getItem("jwt")},
                 success: function(response) {
-                    console.log("사용자 정보 받기 성공:", response);
-                    memberId = response.userId;
-                    userId = $('#profileUserId').val();
-                    console.log("userId 설정: ", userId); // 추가 로그
-                    initEventListeners();
+                    if (response.code === "20000") {
+                        console.log("사용자 정보 받기 성공:", response);
+                        memberId = response.body.userId;
+                        userId = $('#profileUserId').val();
+                        initEventListeners();
+                    } else {
+                        alert(response.message || "회원 정보를 가져오지 못했습니다.");
+                    }
                 },
-                error: function(xhr, status, error) {
+                error: function(xhr) {
                     console.error("사용자 정보 요청에 실패했습니다.", xhr.responseText);
                 }
             });

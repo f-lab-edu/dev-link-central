@@ -1,8 +1,7 @@
 package dev.linkcentral.service.mapper;
 
-import dev.linkcentral.database.entity.member.Member;
+import dev.member.entity.Member;
 import dev.linkcentral.database.entity.profile.Profile;
-import dev.linkcentral.service.dto.member.MemberCurrentDTO;
 import dev.linkcentral.service.dto.profile.ProfileDetailsDTO;
 import dev.linkcentral.service.dto.profile.ProfileUpdateDTO;
 import org.springframework.stereotype.Component;
